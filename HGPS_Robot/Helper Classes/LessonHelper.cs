@@ -48,9 +48,11 @@ namespace HGPS_Robot
             {
                 LessonName = lessonName,
                 DateTime = DateTime.Now,
-                TeacherId = teacherId,
-                LessonHistoryId = 0 //auto increment
+                TeacherId = teacherId                
             };
+
+            WebHelper.AddLessonHistory(lessonHistory);
+            
         }
 
         [Obsolete]

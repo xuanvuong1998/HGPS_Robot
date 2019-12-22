@@ -14,7 +14,7 @@ namespace HGPS_Robot
         public Nullable<int> LessonSlide { get; set; }
         public string MediaPath { get; set; }
         public string MediaCompleted { get; set; }
-        public string AskQuestion { get; set; }
+        public Nullable<int> AskQuestionNumber { get; set; }
         public string AccessToken { get; set; }
     }
 }

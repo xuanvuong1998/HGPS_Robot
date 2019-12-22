@@ -31,7 +31,7 @@ namespace HGPS_Robot
         }
 
         public static void Update(string lessonName = null, Nullable<int> lessonSlide = null, string lessonState = null, 
-                                  string mediaPath = null, string mediaCompleted = null, string askQuestion = null)
+                                  string mediaPath = null, string mediaCompleted = null, Nullable<int> askQuestionNum = null)
         {
             if (_lessonStatus.LessonId != null)
             {
@@ -40,7 +40,7 @@ namespace HGPS_Robot
                 _lessonStatus.LessonState = lessonState;
                 _lessonStatus.MediaPath = mediaPath;
                 _lessonStatus.MediaCompleted = mediaCompleted;
-                _lessonStatus.AskQuestion = askQuestion;
+                _lessonStatus.AskQuestionNumber = askQuestionNum;
 
                 WebHelper.UpdateStatus(_lessonStatus);
             }

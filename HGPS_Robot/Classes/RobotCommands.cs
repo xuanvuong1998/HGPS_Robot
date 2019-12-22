@@ -125,15 +125,14 @@ namespace HGPS_Robot
                         if (CurrentCommand.Value.ToLower() == "quiz")
                         {
                             LessonHelper.QuestionNumber += 1;
-                            quiz.QuestionNumber = LessonHelper.QuestionNumber;
-                            StartQuiz(quiz);
+                            StartQuiz();
                             Wait(Convert.ToInt32(quiz.TimeOut)*1000 + QUIZ_BUFFER_SECONDS*1000);
                             StopQuiz();
                         }
                         break;
 
                     default:
-                        MessageBox.Show($"Unknown Type: {CurrentCommand.Type}");
+                        //MessageBox.Show($"Unknown Type: {CurrentCommand.Type}");
                         break;
                 }
             }
@@ -188,16 +187,16 @@ namespace HGPS_Robot
             while (MediaPlaying) ; //wait for media to finish playing
             Thread.Sleep(2000); // wait for 2 seconds before resuming
         }
-        private void StartQuiz(Quiz quiz)
+        private void StartQuiz()
         {
             var status = LessonStatusHelper.LessonStatus;
-            status.AskQuestion = JsonConvert.SerializeObject(quiz.QuestionNumber);
+            status.AskQuestionNumber = LessonHelper.QuestionNumber;
             WebHelper.UpdateStatus(status);
         }
         private void StopQuiz()
         {
             var status = LessonStatusHelper.LessonStatus;
-            status.AskQuestion = null;
+            status.AskQuestionNumber = 0;
             status.LessonState = "quiz completed";
             WebHelper.UpdateStatus(status);
         }

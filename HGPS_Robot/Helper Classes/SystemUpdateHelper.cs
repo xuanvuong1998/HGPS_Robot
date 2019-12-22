@@ -25,7 +25,7 @@ namespace HGPS_Robot
         private static void Update()
         {
             ExportSlides();
-            UpdateToServer();
+            //UpdateToServer();
         }
 
         private static void ExportSlides()

@@ -206,6 +206,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data Models\GlobalData.cs" />
     <Compile Include="Data Models\Lesson.cs" />
     <Compile Include="Data Models\LessonHistory.cs" />
     <Compile Include="Data Models\LessonStatus.cs" />

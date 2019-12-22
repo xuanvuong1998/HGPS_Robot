@@ -44,7 +44,7 @@ namespace HGPS_Robot
             {
                 var teacherId = status.LessonState.Split('-')[1];
                 LessonHelper.SaveLessonHistory(status.LessonName, teacherId);
-                LessonHelper.Start(status.LessonName, Convert.ToInt32(status.LessonSlide), cmbVoiceGender.Text);
+                LessonHelper.Start(status.LessonName, Convert.ToInt32(status.LessonSlide), "female");
             } else if (status.LessonState == "pause")
             {
                 LessonHelper.Pause();
@@ -83,7 +83,7 @@ namespace HGPS_Robot
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            //LessonHelper.Start(cmbLessons.Text, Convert.ToInt32(cmbSlideNumber.Text), cmbVoiceGender.Text);
+            LessonHelper.Start(cmbLessons.Text, Convert.ToInt32(cmbSlideNumber.Text), cmbVoiceGender.Text);
             //LessonHelper.LessonEnded += LessonHelper_LessonEnded;
         }
 
