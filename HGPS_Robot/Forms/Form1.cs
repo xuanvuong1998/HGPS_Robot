@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
@@ -42,18 +43,37 @@ namespace HGPS_Robot
 
             if (status.LessonState.Contains("starting"))
             {
-                var teacherId = status.LessonState.Split('-')[1];
+                var teacherId = status.LessonState.Split('-')[1];    
+                var voiceName = status.LessonState.Split('-')[2];    
+                
                 LessonHelper.SaveLessonHistory(status.LessonName, teacherId);
-                LessonHelper.Start(status.LessonName, Convert.ToInt32(status.LessonSlide), "female");
-            } else if (status.LessonState == "pause")
+                LessonHelper.LessonId = status.LessonId;
+
+                //this.Invoke(new MethodInvoker(() => this.Hide()));
+
+                if (InvokeRequired)
+                {
+                    this.Invoke(new Action(() =>
+                    LessonHelper.Start(status.LessonName, Convert.ToInt32(status.LessonSlide),voiceName)));
+                    return;
+                }
+
+            }
+            else if (status.LessonState == "pause")
             {
                 LessonHelper.Pause();
-            } else if (status.LessonState == "resume")
+            }
+            else if (status.LessonState == "continue")
             {
                 LessonHelper.Resume();
-            } else if (status.LessonState == "ended")
+            }
+            else if (status.LessonState == "ended")
             {
-                LessonHelper.EndLesson();
+                if (InvokeRequired)
+                {
+                    this.Invoke(new Action(() => LessonHelper.EndLesson()));
+                    return;
+                }
             }
 
             if (status.MediaCompleted != null)

@@ -10,12 +10,10 @@ namespace HGPS_Robot
     public static class LessonStatusHelper
     {
         public static LessonStatus LessonStatus {
-            get
-            {
+            get {
                 return _lessonStatus;
             }
-            set
-            {
+            set {
                 _lessonStatus = value;
             }
         }
@@ -30,20 +28,24 @@ namespace HGPS_Robot
             _lessonStatus.LessonId = lessonId;
         }
 
-        public static void Update(string lessonName = null, Nullable<int> lessonSlide = null, string lessonState = null, 
+        public static void Update(string lessonName = null, Nullable<int> lessonSlide = null, string lessonState = null,
                                   string mediaPath = null, string mediaCompleted = null, Nullable<int> askQuestionNum = null)
         {
-            if (_lessonStatus.LessonId != null)
-            {
-                _lessonStatus.LessonName = lessonName;
-                _lessonStatus.LessonSlide = lessonSlide;
-                _lessonStatus.LessonState = lessonState;
-                _lessonStatus.MediaPath = mediaPath;
-                _lessonStatus.MediaCompleted = mediaCompleted;
-                _lessonStatus.AskQuestionNumber = askQuestionNum;
 
-                WebHelper.UpdateStatus(_lessonStatus);
+            if (_lessonStatus.LessonId == null)
+            {
+                _lessonStatus.LessonId = LessonHelper.LessonId;
             }
+            
+            _lessonStatus.LessonName = lessonName;
+            _lessonStatus.LessonSlide = lessonSlide;
+            _lessonStatus.LessonState = lessonState;
+            _lessonStatus.MediaPath = mediaPath;
+            _lessonStatus.MediaCompleted = mediaCompleted;
+            _lessonStatus.AskQuestionNumber = askQuestionNum;
+
+            WebHelper.UpdateStatus(_lessonStatus);
+
         }
     }
 }

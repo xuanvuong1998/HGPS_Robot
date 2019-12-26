@@ -12,9 +12,11 @@ namespace HGPS_Robot
         public string LessonState { get; set; }
         public string LessonName { get; set; }
         public Nullable<int> LessonSlide { get; set; }
+        public Nullable<int> AskQuestionNumber { get; set; }
         public string MediaPath { get; set; }
         public string MediaCompleted { get; set; }
-        public Nullable<int> AskQuestionNumber { get; set; }
+        public Quiz CurQuiz { get; set; }
         public string AccessToken { get; set; }
+        
     }
 }

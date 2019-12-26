@@ -8,11 +8,11 @@ namespace HGPS_Robot
 {
     public class Lesson
     {
-        public string LessonId { get; set; }
-        public string LessonName { get; set; }
-        public string TeacherId { get; set; }
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Teacher_Id { get; set; }
         public string Subject { get; set; }
-        public int LessonSlides { get; set; }
+        public int Slides { get; set; }
         public string DateModified { get; set; }
     }
 }

@@ -8,13 +8,15 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 using System.Media;
 using System.Threading.Tasks;
+using System.Configuration;
 
 namespace HGPS_Robot
 {
     public class RobotCommands
     {
         public bool MediaPlaying { get; set; } = false;
-        public RobotCommand CurrentCommand { get; private set; } = null;
+        public RobotCommand CurrentCommand { get; private set; } = null;        
+
         public delegate void CommandUpdateHandler(object sender, CommandEventArgs e);
         public event CommandUpdateHandler OnCommandUpdate;
         private List<RobotCommand> _commands;
@@ -25,6 +27,15 @@ namespace HGPS_Robot
         {
             _commands = commands;
         }
+
+        public void SetVoiceName(string voiceName)
+        {
+            voiceName = "Voice 1";
+            var actualVoice = ConfigurationManager.AppSettings[voiceName];
+            
+            _synthesizer.SelectVoice(actualVoice);
+        }
+
         public void SetVoiceGender(string gender)
         {
             if (gender == "Male")
@@ -125,7 +136,8 @@ namespace HGPS_Robot
                         if (CurrentCommand.Value.ToLower() == "quiz")
                         {
                             LessonHelper.QuestionNumber += 1;
-                            StartQuiz();
+                            quiz.QuestionNumber = LessonHelper.QuestionNumber;
+                            StartQuiz(quiz);
                             Wait(Convert.ToInt32(quiz.TimeOut)*1000 + QUIZ_BUFFER_SECONDS*1000);
                             StopQuiz();
                         }
@@ -187,16 +199,17 @@ namespace HGPS_Robot
             while (MediaPlaying) ; //wait for media to finish playing
             Thread.Sleep(2000); // wait for 2 seconds before resuming
         }
-        private void StartQuiz()
+        private void StartQuiz(Quiz q)
         {
             var status = LessonStatusHelper.LessonStatus;
-            status.AskQuestionNumber = LessonHelper.QuestionNumber;
+            status.CurQuiz = q;
+            status.LessonId = LessonHelper.LessonId;
             WebHelper.UpdateStatus(status);
         }
         private void StopQuiz()
         {
             var status = LessonStatusHelper.LessonStatus;
-            status.AskQuestionNumber = 0;
+            status.CurQuiz = null;
             status.LessonState = "quiz completed";
             WebHelper.UpdateStatus(status);
         }

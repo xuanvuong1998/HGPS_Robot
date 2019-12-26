@@ -41,6 +41,7 @@ namespace HGPS_Robot
                 return null;
             }
         }
+
         public static async void UpdateStatus(LessonStatus status)
         {
             if (status != null)

@@ -97,13 +97,13 @@ namespace HGPS_Robot
         {
             string codePath = lessonFolder + @"\code.pptx";
             var lesson = new Lesson();
-            lesson.LessonId = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt");
-            lesson.LessonName = Path.GetFileName(lessonFolder);
+            lesson.Id = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt");
+            lesson.Name = Path.GetFileName(lessonFolder);
             lesson.DateModified = dateModified;
-            lesson.LessonSlides = FileHelper.GetLessonSlidesNumber(lesson.LessonName);
+            lesson.Slides = FileHelper.GetLessonSlidesNumber(lesson.Name);
 
             var slidesData = PowerpointHelper.GetSlidesData(codePath);
-            lesson.TeacherId = slidesData[0].TeacherId;
+            lesson.Teacher_Id = slidesData[0].TeacherId;
             lesson.Subject = slidesData[0].Subject;
 
             WebHelper.AddLesson(lesson);
@@ -114,7 +114,7 @@ namespace HGPS_Robot
                 var question = slidesData[i].Question;
                 if (question != null)
                 {
-                    question.LessonId = lesson.LessonId;
+                    question.LessonId = lesson.Id;
                     _questionNumber += 1;
                     question.QuestionNumber = _questionNumber;
                     WebHelper.AddQuestion(question);

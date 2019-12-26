@@ -11,29 +11,34 @@ namespace HGPS_Robot
     {
         public static event EventHandler LessonEnded;
         public static int QuestionNumber { get; set; } = 0;
+        public static string LessonId { get; set; } = "";
+
+        
         private static Thread _thread = null;
         private static RobotCommands _robotCommands = null;
         private static Form2 form2;
         private static string _lessonName = null;
         static LessonHelper() { }
-        public static void Start(string lessonName, int startSlideNum, string voiceGender)
+        public static void Start(string lessonName, int startSlideNum, string voiceName)
         {
             form2 = new Form2();
             form2.ShowForm();
             _lessonName = lessonName;
-
+            QuestionNumber = 0;
+                        
             _thread = new Thread(new ThreadStart(() =>
             {
                 int endSlideNum = FileHelper.GetLessonSlidesNumber(lessonName);
                 string codePath = FileHelper.BasePath + @"\" + lessonName + @"\code.pptx";
                 var progData = PowerpointHelper.GetSlidesData(codePath);
-
+                
                 for (int i = startSlideNum; i <= endSlideNum; i++)
                 {
                     LessonStatusHelper.Update(lessonName, i, "started", null, null, null);
                     RobotProgSlide _currentProgSlide = progData[i-1];
                     _robotCommands = new RobotCommands(_currentProgSlide.Commands);
-                    _robotCommands.SetVoiceGender(voiceGender);
+                    if (voiceName == null) voiceName = "Voice 1";
+                    _robotCommands.SetVoiceName(voiceName);
                     _robotCommands.OnCommandUpdate += _robotCommands_OnCommandUpdate;
                     _robotCommands.Execute();
                 }
@@ -46,9 +51,9 @@ namespace HGPS_Robot
         {
             var lessonHistory = new LessonHistory
             {
-                LessonName = lessonName,
+                Lesson_name = lessonName,
                 DateTime = DateTime.Now,
-                TeacherId = teacherId                
+                Teacher_id = teacherId                
             };
 
             WebHelper.AddLessonHistory(lessonHistory);
