@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -34,6 +35,18 @@ namespace HGPS_Robot
             SystemUpdateHelper.Start();
 
             SyncHelper.StatusChanged += SyncHelper_StatusChanged;
+
+            SyncHelper.RobotCommandChanged += SyncHelper_RobotCommandChanged;
+        }
+
+        private void SyncHelper_RobotCommandChanged(object sender, RobotCommandEventArgs e)
+        {
+            var list = e.Command.AssessPerformance;
+
+            foreach (var item in list)
+            {
+                Debug.WriteLine(item.ResultInBinaryString);
+            }
         }
 
         private void SyncHelper_StatusChanged(object sender, StatusEventArgs e)

@@ -246,6 +246,7 @@
     <Compile Include="Data Models\SavedLessons.cs" />
     <Compile Include="Data Models\SearchPreference.cs" />
     <Compile Include="Data Models\StudentHistory.cs" />
+    <Compile Include="Data Models\StudentHistoryDTO.cs" />
     <Compile Include="Helper Classes\BaseHelper.cs" />
     <Compile Include="Helper Classes\FileHelper.cs" />
     <Compile Include="Forms\Form2.cs">

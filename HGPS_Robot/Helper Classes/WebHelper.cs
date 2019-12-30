@@ -61,7 +61,6 @@ namespace HGPS_Robot
             }
         }
 
-
         public static List<StudentHistory> GetStudentHistories()
         {
             var client = new HttpClient();
