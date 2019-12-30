@@ -76,8 +76,8 @@ namespace HGPS_Robot
         public static void EndLesson()
         {
             try
-            {
-                //LessonStatusHelper.Update(lessonName, null, "ended", null, null, null);
+            {                
+                LessonStatusHelper.Update("", null, "ended", null, null, null);
                 if (_thread != null && _thread.IsAlive)
                 {
                     form2.CloseForm();

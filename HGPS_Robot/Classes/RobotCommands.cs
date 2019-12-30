@@ -22,7 +22,7 @@ namespace HGPS_Robot
         private List<RobotCommand> _commands;
         private SoundPlayer _soundPlayer = new SoundPlayer();
         private SpeechSynthesizer _synthesizer = new SpeechSynthesizer();
-        private const int QUIZ_BUFFER_SECONDS = 3;
+        private const int QUIZ_BUFFER_SECONDS = 2;
         public RobotCommands(List<RobotCommand> commands)
         {
             _commands = commands;

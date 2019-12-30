@@ -9,42 +9,35 @@ namespace HGPS_Robot
 {
     public static class LessonStatusHelper
     {
-        public static LessonStatus LessonStatus {
-            get {
-                return _lessonStatus;
-            }
-            set {
-                _lessonStatus = value;
-            }
-        }
-        private static LessonStatus _lessonStatus;
+        public static LessonStatus LessonStatus { get; set; }
+
         static LessonStatusHelper()
         {
-            _lessonStatus = new LessonStatus();
+            LessonStatus = new LessonStatus();
         }
 
         public static void Initialise(string lessonId)
         {
-            _lessonStatus.LessonId = lessonId;
+            LessonStatus.LessonId = lessonId;
         }
 
         public static void Update(string lessonName = null, Nullable<int> lessonSlide = null, string lessonState = null,
                                   string mediaPath = null, string mediaCompleted = null, Nullable<int> askQuestionNum = null)
         {
 
-            if (_lessonStatus.LessonId == null)
+            if (LessonStatus.LessonId == null)
             {
-                _lessonStatus.LessonId = LessonHelper.LessonId;
+                LessonStatus.LessonId = LessonHelper.LessonId;
             }
             
-            _lessonStatus.LessonName = lessonName;
-            _lessonStatus.LessonSlide = lessonSlide;
-            _lessonStatus.LessonState = lessonState;
-            _lessonStatus.MediaPath = mediaPath;
-            _lessonStatus.MediaCompleted = mediaCompleted;
-            _lessonStatus.AskQuestionNumber = askQuestionNum;
+            LessonStatus.LessonName = lessonName;
+            LessonStatus.LessonSlide = lessonSlide;
+            LessonStatus.LessonState = lessonState;
+            LessonStatus.MediaPath = mediaPath;
+            LessonStatus.MediaCompleted = mediaCompleted;
+            LessonStatus.AskQuestionNumber = askQuestionNum;
 
-            WebHelper.UpdateStatus(_lessonStatus);
+            WebHelper.UpdateStatus(LessonStatus);
 
         }
     }

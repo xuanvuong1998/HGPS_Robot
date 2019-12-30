@@ -67,7 +67,7 @@ namespace HGPS_Robot
             {
                 LessonHelper.Resume();
             }
-            else if (status.LessonState == "ended")
+            else if (status.LessonState == "end")
             {
                 if (InvokeRequired)
                 {
