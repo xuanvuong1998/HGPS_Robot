@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HGPS_Robot.Data_Models
+namespace HGPS_Robot
 {
-    class StudentHistoryDTO
+    public class StudentHistoryDTO
     {
         public string Student_id { get; set; }
         public int LessonHistory_id { get; set; }

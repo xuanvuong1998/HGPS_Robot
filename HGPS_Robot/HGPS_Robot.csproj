@@ -107,7 +107,7 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="Robot">
-      <HintPath>..\..\..\Robot\Robot\bin\Debug\Robot.dll</HintPath>
+      <HintPath>..\..\..\Robo-TA\Robotx64\Robot\bin\Debug\Robot.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.AppContext, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -247,6 +247,7 @@
     <Compile Include="Data Models\SearchPreference.cs" />
     <Compile Include="Data Models\StudentHistory.cs" />
     <Compile Include="Data Models\StudentHistoryDTO.cs" />
+    <Compile Include="Data Models\StudentsPerformance.cs" />
     <Compile Include="Helper Classes\BaseHelper.cs" />
     <Compile Include="Helper Classes\FileHelper.cs" />
     <Compile Include="Forms\Form2.cs">
@@ -264,6 +265,7 @@
     <Compile Include="Helper Classes\LessonStatusHelper.cs" />
     <Compile Include="Helper Classes\PowerpointHelper.cs" />
     <Compile Include="Helper Classes\LessonHelper.cs" />
+    <Compile Include="Helper Classes\StudentsPerformanceHelper.cs" />
     <Compile Include="Helper Classes\SystemUpdateHelper.cs" />
     <Compile Include="Helper Classes\SyncHelper.cs" />
     <Compile Include="Helper Classes\UpperBodyHelper.cs" />
@@ -307,6 +309,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\img_forest.jpg" />
+    <None Include="Resources\CoddieUI2.png" />
+    <None Include="Resources\CoddieUI3.png" />
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />

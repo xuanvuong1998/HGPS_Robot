@@ -19,7 +19,7 @@ namespace HGPS_Robot
 
         public string LessonStatus { get; set; }
 
-        public List<StudentHistory> AssessPerformance { get; set; }
+        public List<StudentHistoryDTO> AssessPerformance { get; set; }
 
 
         // From Teacher Panel

@@ -60,6 +60,11 @@ namespace HGPS_Robot
             
         }
 
+        public static void InsertCommand(string cmdType, string cmdValue)
+        {
+            _robotCommands.InsertCommand(cmdType, cmdValue);
+        }
+
         [Obsolete]
         public static void Pause()
         {
@@ -77,7 +82,7 @@ namespace HGPS_Robot
         {
             try
             {                
-                LessonStatusHelper.Update("", null, "ended", null, null, null);
+                LessonStatusHelper.Update("", null, "end", null, null, null);
                 if (_thread != null && _thread.IsAlive)
                 {
                     form2.CloseForm();
@@ -124,7 +129,6 @@ namespace HGPS_Robot
         {
             EndLesson();
             LessonEnded?.Invoke(null, EventArgs.Empty);
-            
         }
 
         

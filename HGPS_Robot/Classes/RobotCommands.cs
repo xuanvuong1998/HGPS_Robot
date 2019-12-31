@@ -22,7 +22,7 @@ namespace HGPS_Robot
         private List<RobotCommand> _commands;
         private SoundPlayer _soundPlayer = new SoundPlayer();
         private SpeechSynthesizer _synthesizer = new SpeechSynthesizer();
-        private const int QUIZ_BUFFER_SECONDS = 2;
+        private const int QUIZ_BUFFER_SECONDS = 3;
         public RobotCommands(List<RobotCommand> commands)
         {
             _commands = commands;
@@ -80,13 +80,21 @@ namespace HGPS_Robot
                 MessageBox.Show("Error: Commands not found!");
             }
         }
+
+        public void InsertCommand(string cmdType, string cmdValue)
+        {
+            var robotCommand = new RobotCommand(cmdType, cmdValue);
+            _commands.Insert(commandIteration + 1, robotCommand);
+        }
+
+        int commandIteration = 0;
         private void CommandHandler()
         {
             var quiz = new Quiz();
 
-            for (int i = 0; i < _commands.Count; i++)
+            for (commandIteration = 0; commandIteration < _commands.Count; commandIteration++)
             {
-                CurrentCommand = _commands[i];
+                CurrentCommand = _commands[commandIteration];
 
                 UpdateCommand(CurrentCommand.Type.ToLower(), CurrentCommand.Value);
 

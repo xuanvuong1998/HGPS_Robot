@@ -25,27 +25,26 @@ namespace HGPS_Robot
 
         private void Form1_Shown(object sender, EventArgs e)
         {
-            this.Size = new Size(1000, 400);
+            //this.Size = new Size(1000, 400);
             this.CenterToScreen();
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.WindowState = FormWindowState.Maximized;
 
-            var lessonNames = FileHelper.GetLessons();
-            cmbLessons.DataSource = lessonNames;
-            cmbVoiceGender.SelectedIndex = 0;
-
+            var area = Screen.FromControl(this).WorkingArea;
+            picBackground.Location = new Point(0, 0);
+            picBackground.Size = new Size(area.Width, area.Height);
             SystemUpdateHelper.Start();
 
-            SyncHelper.StatusChanged += SyncHelper_StatusChanged;
-
-            SyncHelper.RobotCommandChanged += SyncHelper_RobotCommandChanged;
+            //SyncHelper.StatusChanged += SyncHelper_StatusChanged;
+            //SyncHelper.RobotCommandChanged += SyncHelper_RobotCommandChanged;
         }
 
         private void SyncHelper_RobotCommandChanged(object sender, RobotCommandEventArgs e)
         {
             var list = e.Command.AssessPerformance;
-
-            foreach (var item in list)
+            if (list != null)
             {
-                Debug.WriteLine(item.ResultInBinaryString);
+                Praise(list);
             }
         }
 
@@ -100,24 +99,75 @@ namespace HGPS_Robot
             }
         }
 
-        private void cmbLessons_SelectedIndexChanged(object sender, EventArgs e)
+        private void Praise(List<StudentHistoryDTO> list)
         {
-            cmbSlideNumber.Items.Clear();
-            var numOfSlides = FileHelper.GetLessonSlidesNumber(cmbLessons.Text);
-            if (numOfSlides > 0)
-            {
-                for (int i = 1; i <= numOfSlides; i++)
-                {
-                    cmbSlideNumber.Items.Add(i);
-                }
-                cmbSlideNumber.SelectedIndex = 0;
-            }
-        }
+            var rdm = new Random();
+            var rdmNum = rdm.Next(1, 4); // generate random number 1-3
 
-        private void btnStart_Click(object sender, EventArgs e)
-        {
-            LessonHelper.Start(cmbLessons.Text, Convert.ToInt32(cmbSlideNumber.Text), cmbVoiceGender.Text);
-            //LessonHelper.LessonEnded += LessonHelper_LessonEnded;
+            var speech = "";
+            var topStudents = new Dictionary<string, int>();
+
+            switch (rdmNum)
+            {
+                case 1:
+                    var performance = StudentsPerformanceHelper.GetSummary(list);
+                    speech = "The average score for this class currently at " + performance.AverageScore.ToString();
+                    speech += " Well done!";
+                    break;
+
+                case 2:
+                    var numOfFullScore = StudentsPerformanceHelper.GetNumOfFullScore(list);
+                    if (numOfFullScore != 0)
+                    {
+                        speech = $"We have {numOfFullScore.ToString()} students with full score!";
+                            speech += " Great job!";
+                    }
+                    else
+                    {
+                        topStudents = StudentsPerformanceHelper.GetTopStudents(list);
+                        if (topStudents.Count == 1)
+                        {
+                            speech = $"Currently the top students for this class is {topStudents.FirstOrDefault().Key} with" +
+                                     $" with a score of {topStudents.FirstOrDefault().Value.ToString()}";
+                            speech += " The rest of you please try your best!"; ;
+                        }
+                        else if (topStudents.Count <= 5)
+                        {
+                            foreach (var stud in topStudents)
+                            {
+                                speech += stud.Key;
+                                speech += ", ";
+                            }
+                            speech += " are currently the top students in this class";
+                            speech += $" with a score of {topStudents.FirstOrDefault().Value.ToString()}";
+                            speech += " Great job everyone!";
+                        }
+                    }
+                    break;
+
+                case 3:
+                    topStudents = StudentsPerformanceHelper.GetTopStudents(list);
+                    if (topStudents.Count == 1)
+                    {
+                        speech = $"Currently the top students for this class is {topStudents.FirstOrDefault().Key} with" +
+                                 $" with a score of {topStudents.FirstOrDefault().Value.ToString()}";
+                        speech += " The rest of you please try your best!"; ;
+                    }
+                    else if (topStudents.Count <= 5)
+                    {
+                        foreach (var stud in topStudents)
+                        {
+                            speech += stud.Key;
+                            speech += ", ";
+                        }
+                        speech += " are currently the top students in this class";
+                        speech += $" with a score of {topStudents.FirstOrDefault().Value.ToString()}";
+                        speech += " Great job everyone!";
+                    }
+                    break;
+            }
+            
+            //append a speak command using speech
         }
 
         private void LessonHelper_LessonEnded(object sender, EventArgs e)
