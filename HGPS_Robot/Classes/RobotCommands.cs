@@ -150,6 +150,9 @@ namespace HGPS_Robot
                             StopQuiz();
                         }
                         break;
+                    case "review":
+                        
+                        break;
 
                     default:
                         //MessageBox.Show($"Unknown Type: {CurrentCommand.Type}");

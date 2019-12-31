@@ -36,6 +36,7 @@ namespace HGPS_Robot
             LessonStatus.MediaPath = mediaPath;
             LessonStatus.MediaCompleted = mediaCompleted;
             LessonStatus.AskQuestionNumber = askQuestionNum;
+            LessonStatus.CurQuiz = null;
 
             WebHelper.UpdateStatus(LessonStatus);
 

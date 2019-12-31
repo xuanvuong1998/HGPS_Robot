@@ -13,8 +13,8 @@ namespace HGPS_Robot
         private static HubConnection _hubConnection;
         private static IHubProxy _hub;
         private const string CLIENT_NAME = "Robo-TA";
-        private const string _baseAddress = "http://robo-ta.com/";
-        //private const string _baseAddress = "https://localhost:44353/";
+        //private const string _baseAddress = "http://robo-ta.com/";
+        private const string _baseAddress = "https://localhost:44353/";
 
         public static event EventHandler<StatusEventArgs> StatusChanged;
         public static event EventHandler<RobotCommandEventArgs> RobotCommandChanged;
@@ -24,7 +24,7 @@ namespace HGPS_Robot
             _hubConnection = new HubConnection(_baseAddress);
             _hub = _hubConnection.CreateHubProxy("SyncHub");
             _hub.On<string>("statusChanged", (status) => OnStatusChanged(status));
-            _hub.On<RobotCmd>("haveRobotCommands", (command) => OnRobotCommand(command));
+            _hub.On<RobotCmd>("haveRobotCommands", (command) => OnRobotCommand(command));            
             _hubConnection.Start().Wait();
             _hub.Invoke("Notify", CLIENT_NAME, _hubConnection.ConnectionId);
         }
