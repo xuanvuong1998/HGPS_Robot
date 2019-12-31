@@ -166,8 +166,9 @@ namespace HGPS_Robot
                     }
                     break;
             }
-            
+
             //append a speak command using speech
+            LessonHelper.InsertCommand("speak", speech);
         }
 
         private void LessonHelper_LessonEnded(object sender, EventArgs e)
