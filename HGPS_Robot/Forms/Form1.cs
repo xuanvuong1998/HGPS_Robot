@@ -27,7 +27,7 @@ namespace HGPS_Robot
         {
             //this.Size = new Size(1000, 400);
             this.CenterToScreen();
-            this.FormBorderStyle = FormBorderStyle.None;
+            //this.FormBorderStyle = FormBorderStyle.None;
             this.WindowState = FormWindowState.Maximized;
 
             var area = Screen.FromControl(this).WorkingArea;
@@ -54,53 +54,58 @@ namespace HGPS_Robot
             var status = e.Status;
             LessonStatusHelper.LessonStatus = status;
 
-            if (status.LessonState.Contains("starting"))
+            if (status.LessonState != null)
             {
-                var teacherId = status.LessonState.Split('-')[1];    
-                var voiceName = status.LessonState.Split('-')[2];    
-                
-                LessonHelper.SaveLessonHistory(status.LessonName, teacherId);
-                LessonHelper.LessonId = status.LessonId;
-
-                //this.Invoke(new MethodInvoker(() => this.Hide()));
-
-                if (InvokeRequired)
+                if (status.LessonState.Contains("starting"))
                 {
-                    this.Invoke(new Action(() =>
-                    LessonHelper.Start(status.LessonName, Convert.ToInt32(status.LessonSlide),voiceName)));
-                    return;
+                    var teacherId = status.LessonState.Split('-')[1];
+                    var voiceName = status.LessonState.Split('-')[2];
+
+                    LessonHelper.SaveLessonHistory(status.LessonName, teacherId);
+                    LessonHelper.LessonId = status.LessonId;
+
+                    //this.Invoke(new MethodInvoker(() => this.Hide()));
+
+                    if (InvokeRequired)
+                    {
+                        this.Invoke(new Action(() =>
+                        LessonHelper.Start(status.LessonName, Convert.ToInt32(status.LessonSlide), voiceName)));
+                        return;
+                    }
+
+                }
+                else if (status.LessonState == "pause")
+                {
+                    LessonHelper.Pause();
+                }
+                else if (status.LessonState == "continue")
+                {
+                    LessonHelper.Resume();
+                }
+                else if (status.LessonState == "end")
+                {
+                    try
+                    {
+                        if (InvokeRequired)
+                        {
+                            this.Invoke(new Action(() => LessonHelper.EndLesson()));
+                            return;
+                        }
+                    }
+                    catch { }
                 }
 
-            }
-            else if (status.LessonState == "pause")
-            {
-                LessonHelper.Pause();
-            }
-            else if (status.LessonState == "continue")
-            {
-                LessonHelper.Resume();
-            }
-            else if (status.LessonState == "end")
-            {
-                if (InvokeRequired)
+                if (status.MediaCompleted != null)
                 {
-                    this.Invoke(new Action(() => LessonHelper.EndLesson()));
-                    return;
-                }
-            }
-
-            if (status.MediaCompleted != null)
-            {
-                if (status.MediaCompleted == "true")
-                {
-                    LessonHelper.MediaEnded();
-                    status.MediaCompleted = null;
-                    WebHelper.UpdateStatus(status);
+                    if (status.MediaCompleted == "true")
+                    {
+                        LessonHelper.MediaEnded();
+                        status.MediaCompleted = null;
+                        WebHelper.UpdateStatus(status);
+                    }
                 }
             }
         }
-
-        
 
         private void LessonHelper_LessonEnded(object sender, EventArgs e)
         {

@@ -8,7 +8,7 @@ namespace HGPS_Robot
 {
     public class SavedLessons
     {
-        public string LessonName { get; set; }
+        public string Name { get; set; }
         public string DateModified { get; set; }
     }
 }

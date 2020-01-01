@@ -27,7 +27,7 @@ namespace HGPS_Robot
             this.Width = _width;
             this.Height = _height;
             //this.TopMost = true;
-            this.FormBorderStyle = FormBorderStyle.None;
+            //this.FormBorderStyle = FormBorderStyle.None;
             this.WindowState = FormWindowState.Maximized;
 
             lblMessage.Location = new Point(0, 0);

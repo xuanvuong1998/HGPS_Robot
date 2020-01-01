@@ -25,7 +25,7 @@ namespace HGPS_Robot
         private static void Update()
         {
             ExportSlides();
-            //UpdateToServer();
+            UpdateToServer();
         }
 
         private static void ExportSlides()
@@ -72,24 +72,27 @@ namespace HGPS_Robot
 
                 if (savedLessons != null)
                 {
-                    int index = savedLessons.FindIndex(s => s.LessonName == lessonName);
-                    if (index >= 0) //saved
+                    if (lessonName != "Math1")
                     {
-                        if (savedLessons[index].DateModified != lastModified)
+                        int index = savedLessons.FindIndex(s => s.Name == lessonName);
+                        if (index >= 0) //saved
                         {
-                            //update - delete and save
-                            WebHelper.DeleteLesson(lessonName);
+                            if (savedLessons[index].DateModified != lastModified)
+                            {
+                                //update - delete and save
+                                WebHelper.DeleteLesson(lessonName);
+                                Save(folder, lastModified);
+                            }
+                        }
+                        else //not saved
+                        {
                             Save(folder, lastModified);
                         }
                     }
-                    else //not saved
+                    else
                     {
                         Save(folder, lastModified);
                     }
-                }
-                else
-                {
-                    Save(folder, lastModified);
                 }
             }
         }
@@ -114,9 +117,17 @@ namespace HGPS_Robot
                 var question = slidesData[i].Question;
                 if (question != null)
                 {
-                    question.LessonId = lesson.Id;
+                    if (question.Type == 1)
+                    {
+                        question.ChoiceA = "null";
+                        question.ChoiceB = "null";
+                        question.ChoiceC = "null";
+                        question.ChoiceD = "null";
+                    }
+                    question.Id = 1;
+                    question.Lesson_Id = lesson.Id;
                     _questionNumber += 1;
-                    question.QuestionNumber = _questionNumber;
+                    question.Number = _questionNumber;
                     WebHelper.AddQuestion(question);
                 }
             }

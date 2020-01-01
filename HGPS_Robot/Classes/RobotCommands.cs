@@ -30,10 +30,10 @@ namespace HGPS_Robot
 
         public void SetVoiceName(string voiceName)
         {
-            voiceName = "Voice 1";
-            var actualVoice = ConfigurationManager.AppSettings[voiceName];
+            //voiceName = "Voice 1";
+            //var actualVoice = ConfigurationManager.AppSettings[voiceName];
             
-            _synthesizer.SelectVoice(actualVoice);
+            //_synthesizer.SelectVoice(actualVoice);
         }
 
         public void SetVoiceGender(string gender)
@@ -85,6 +85,12 @@ namespace HGPS_Robot
         {
             var robotCommand = new RobotCommand(cmdType, cmdValue);
             _commands.Insert(commandIteration + 1, robotCommand);
+        }
+
+        public void InsertPraise(string cmdType, string cmdValue)
+        {
+            var robotCommand = new RobotCommand(cmdType, cmdValue);
+
         }
 
         int commandIteration = 0;
