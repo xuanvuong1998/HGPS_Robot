@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SpeechLibrary;
 
 namespace HGPS_Robot
 {
@@ -21,6 +22,13 @@ namespace HGPS_Robot
         public Form1()
         {
             InitializeComponent();
+        }
+
+        private void InitSpeechAndChatbot()
+        {
+            Synthesizer.Setup();
+            Synthesizer.SelectVoiceByName(GlobalData.Voice1);
+            Conversation.Init();
         }
 
         private void Form1_Shown(object sender, EventArgs e)
@@ -35,8 +43,10 @@ namespace HGPS_Robot
             picBackground.Size = new Size(area.Width, area.Height);
             SystemUpdateHelper.Start();
 
-            SyncHelper.StatusChanged += SyncHelper_StatusChanged;
-            SyncHelper.RobotCommandChanged += SyncHelper_RobotCommandChanged;
+            //SyncHelper.StatusChanged += SyncHelper_StatusChanged;
+            //SyncHelper.RobotCommandChanged += SyncHelper_RobotCommandChanged;
+
+            InitSpeechAndChatbot();
         }
 
         private void SyncHelper_RobotCommandChanged(object sender, RobotCommandEventArgs e)
@@ -110,6 +120,25 @@ namespace HGPS_Robot
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             LessonHelper.ForceStop();
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Space)
+            {
+                var flag = GlobalFlowControl.ChatBot.ConversationEnable;
+                if (flag)
+                {
+                    Conversation.Stop();
+                    Debug.WriteLine("Stop Conversation");
+                }
+                else
+                {
+                    Debug.WriteLine("Start Conversation");
+                    Conversation.Start();
+                }
+
+            }
         }
     }
 }

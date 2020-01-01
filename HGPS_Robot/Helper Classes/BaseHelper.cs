@@ -64,12 +64,12 @@ namespace HGPS_Robot
 
         public static void TurnLeft()
         {
-            BaseHelper.Move(ROS.BaseDirection.ANTICLOCKWISE);
+           Move(ROS.BaseDirection.ANTICLOCKWISE);
         }
 
         public static void TurnRight()
         {
-            BaseHelper.Move(ROS.BaseDirection.CLOCKWISE);
+           Move(ROS.BaseDirection.CLOCKWISE);
         }
         public static void TurnLeft(int rounds)
         {
@@ -114,7 +114,7 @@ namespace HGPS_Robot
         #region Moves
         public static void Forward()
         {
-            BaseHelper.Move(ROS.BaseDirection.FORWARD);
+           Move(ROS.BaseDirection.FORWARD);
         }
 
         public static void ForwardDuring(int interval)
@@ -158,7 +158,7 @@ namespace HGPS_Robot
 
         public static void Backward()
         {
-            BaseHelper.Move(ROS.BaseDirection.BACKWARD);
+           Move(ROS.BaseDirection.BACKWARD);
         }
         #endregion
 
@@ -168,22 +168,22 @@ namespace HGPS_Robot
             switch (direction)
             {
                 case "forward":
-                    BaseHelper.Forward();
+                    Forward();
                     break;
                 case "backward":
-                    BaseHelper.Backward();
+                    Backward();
                     break;
                 case "left-turn":
-                    BaseHelper.TurnLeft();
+                    TurnLeft();
                     break;
                 case "right-turn":
-                    BaseHelper.TurnRight();
+                    TurnRight();
                     break;
                 case "stop":
-                    BaseHelper.Stop();
+                    Stop();
                     break;
                 default:
-                    BaseHelper.Stop();
+                    Stop();
                     break;
             }
         }

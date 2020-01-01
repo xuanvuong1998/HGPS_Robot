@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace HGPS_Robot
 {
-    class GlobalData
+    class MathIntepreter
     {
-        
     }
 }

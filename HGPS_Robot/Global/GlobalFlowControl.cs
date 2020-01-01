@@ -80,7 +80,11 @@ namespace HGPS_Robot
 
             public static bool ConversationEnable { get; set; }
 
-
+            public static void ResetBeforeNewConversation()
+            {
+                ConversationEnable = true;
+                RecognizedQuestion = "";                
+            }
         }
     }
 }

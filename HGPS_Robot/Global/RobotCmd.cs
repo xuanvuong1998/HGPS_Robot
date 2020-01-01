@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace HGPS_Robot
 {
+    /// <summary>
+    /// This class to process command from teacher panel (using signalR) 
+    /// </summary>
     public class RobotCmd
     {
         public string Navigation { get; set; }
@@ -101,17 +104,17 @@ namespace HGPS_Robot
         {
             if (Navigation != null)
             {
-                
+                BaseHelper.Go(Navigation);
             }
 
             if (Movement != null)
             {
-
+                BaseHelper.DoBaseMovements(Movement);
             }
 
             if (Gesture != null)
             {
-
+                UpperBodyHelper.DoGestures(Gesture);
             }
 
             if (Chatbot != null)
