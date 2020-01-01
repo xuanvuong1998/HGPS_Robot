@@ -25,7 +25,6 @@ namespace HGPS_Robot
 
         public Image Image { get; set; } = null;
         private string _code = null;
-        private int _questionNumber = 0;
         private Question _question = new Question();
 
         private void ProcessCommands()
@@ -67,7 +66,7 @@ namespace HGPS_Robot
                     break;
 
                 case "question":
-                    _question.QuestionContent = cmd.Value;
+                    _question.Query = cmd.Value;
                     break;
 
                 case "optiona":
@@ -99,7 +98,6 @@ namespace HGPS_Robot
                     break;
 
                 case "start":
-                    _question.LessonId = null;
                     Question = _question;
                     break;
             }

@@ -76,7 +76,7 @@ namespace HGPS_Robot
                     topStudents = StudentsPerformanceHelper.GetTopStudents(list);
                     if (topStudents.Count == 1)
                     {
-                        speech = $"Currently the top students for this class is {topStudents.FirstOrDefault().Key} with" +
+                        speech = $"Currently the top students for this class is {topStudents.FirstOrDefault().Key}" +
                                  $" with a score of {topStudents.FirstOrDefault().Value.ToString()}";
                         speech += " The rest of you please try your best!"; ;
                     }
@@ -93,9 +93,7 @@ namespace HGPS_Robot
                     }
                     break;
             }
-
-            //append a speak command using speech
-            LessonHelper.InsertCommand("speak", speech);
+            LessonHelper.InsertPraise(speech);
         }
         #endregion
 

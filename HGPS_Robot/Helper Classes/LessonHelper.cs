@@ -12,13 +12,15 @@ namespace HGPS_Robot
         public static event EventHandler LessonEnded;
         public static int QuestionNumber { get; set; } = 0;
         public static string LessonId { get; set; } = "";
-
+        public static int CurrentSlideNumber { get; private set; } = 0;
         
         private static Thread _thread = null;
         private static RobotCommands _robotCommands = null;
         private static Form2 form2;
         private static string _lessonName = null;
+        private static List<RobotProgSlide> progData = null;
         static LessonHelper() { }
+
         public static void Start(string lessonName, int startSlideNum, string voiceName)
         {
             form2 = new Form2();
@@ -30,12 +32,12 @@ namespace HGPS_Robot
             {
                 int endSlideNum = FileHelper.GetLessonSlidesNumber(lessonName);
                 string codePath = FileHelper.BasePath + @"\" + lessonName + @"\code.pptx";
-                var progData = PowerpointHelper.GetSlidesData(codePath);
+                progData = PowerpointHelper.GetSlidesData(codePath);
                 
-                for (int i = startSlideNum; i <= endSlideNum; i++)
+                for (CurrentSlideNumber = startSlideNum; CurrentSlideNumber <= endSlideNum; CurrentSlideNumber++)
                 {
-                    LessonStatusHelper.Update(lessonName, i, "started", null, null, null);
-                    RobotProgSlide _currentProgSlide = progData[i-1];
+                    LessonStatusHelper.Update(lessonName, CurrentSlideNumber, "started", null, null, null);
+                    RobotProgSlide _currentProgSlide = progData[CurrentSlideNumber-1];
                     _robotCommands = new RobotCommands(_currentProgSlide.Commands);
                     if (voiceName == null) voiceName = "Voice 1";
                     _robotCommands.SetVoiceName(voiceName);
@@ -63,6 +65,18 @@ namespace HGPS_Robot
         public static void InsertCommand(string cmdType, string cmdValue)
         {
             _robotCommands.InsertCommand(cmdType, cmdValue);
+        }
+
+        public static void InsertPraise(string speech)
+        {
+            //this method will insert a 'speak' command into
+            //the end of next slide
+            int slideNum = CurrentSlideNumber;
+
+            var robotCommand = new RobotCommand("speak", speech);
+            var _nextProgSlide = progData[slideNum]; //next slide since slide 1 starts from index 0
+            _nextProgSlide.Commands.Add(robotCommand);
+            progData[slideNum] = _nextProgSlide;
         }
 
         [Obsolete]
