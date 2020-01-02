@@ -30,10 +30,10 @@ namespace HGPS_Robot
 
         public void SetVoiceName(string voiceName)
         {
-            //voiceName = "Voice 1";
-            //var actualVoice = ConfigurationManager.AppSettings[voiceName];
-            
-            //_synthesizer.SelectVoice(actualVoice);
+            voiceName = "Voice 1";
+            var actualVoice = ConfigurationManager.AppSettings[voiceName];
+
+            _synthesizer.SelectVoice(actualVoice);
         }
 
         public void SetVoiceGender(string gender)

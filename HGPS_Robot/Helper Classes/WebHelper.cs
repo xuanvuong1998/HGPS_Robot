@@ -82,7 +82,7 @@ namespace HGPS_Robot
         {
             var client = new HttpClient();
             client.BaseAddress = new Uri(BASE_ADDRESS);
-            var response = client.GetAsync("api/LessonApi/GetLessonsWithDateMotified").Result;
+            var response = client.GetAsync("api/LessonApi/GetLessonsWithDateModified").Result;
             var resultsJson = response.Content.ReadAsStringAsync().Result;
 
             if (resultsJson != null)
@@ -136,7 +136,7 @@ namespace HGPS_Robot
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(BASE_ADDRESS);
-                    using (var req = new HttpRequestMessage(HttpMethod.Post, "api/Question/AddQuestion"))
+                    using (var req = new HttpRequestMessage(HttpMethod.Post, "api/QuestionApi/AddQuestion"))
                     {
                         req.Content = new StringContent(JsonConvert.SerializeObject(question), Encoding.UTF8, "application/json");
                         await client.SendAsync(req);

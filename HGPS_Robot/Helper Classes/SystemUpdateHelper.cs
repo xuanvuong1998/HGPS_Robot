@@ -15,8 +15,9 @@ namespace HGPS_Robot
         public static void Start()
         {
             ThreadStart starter = Update;
-            starter += () => {
-                MessageBox.Show("System updated");
+            starter += () =>
+            {
+                //MessageBox.Show("System updated");
             };
             Thread thread = new Thread(starter) { IsBackground = true };
             thread.Start();
@@ -72,24 +73,17 @@ namespace HGPS_Robot
 
                 if (savedLessons != null)
                 {
-                    if (lessonName != "Math1")
+                    int index = savedLessons.FindIndex(s => s.Name == lessonName);
+                    if (index >= 0) //saved
                     {
-                        int index = savedLessons.FindIndex(s => s.Name == lessonName);
-                        if (index >= 0) //saved
+                        if (savedLessons[index].DateModified != lastModified)
                         {
-                            if (savedLessons[index].DateModified != lastModified)
-                            {
-                                //update - delete and save
-                                WebHelper.DeleteLesson(lessonName);
-                                Save(folder, lastModified);
-                            }
-                        }
-                        else //not saved
-                        {
+                            //update - delete and save
+                            WebHelper.DeleteLesson(lessonName);
                             Save(folder, lastModified);
                         }
                     }
-                    else
+                    else //not saved
                     {
                         Save(folder, lastModified);
                     }
@@ -117,13 +111,13 @@ namespace HGPS_Robot
                 var question = slidesData[i].Question;
                 if (question != null)
                 {
-                    if (question.Type == 1)
-                    {
-                        question.ChoiceA = "null";
-                        question.ChoiceB = "null";
-                        question.ChoiceC = "null";
-                        question.ChoiceD = "null";
-                    }
+                    //if (question.Type == 1)
+                    //{
+                    //    question.ChoiceA = "null";
+                    //    question.ChoiceB = "null";
+                    //    question.ChoiceC = "null";
+                    //    question.ChoiceD = "null";
+                    //}
                     question.Id = 1;
                     question.Lesson_Id = lesson.Id;
                     _questionNumber += 1;

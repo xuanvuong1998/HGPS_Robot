@@ -43,8 +43,8 @@ namespace HGPS_Robot
             picBackground.Size = new Size(area.Width, area.Height);
             SystemUpdateHelper.Start();
 
-            //SyncHelper.StatusChanged += SyncHelper_StatusChanged;
-            //SyncHelper.RobotCommandChanged += SyncHelper_RobotCommandChanged;
+            SyncHelper.StatusChanged += SyncHelper_StatusChanged;
+            SyncHelper.RobotCommandChanged += SyncHelper_RobotCommandChanged;
 
             InitSpeechAndChatbot();
         }

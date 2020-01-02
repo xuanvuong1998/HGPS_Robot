@@ -52,7 +52,7 @@ namespace HGPS_Robot
         public static void SaveLessonHistory(string lessonName, string teacherId)
         {
             var lessonHistory = new LessonHistory
-            {
+            {                
                 Lesson_name = lessonName,
                 DateTime = DateTime.Now,
                 Teacher_id = teacherId                

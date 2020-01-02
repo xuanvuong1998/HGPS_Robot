@@ -19,7 +19,6 @@ namespace HGPS_Robot
         public string Audio { get; set; }
         public string SpecialAction { get; set; }
         public string Praise { get; set; }
-
         public string LessonStatus { get; set; }
 
         public List<StudentHistoryDTO> AssessPerformance { get; set; }
