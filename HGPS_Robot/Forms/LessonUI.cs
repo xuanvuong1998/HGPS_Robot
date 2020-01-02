@@ -126,21 +126,7 @@ namespace HGPS_Robot
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Space)
-            {
-                var flag = GlobalFlowControl.ChatBot.ConversationEnable;
-                if (flag)
-                {
-                    Conversation.Stop();
-                    Debug.WriteLine("Stop Conversation");
-                }
-                else
-                {
-                    Debug.WriteLine("Start Conversation");
-                    Conversation.Start();
-                }
-
-            }
+            
         }
 
         private void picClose_Click(object sender, EventArgs e)

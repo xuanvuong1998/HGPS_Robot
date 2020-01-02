@@ -75,6 +75,7 @@
             this.Name = "MainUI";
             this.Text = "Main";
             this.Shown += new System.EventHandler(this.Form3_Shown);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainUI_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.picTalk)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picLesson)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picBackground)).EndInit();

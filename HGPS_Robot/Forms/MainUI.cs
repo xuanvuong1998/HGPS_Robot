@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SpeechLibrary;
 
 namespace HGPS_Robot
 {
@@ -43,7 +44,7 @@ namespace HGPS_Robot
 
             //SystemUpdateHelper.Start();
 
-            //InitSpeechAndChatbot();
+            InitSpeechAndChatbot();
 
             //UpperBodyHelper.Init();  
         }
@@ -60,9 +61,17 @@ namespace HGPS_Robot
 
         private void InitSpeechAndChatbot()
         {
-            //Synthesizer.Setup();
-            //Synthesizer.SelectVoiceByName(GlobalData.Voice1);
-            //Conversation.Init();
+            Synthesizer.Setup();
+            Synthesizer.SelectVoiceByName(GlobalData.Voice1);
+            Conversation.Init();
+        }
+
+        private void MainUI_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                chatbotUI.ShowDialog();
+            }
         }
     }
 }

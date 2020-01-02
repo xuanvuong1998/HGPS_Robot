@@ -63,6 +63,7 @@
             this.Name = "ChatbotUI";
             this.Text = "Chatbot";
             this.Shown += new System.EventHandler(this.ChatbotUI_Shown);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ChatbotUI_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.picClose)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picBackground)).EndInit();
             this.ResumeLayout(false);
