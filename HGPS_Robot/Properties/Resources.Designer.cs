@@ -63,6 +63,56 @@ namespace HGPS_Robot.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap CoddieChatbotUI {
+            get {
+                object obj = ResourceManager.GetObject("CoddieChatbotUI", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap CoddieLessonSpeechUI {
+            get {
+                object obj = ResourceManager.GetObject("CoddieLessonSpeechUI", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap CoddieLessonUI {
+            get {
+                object obj = ResourceManager.GetObject("CoddieLessonUI", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap CoddieLessonUI1 {
+            get {
+                object obj = ResourceManager.GetObject("CoddieLessonUI1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap CoddieMainUI {
+            get {
+                object obj = ResourceManager.GetObject("CoddieMainUI", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap CoddieUI2 {
             get {
                 object obj = ResourceManager.GetObject("CoddieUI2", resourceCulture);

@@ -250,11 +250,17 @@
   <ItemGroup>
     <Compile Include="Chatbot\Conversation.cs" />
     <Compile Include="Chatbot\MathIntepreter.cs" />
-    <Compile Include="Forms\MainForm.cs">
+    <Compile Include="Forms\ChatbotUI.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <Compile Include="Forms\ChatbotUI.Designer.cs">
+      <DependentUpon>ChatbotUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MainUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MainUI.Designer.cs">
+      <DependentUpon>MainUI.cs</DependentUpon>
     </Compile>
     <Compile Include="Global\GlobalData.cs" />
     <Compile Include="Global\GlobalFlowControl.cs" />
@@ -271,17 +277,17 @@
     <Compile Include="Data Models\StudentsPerformance.cs" />
     <Compile Include="Helper Classes\BaseHelper.cs" />
     <Compile Include="Helper Classes\FileHelper.cs" />
-    <Compile Include="Forms\Form2.cs">
+    <Compile Include="Forms\LessonSpeechUI.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Form2.Designer.cs">
-      <DependentUpon>Form2.cs</DependentUpon>
+    <Compile Include="Forms\LessonSpeechUI.Designer.cs">
+      <DependentUpon>LessonSpeechUI.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Form1.cs">
+    <Compile Include="Forms\LessonUI.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Forms\LessonUI.Designer.cs">
+      <DependentUpon>LessonUI.cs</DependentUpon>
     </Compile>
     <Compile Include="Helper Classes\LessonStatusHelper.cs" />
     <Compile Include="Helper Classes\PowerpointHelper.cs" />
@@ -298,11 +304,17 @@
     <Compile Include="Data Models\RobotLesson.cs" />
     <Compile Include="Data Models\RobotSlide.cs" />
     <Compile Include="Data Models\SlideViewerData.cs" />
-    <EmbeddedResource Include="Forms\Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\ChatbotUI.resx">
+      <DependentUpon>ChatbotUI.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Form2.resx">
-      <DependentUpon>Form2.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\LessonUI.resx">
+      <DependentUpon>LessonUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\LessonSpeechUI.resx">
+      <DependentUpon>LessonSpeechUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MainUI.resx">
+      <DependentUpon>MainUI.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -333,6 +345,11 @@
     <Content Include="Images\img_forest.jpg" />
     <None Include="Resources\CoddieUI2.png" />
     <None Include="Resources\CoddieUI3.png" />
+    <None Include="Resources\CoddieMainUI.png" />
+    <None Include="Resources\CoddieChatbotUI.PNG" />
+    <None Include="Resources\CoddieLessonUI.PNG" />
+    <None Include="Resources\CoddieLessonUI1.PNG" />
+    <None Include="Resources\CoddieLessonSpeechUI.PNG" />
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />

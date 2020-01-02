@@ -16,7 +16,7 @@ namespace HGPS_Robot
         
         private static Thread _thread = null;
         private static RobotCommands _robotCommands = null;
-        private static Form2 form2;
+        private static LessonSpeechUI form2;
         private static string _lessonName = null;
         private static List<RobotProgSlide> progData = null;
         static LessonHelper() { }
@@ -25,7 +25,7 @@ namespace HGPS_Robot
         {
             
             //UpperBodyHelper.MoveRandomlyAllMotors();
-            form2 = new Form2();
+            form2 = new LessonSpeechUI();
             form2.ShowForm();
             _lessonName = lessonName;
             QuestionNumber = 0;

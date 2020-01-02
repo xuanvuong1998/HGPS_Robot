@@ -17,38 +17,32 @@ using SpeechLibrary;
 
 namespace HGPS_Robot
 {
-    public partial class Form1 : Form
+    public partial class LessonUI : Form
     {
-        public Form1()
+        public LessonUI()
         {
             InitializeComponent();
         }
 
-        private void InitSpeechAndChatbot()
-        {
-            Synthesizer.Setup();
-            Synthesizer.SelectVoiceByName(GlobalData.Voice1);
-            Conversation.Init();
-        }
+
 
         private void Form1_Shown(object sender, EventArgs e)
         {
-            //this.Size = new Size(1000, 400);
             this.CenterToScreen();
-            //this.FormBorderStyle = FormBorderStyle.None;
+            this.FormBorderStyle = FormBorderStyle.None;
             this.WindowState = FormWindowState.Maximized;
 
             var area = Screen.FromControl(this).WorkingArea;
             picBackground.Location = new Point(0, 0);
             picBackground.Size = new Size(area.Width, area.Height);
-            SystemUpdateHelper.Start();
+            picBackground.Controls.Add(picClose);
+
+            picClose.Location = new Point(300, 820);
+            picClose.Size = new Size(170, 200);
+            picClose.BackColor = Color.Transparent;
 
             SyncHelper.StatusChanged += SyncHelper_StatusChanged;
-            SyncHelper.RobotCommandChanged += SyncHelper_RobotCommandChanged;
-
-            InitSpeechAndChatbot();
-
-            //UpperBodyHelper.Init();            
+            SyncHelper.RobotCommandChanged += SyncHelper_RobotCommandChanged;          
         }
 
         private void SyncHelper_RobotCommandChanged(object sender, RobotCommandEventArgs e)
@@ -65,6 +59,7 @@ namespace HGPS_Robot
             {
                 if (status.LessonState.Contains("starting"))
                 {
+                    this.Invoke(new Action(() => { picClose.Visible = false;  }));
                     var teacherId = status.LessonState.Split('-')[1];
                     var voiceName = status.LessonState.Split('-')[2];
 
@@ -95,7 +90,10 @@ namespace HGPS_Robot
                     {
                         if (InvokeRequired)
                         {
-                            this.Invoke(new Action(() => LessonHelper.EndLesson()));
+                            this.Invoke(new Action(() => { 
+                                picClose.Visible = true;
+                                LessonHelper.EndLesson();
+                            }));
                             return;
                         }
                     }
@@ -122,6 +120,8 @@ namespace HGPS_Robot
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             LessonHelper.ForceStop();
+            SyncHelper.StatusChanged -= SyncHelper_StatusChanged;
+            SyncHelper.RobotCommandChanged -= SyncHelper_RobotCommandChanged;
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -141,6 +141,11 @@ namespace HGPS_Robot
                 }
 
             }
+        }
+
+        private void picClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

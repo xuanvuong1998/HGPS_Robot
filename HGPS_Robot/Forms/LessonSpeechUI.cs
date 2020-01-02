@@ -10,11 +10,11 @@ using System.Windows.Forms;
 
 namespace HGPS_Robot
 {
-    public partial class Form2 : Form
+    public partial class LessonSpeechUI : Form
     {
         private int _width, _height;
         private bool _paused = false;
-        public Form2()
+        public LessonSpeechUI()
         {
             InitializeComponent();
         }
@@ -27,16 +27,17 @@ namespace HGPS_Robot
             this.Width = _width;
             this.Height = _height;
             //this.TopMost = true;
-            //this.FormBorderStyle = FormBorderStyle.None;
+            this.FormBorderStyle = FormBorderStyle.None;
             this.WindowState = FormWindowState.Maximized;
 
-            lblMessage.Location = new Point(0, 0);
-            lblMessage.Width = _width;
-            lblMessage.Height = _height;
+            picBackground.Controls.Add(lblMessage);
+            lblMessage.Location = new Point(0, 300);
+            lblMessage.AutoSize = false;
+            lblMessage.Size = new Size(_width, _height - (lblMessage.Location.Y + 150));
+            lblMessage.BackColor = Color.Transparent;
+            lblMessage.TextAlign = ContentAlignment.MiddleCenter;
             lblMessage.Text = "Lesson starting...";
 
-            picLogo.Location = new Point(_width - picLogo.Width, 0);
-            picRoboTA.Location = new Point(0, 0);
         }
 
         public void ShowForm()
@@ -92,25 +93,25 @@ namespace HGPS_Robot
             }
         }
 
-        private void PicRoboTA_Click(object sender, EventArgs e)
-        {
-            if (_paused == false)
-            {
-                LessonHelper.Pause();
-                _paused = true;
+        //private void PicRoboTA_Click(object sender, EventArgs e)
+        //{
+        //    if (_paused == false)
+        //    {
+        //        LessonHelper.Pause();
+        //        _paused = true;
 
-            }
-            else if (_paused == true)
-            {
-                LessonHelper.Resume();
-                _paused = false;
+        //    }
+        //    else if (_paused == true)
+        //    {
+        //        LessonHelper.Resume();
+        //        _paused = false;
                 
-            }
-        }
+        //    }
+        //}
 
-        private void picLogo_Click(object sender, EventArgs e)
-        {
-            LessonHelper.ForceStop();
-        }
+        //private void picLogo_Click(object sender, EventArgs e)
+        //{
+        //    LessonHelper.ForceStop();
+        //}
     }
 }
