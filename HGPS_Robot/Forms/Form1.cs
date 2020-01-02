@@ -47,6 +47,8 @@ namespace HGPS_Robot
             SyncHelper.RobotCommandChanged += SyncHelper_RobotCommandChanged;
 
             InitSpeechAndChatbot();
+
+            UpperBodyHelper.Init();            
         }
 
         private void SyncHelper_RobotCommandChanged(object sender, RobotCommandEventArgs e)

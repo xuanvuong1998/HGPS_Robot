@@ -38,7 +38,8 @@ namespace HGPS_Robot
 
         public static void Stop()
         {
-
+            GlobalFlowControl.ChatBot.ConversationEnable = false;
+            Recognizer.StopAndDeleteRecognizedWords();
         }
 
         public static void Start()

@@ -60,23 +60,7 @@ namespace HGPS_Robot
                 }
             }
         }
-
-        public static List<StudentHistory> GetStudentHistories()
-        {
-            var client = new HttpClient();
-            client.BaseAddress = new Uri(BASE_ADDRESS);
-            var response = client.GetAsync("api/ResultsApi/GetResults/Test").Result;
-            var resultsJson = response.Content.ReadAsStringAsync().Result;
-
-            if (resultsJson != null)
-            {
-                resultsJson = Regex.Unescape(resultsJson);
-                resultsJson = resultsJson.Substring(1, resultsJson.Length - 2);
-                var results = JsonConvert.DeserializeObject<List<StudentHistory>>(resultsJson);
-                return results;
-            }
-            return null;
-        }
+       
 
         public static List<SavedLessons> GetSavedLessons()
         {

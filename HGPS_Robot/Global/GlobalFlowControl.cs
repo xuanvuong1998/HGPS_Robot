@@ -68,6 +68,11 @@ namespace HGPS_Robot
             }
         }
 
+        public class Lesson
+        {
+            public static bool Starting { get; set; }
+        }
+
         public class ChatBot
         {
             public static bool Talking { get; set; }

@@ -23,6 +23,8 @@ namespace HGPS_Robot
 
         public static void Start(string lessonName, int startSlideNum, string voiceName)
         {
+            
+            //UpperBodyHelper.MoveRandomlyAllMotors();
             form2 = new Form2();
             form2.ShowForm();
             _lessonName = lessonName;
@@ -94,6 +96,7 @@ namespace HGPS_Robot
         }
         public static void EndLesson()
         {
+            GlobalFlowControl.Lesson.Starting = false;
             try
             {                
                 LessonStatusHelper.Update("", null, "end", null, null, null);

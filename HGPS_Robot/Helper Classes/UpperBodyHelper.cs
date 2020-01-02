@@ -286,20 +286,12 @@ namespace HGPS_Robot
 
         public static void MoveRandomlyAllMotors()
         {
+            GlobalFlowControl.Lesson.Starting = true;
             Task.Factory.StartNew(() =>
             {
-                GlobalFlowControl.ChatBot.Talking = true;
-                int count = 0;
-                int cmd = 0;
+                GlobalFlowControl.ChatBot.Talking = true;                
                 do
-                {
-                    count++;
-                    if (count % 4 == 0)
-                    {
-                        if (cmd == 0) cmd++; else cmd--;
-                        MoveBaseRandomly(cmd);
-                    }
-
+                {                    
                     for (int i = 1; i <= 8; i++)
                     {
                         MoveRandomly(i, 1);
@@ -307,7 +299,7 @@ namespace HGPS_Robot
 
                     Wait(3000);
 
-                } while (GlobalFlowControl.ChatBot.Talking);
+                } while (GlobalFlowControl.Lesson.Starting);
             });
 
         }
