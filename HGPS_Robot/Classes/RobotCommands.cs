@@ -9,64 +9,37 @@ using Newtonsoft.Json;
 using System.Media;
 using System.Threading.Tasks;
 using System.Configuration;
+using SpeechLibrary;
 
 namespace HGPS_Robot
 {
     public class RobotCommands
     {
         public bool MediaPlaying { get; set; } = false;
-        public RobotCommand CurrentCommand { get; private set; } = null;        
+        public RobotCommand CurrentCommand { get; private set; } = null;
 
         public delegate void CommandUpdateHandler(object sender, CommandEventArgs e);
         public event CommandUpdateHandler OnCommandUpdate;
         private List<RobotCommand> _commands;
-        private SoundPlayer _soundPlayer = new SoundPlayer();
-        private SpeechSynthesizer _synthesizer = new SpeechSynthesizer();
+        private SoundPlayer _soundPlayer = new SoundPlayer();        
         private const int QUIZ_BUFFER_SECONDS = 3;
         public RobotCommands(List<RobotCommand> commands)
         {
             _commands = commands;
         }
 
-        public void SetVoiceName(string voiceName)
-        {
-            voiceName = "Voice 1";
-            var actualVoice = ConfigurationManager.AppSettings[voiceName];
 
-            _synthesizer.SelectVoice(actualVoice);
-        }
-
-        public void SetVoiceGender(string gender)
-        {
-            if (gender == "Male")
-            {
-                _synthesizer.SelectVoiceByHints(VoiceGender.Male, VoiceAge.Adult);
-            }
-            else if (gender == "Female")
-            {
-                _synthesizer.SelectVoiceByHints(VoiceGender.Female, VoiceAge.Adult);
-            }
-            _synthesizer.Rate = -1;
-        }
         public void PauseSpeak()
         {
-            if (_synthesizer.State == SynthesizerState.Speaking)
-                _synthesizer.Pause();
+            Synthesizer.Pause();
         }
         public void ResumeSpeak()
         {
-            if (_synthesizer.State == SynthesizerState.Paused)
-                _synthesizer.Resume();
+            Synthesizer.Resume();
         }
         public void StopSpeak()
         {
-            try
-            {
-                _synthesizer.SpeakAsyncCancelAll();
-            }
-            catch
-            {
-            }
+            Synthesizer.StopSpeaking();
         }
         public void Execute()
         {
@@ -152,12 +125,12 @@ namespace HGPS_Robot
                             LessonHelper.QuestionNumber += 1;
                             quiz.QuestionNumber = LessonHelper.QuestionNumber;
                             StartQuiz(quiz);
-                            Wait(Convert.ToInt32(quiz.TimeOut)*1000 + QUIZ_BUFFER_SECONDS*1000);
+                            Wait(Convert.ToInt32(quiz.TimeOut) * 1000 + QUIZ_BUFFER_SECONDS * 1000);
                             StopQuiz();
                         }
                         break;
                     case "review":
-                        
+
                         break;
 
                     default:
@@ -168,19 +141,12 @@ namespace HGPS_Robot
         }
         private void Speak(string text)
         {
-            try
-            {
-                _synthesizer.Speak(text);
-            }
-            catch { }
+
+            Synthesizer.Speak(text);
         }
         private void SpeakAsync(string text)
         {
-            try
-            {
-                _synthesizer.Speak(text);
-            }
-            catch { }
+            Synthesizer.SpeakAsync(text);
         }
         private void MySpeech(string file)
         {

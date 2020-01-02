@@ -48,17 +48,12 @@ namespace HGPS_Robot
 
             InitSpeechAndChatbot();
 
-            UpperBodyHelper.Init();            
+            //UpperBodyHelper.Init();            
         }
 
         private void SyncHelper_RobotCommandChanged(object sender, RobotCommandEventArgs e)
         {
-            e.Command.ProcessCommand();
-            /*var list = e.Command.AssessPerformance;
-            if (list != null)
-            {
-                Praise(list);
-            }*/
+            e.Command.ProcessCommand();           
         }
 
         private void SyncHelper_StatusChanged(object sender, StatusEventArgs e)

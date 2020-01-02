@@ -18,5 +18,6 @@ namespace HGPS_Robot
         public static readonly string DirectLine = ConfigurationManager.AppSettings["DirectLineSecret"];
         public static readonly string BotId = ConfigurationManager.AppSettings["BotId"];
                 
+        
     }
 }

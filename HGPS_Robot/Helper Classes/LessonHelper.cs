@@ -40,9 +40,7 @@ namespace HGPS_Robot
                 {
                     LessonStatusHelper.Update(lessonName, CurrentSlideNumber, "started", null, null, null);
                     RobotProgSlide _currentProgSlide = progData[CurrentSlideNumber-1];
-                    _robotCommands = new RobotCommands(_currentProgSlide.Commands);
-                    if (voiceName == null) voiceName = "Voice 1";
-                    _robotCommands.SetVoiceName(voiceName);
+                    _robotCommands = new RobotCommands(_currentProgSlide.Commands);                    
                     _robotCommands.OnCommandUpdate += _robotCommands_OnCommandUpdate;
                     _robotCommands.Execute();
                 }

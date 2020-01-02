@@ -8,5 +8,6 @@ namespace HGPS_Robot
 {
     class MathIntepreter
     {
+        
     }
 }
