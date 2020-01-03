@@ -67,6 +67,28 @@ namespace HGPS_Robot
             return 0;
         }
 
+        public static Dictionary<string,int> GetCorrectStreak(List<StudentHistoryDTO> studHistories)
+        {
+            if (studHistories != null)
+            {
+                var studentsStreak = new Dictionary<string, int>();
+
+                foreach (var stud in studHistories)
+                {
+                    var streak = 0;
+                    var scores = stud.ResultInBinaryString.Select(digit => int.Parse(digit.ToString())).ToList();
+                    foreach (var score in scores)
+                    {
+                        if (score != 0) streak++;
+                        else streak = 0;
+                    }
+                    studentsStreak.Add(stud.UserAccountFullName, streak);
+                }
+                return studentsStreak;
+            }
+            return null;
+        }
+
         public static int GetNumberOfQuestions(List<StudentHistoryDTO> studHistories)
         {
             if (studHistories != null)

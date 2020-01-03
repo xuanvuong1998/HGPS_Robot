@@ -54,7 +54,8 @@ namespace HGPS_Robot
             var status = e.Status;
             LessonStatusHelper.LessonStatus = status;
 
-            if (_prevState != status.LessonState) _prevState = status.LessonState;
+            if (_prevState != status.LessonState)
+                _prevState = status.LessonState;
             else return;
             
             if (status.LessonState != null)

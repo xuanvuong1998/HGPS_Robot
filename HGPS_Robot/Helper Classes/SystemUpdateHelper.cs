@@ -105,7 +105,7 @@ namespace HGPS_Robot
 
             var lessonSaved = await WebHelper.AddLesson(lesson);
 
-            if (lessonSaved)
+            if (lessonSaved == "true")
             {
                 int _questionNumber = 0;
                 for (int i = 0; i < slidesData.Count; i++)

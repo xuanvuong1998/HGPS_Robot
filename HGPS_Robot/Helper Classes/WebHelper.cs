@@ -81,7 +81,7 @@ namespace HGPS_Robot
 
 
 
-        public static async Task<bool> AddLesson(Lesson lesson)
+        public static async Task<string> AddLesson(Lesson lesson)
         {
             if (lesson != null)
             {
@@ -93,11 +93,11 @@ namespace HGPS_Robot
                         req.Content = new StringContent(JsonConvert.SerializeObject(lesson), Encoding.UTF8, "application/json");
                         var msg = await client.SendAsync(req);
                         var content = msg.Content.ReadAsStringAsync().Result;
-                        return Convert.ToBoolean(content);
+                        return content;
                     }
                 }
             }
-            return false;
+            return null;
         }
 
         public static async void DeleteLesson(string lessonName)

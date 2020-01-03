@@ -13,7 +13,6 @@ namespace HGPS_Robot
 {
     public partial class MainUI : Form
     {
-        private bool _updated = false;
         LessonUI lessonUI = new LessonUI();
         ChatbotUI chatbotUI = new ChatbotUI();
 
@@ -37,7 +36,7 @@ namespace HGPS_Robot
 
             InitSpeechAndChatbot();
 
-            //UpperBodyHelper.Init();  
+            //UpperBodyHelper.Init();
         }
 
         private void SystemUpdateHelper_SystemUpdated(object sender, EventArgs e)
@@ -46,9 +45,7 @@ namespace HGPS_Robot
             {
                 this.Invoke(new Action(() =>
                 {
-                    _updated = true;
                     picBackground.Image = Properties.Resources.CoddieMainUI;
-                    //picBackground.Load();
                     picBackground.Controls.Add(picLesson);
                     picBackground.Controls.Add(picTalk);
 
