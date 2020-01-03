@@ -42,7 +42,7 @@ namespace HGPS_Robot
             picTalk.Size = btnSize;
             picTalk.BackColor = Color.Transparent;
 
-            //SystemUpdateHelper.Start();
+            SystemUpdateHelper.Start();
 
             InitSpeechAndChatbot();
 
@@ -71,6 +71,10 @@ namespace HGPS_Robot
             if (e.KeyCode == Keys.Enter)
             {
                 chatbotUI.ShowDialog();
+            }
+            if (e.KeyCode == Keys.Space)
+            {
+                lessonUI.ShowDialog();
             }
         }
     }
