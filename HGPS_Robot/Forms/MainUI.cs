@@ -20,7 +20,7 @@ namespace HGPS_Robot
             InitializeComponent();
         }
 
-        private void Form3_Shown(object sender, EventArgs e)
+        private async void Form3_Shown(object sender, EventArgs e)
         {
             this.CenterToScreen();
             this.FormBorderStyle = FormBorderStyle.None;
@@ -42,9 +42,9 @@ namespace HGPS_Robot
             picTalk.Size = btnSize;
             picTalk.BackColor = Color.Transparent;
 
-            //SystemUpdateHelper.Start();
+            SystemUpdateHelper.Start();
 
-            InitSpeechAndChatbot();
+            //InitSpeechAndChatbot();
 
             //UpperBodyHelper.Init();  
         }
