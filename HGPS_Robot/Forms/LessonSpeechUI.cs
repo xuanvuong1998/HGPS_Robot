@@ -28,7 +28,7 @@ namespace HGPS_Robot
             picBackground.Controls.Add(lblMessage);
             lblMessage.Location = new Point(0, 300);
             lblMessage.AutoSize = false;
-            lblMessage.Size = new Size(area.Width, area.Height - (lblMessage.Location.Y + 150));
+            lblMessage.Size = new Size(area.Width-100, area.Height - (lblMessage.Location.Y + 150));
             lblMessage.BackColor = Color.Transparent;
             lblMessage.TextAlign = ContentAlignment.MiddleCenter;
             lblMessage.Text = "Lesson starting...";

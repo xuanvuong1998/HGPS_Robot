@@ -19,6 +19,7 @@ namespace HGPS_Robot
 {
     public partial class LessonUI : Form
     {
+        private string _prevState = null;
         public LessonUI()
         {
             InitializeComponent();
@@ -40,12 +41,12 @@ namespace HGPS_Robot
             picClose.BackColor = Color.Transparent;
 
             SyncHelper.StatusChanged += SyncHelper_StatusChanged;
-            SyncHelper.RobotCommandChanged += SyncHelper_RobotCommandChanged;          
+            SyncHelper.RobotCommandChanged += SyncHelper_RobotCommandChanged;
         }
 
         private void SyncHelper_RobotCommandChanged(object sender, RobotCommandEventArgs e)
         {
-            e.Command.ProcessCommand();           
+            e.Command.ProcessCommand();
         }
 
         private void SyncHelper_StatusChanged(object sender, StatusEventArgs e)
@@ -53,10 +54,12 @@ namespace HGPS_Robot
             var status = e.Status;
             LessonStatusHelper.LessonStatus = status;
 
+            if (_prevState != status.LessonState) _prevState = status.LessonState;
+            else return;
+            
             if (status.LessonState != null)
             {                
-
-                if (status.LessonState.Contains("starting") || 
+                if (status.LessonState.Contains("starting") && 
                     GlobalFlowControl.Lesson.Starting == false)
                 {
                     this.Invoke(new Action(() => { picClose.Visible = false;  }));
