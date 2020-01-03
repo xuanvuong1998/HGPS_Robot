@@ -92,6 +92,10 @@ namespace HGPS_Robot
             {
                 chatbotUI.ShowDialog();
             }
+            if (e.KeyCode == Keys.Space)
+            {
+                lessonUI.ShowDialog();
+            }
         }
     }
 }

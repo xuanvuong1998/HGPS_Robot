@@ -16,8 +16,8 @@ namespace HGPS_Robot
 {
     public static class WebHelper
     {
-        private const string BASE_ADDRESS = "http://robo-ta.com/";
-        //private const string BASE_ADDRESS = "https://localhost:44353/";
+        //private const string BASE_ADDRESS = "http://robo-ta.com/";
+        private const string BASE_ADDRESS = "https://localhost:44353/";
         private const string ACCESS_TOKEN = "1H099XeDsRteM89yy91QonxH3mEd0DoE";
 
         public static async Task<LessonStatus> GetStatus()
@@ -126,7 +126,7 @@ namespace HGPS_Robot
                     using (var req = new HttpRequestMessage(HttpMethod.Post, "api/QuestionApi/AddQuestion"))
                     {
                         req.Content = new StringContent(JsonConvert.SerializeObject(question), Encoding.UTF8, "application/json");
-                        await client.SendAsync(req);
+                        await client.SendAsync(req);                        
                     }
                 }
             }
