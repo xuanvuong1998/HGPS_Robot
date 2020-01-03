@@ -12,12 +12,13 @@ namespace HGPS_Robot
 {
     public static class SystemUpdateHelper
     {
+        public static event EventHandler SystemUpdated;
         public static void Start()
         {
             ThreadStart starter = Update;
             starter += () =>
             {
-                //MessageBox.Show("System updated");
+                OnSystemUpdated();
             };
             Thread thread = new Thread(starter) { IsBackground = true };
             thread.Start();
@@ -76,12 +77,11 @@ namespace HGPS_Robot
                     int index = savedLessons.FindIndex(s => s.Name == lessonName);
                     if (index >= 0) //saved
                     {
-                        if (savedLessons[index].DateModified != lastModified)
-                        {
-                            //update - delete and save
-                            WebHelper.DeleteLesson(lessonName);
-                            Save(folder, lastModified);
-                        }
+                        //if (savedLessons[index].DateModified != lastModified)
+                        //{
+                            //WebHelper.DeleteLesson(lessonName);
+                            //Save(folder, lastModified);
+                        //}
                     }
                     else //not saved
                     {
@@ -125,6 +125,10 @@ namespace HGPS_Robot
             {
                 MessageBox.Show($"Lesson {lesson.Name} not saved!");
             }
+        }
+        private static void OnSystemUpdated()
+        {
+            SystemUpdated?.Invoke(null, EventArgs.Empty);
         }
     }
 }

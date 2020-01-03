@@ -360,6 +360,7 @@
     <None Include="Resources\CoddieLessonUI1.PNG" />
     <None Include="Resources\CoddieLessonSpeechUI.PNG" />
     <None Include="Resources\listening.gif" />
+    <None Include="Resources\CoddieSystemUpdateUI.png" />
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />

@@ -24,7 +24,6 @@ namespace HGPS_Robot
 
         public static void Start(string lessonName, int startSlideNum, string voiceName)
         {
-            
             //UpperBodyHelper.MoveRandomlyAllMotors();
             form2 = new LessonSpeechUI();
             Synthesizer.SetSpeed(-2);
