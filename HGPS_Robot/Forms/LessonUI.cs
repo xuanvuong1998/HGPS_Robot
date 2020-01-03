@@ -65,8 +65,12 @@ namespace HGPS_Robot
                 {
                     this.Invoke(new Action(() => { picClose.Visible = false;  }));
                     var teacherId = status.LessonState.Split('-')[1];
-                    var voiceName = status.LessonState.Split('-')[2];
-
+                    string voiceName = null;
+                    if (status.LessonState.Split('-').Length > 1)
+                    {
+                        voiceName = status.LessonState.Split('-')[2];
+                    }
+                    
                     LessonHelper.SaveLessonHistory(status.LessonName, teacherId);
                     LessonHelper.LessonId = status.LessonId;
 

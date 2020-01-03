@@ -19,7 +19,7 @@ namespace HGPS_Robot
 
         private static string[] confirmToContinueKeyword =
         {
-            "Ok, anything else?",
+            "anything else?",
             "What's else I can help you?",
             "Do you have another question?"
         };
