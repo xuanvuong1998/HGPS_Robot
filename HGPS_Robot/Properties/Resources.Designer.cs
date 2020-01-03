@@ -113,6 +113,16 @@ namespace HGPS_Robot.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap CoddieSystemUpdateUI {
+            get {
+                object obj = ResourceManager.GetObject("CoddieSystemUpdateUI", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap CoddieUI2 {
             get {
                 object obj = ResourceManager.GetObject("CoddieUI2", resourceCulture);

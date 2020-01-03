@@ -12,31 +12,30 @@ namespace HGPS_Robot
 {
     public partial class LessonSpeechUI : Form
     {
-        private int _width, _height;
-        private bool _paused = false;
         public LessonSpeechUI()
         {
             InitializeComponent();
         }
         private void Form2_Shown(object sender, EventArgs e)
         {
-            var screen = Screen.PrimaryScreen.Bounds;
-            _width = screen.Width;
-            _height = screen.Height;
-
-            this.Width = _width;
-            this.Height = _height;
             //this.TopMost = true;
             this.FormBorderStyle = FormBorderStyle.None;
             this.WindowState = FormWindowState.Maximized;
 
+            var area = Screen.FromControl(this).WorkingArea;
+            picBackground.Location = new Point(0, 0);
+            picBackground.Size = new Size(area.Width, area.Height);
             picBackground.Controls.Add(lblMessage);
             lblMessage.Location = new Point(0, 300);
             lblMessage.AutoSize = false;
-            lblMessage.Size = new Size(_width, _height - (lblMessage.Location.Y + 150));
+            lblMessage.Size = new Size(area.Width, area.Height - (lblMessage.Location.Y + 150));
             lblMessage.BackColor = Color.Transparent;
             lblMessage.TextAlign = ContentAlignment.MiddleCenter;
             lblMessage.Text = "Lesson starting...";
+
+            picBackground.Controls.Add(lblMessage);
+            lblMessage.Location = new Point(50, 150);
+            lblMessage.BackColor = Color.Transparent;
 
         }
 

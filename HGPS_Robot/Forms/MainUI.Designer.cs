@@ -43,6 +43,7 @@
             this.picTalk.Size = new System.Drawing.Size(170, 50);
             this.picTalk.TabIndex = 2;
             this.picTalk.TabStop = false;
+            this.picTalk.Visible = false;
             this.picTalk.Click += new System.EventHandler(this.picTalk_Click);
             // 
             // picLesson
@@ -52,11 +53,12 @@
             this.picLesson.Size = new System.Drawing.Size(170, 50);
             this.picLesson.TabIndex = 1;
             this.picLesson.TabStop = false;
+            this.picLesson.Visible = false;
             this.picLesson.Click += new System.EventHandler(this.picLesson_Click);
             // 
             // picBackground
             // 
-            this.picBackground.Image = global::HGPS_Robot.Properties.Resources.CoddieMainUI;
+            this.picBackground.Image = global::HGPS_Robot.Properties.Resources.CoddieSystemUpdateUI;
             this.picBackground.Location = new System.Drawing.Point(44, 36);
             this.picBackground.Name = "picBackground";
             this.picBackground.Size = new System.Drawing.Size(111, 150);

@@ -13,8 +13,10 @@ namespace HGPS_Robot
 {
     public partial class MainUI : Form
     {
+        private bool _updated = false;
         LessonUI lessonUI = new LessonUI();
         ChatbotUI chatbotUI = new ChatbotUI();
+
         public MainUI()
         {
             InitializeComponent();
@@ -29,24 +31,42 @@ namespace HGPS_Robot
             var area = Screen.FromControl(this).WorkingArea;
             picBackground.Location = new Point(0, 0);
             picBackground.Size = new Size(area.Width, area.Height);
-            picBackground.Controls.Add(picLesson);
-            picBackground.Controls.Add(picTalk);
-
-            var btnSize = new Size(520, 150);
-
-            picLesson.Location = new Point(120, 620);
-            picLesson.Size = btnSize;
-            picLesson.BackColor = Color.Transparent;
-
-            picTalk.Location = new Point(120, 780);
-            picTalk.Size = btnSize;
-            picTalk.BackColor = Color.Transparent;
 
             SystemUpdateHelper.Start();
+            SystemUpdateHelper.SystemUpdated += SystemUpdateHelper_SystemUpdated;
 
             InitSpeechAndChatbot();
 
             //UpperBodyHelper.Init();  
+        }
+
+        private void SystemUpdateHelper_SystemUpdated(object sender, EventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                this.Invoke(new Action(() =>
+                {
+                    _updated = true;
+                    picBackground.Image = Properties.Resources.CoddieMainUI;
+                    //picBackground.Load();
+                    picBackground.Controls.Add(picLesson);
+                    picBackground.Controls.Add(picTalk);
+
+                    var btnSize = new Size(520, 150);
+
+                    picLesson.Location = new Point(120, 620);
+                    picLesson.Size = btnSize;
+                    picLesson.BackColor = Color.Transparent;
+                    picLesson.Visible = true;
+
+                    picTalk.Location = new Point(120, 780);
+                    picTalk.Size = btnSize;
+                    picTalk.BackColor = Color.Transparent;
+                    picTalk.Visible = true;
+                    return;
+                }));
+            }
+            
         }
 
         private void picLesson_Click(object sender, EventArgs e)
