@@ -90,7 +90,7 @@ namespace HGPS_Robot
                 }
             }
         }
-        private static void Save(string lessonFolder, string dateModified)
+        private static async void Save(string lessonFolder, string dateModified)
         {
             string codePath = lessonFolder + @"\code.pptx";
             var lesson = new Lesson();
@@ -103,27 +103,27 @@ namespace HGPS_Robot
             lesson.Teacher_Id = slidesData[0].TeacherId;
             lesson.Subject = slidesData[0].Subject;
 
-            WebHelper.AddLesson(lesson);
+            var lessonSaved = await WebHelper.AddLesson(lesson);
 
-            int _questionNumber = 0;
-            for (int i = 0; i < slidesData.Count; i++)
+            if (lessonSaved)
             {
-                var question = slidesData[i].Question;
-                if (question != null)
+                int _questionNumber = 0;
+                for (int i = 0; i < slidesData.Count; i++)
                 {
-                    //if (question.Type == 1)
-                    //{
-                    //    question.ChoiceA = "null";
-                    //    question.ChoiceB = "null";
-                    //    question.ChoiceC = "null";
-                    //    question.ChoiceD = "null";
-                    //}
-                    question.Id = 1;
-                    question.Lesson_Id = lesson.Id;
-                    _questionNumber += 1;
-                    question.Number = _questionNumber;
-                    WebHelper.AddQuestion(question);
+                    var question = slidesData[i].Question;
+                    if (question != null)
+                    {
+                        question.Id = 1;
+                        question.Lesson_Id = lesson.Id;
+                        _questionNumber += 1;
+                        question.Number = _questionNumber;
+                        WebHelper.AddQuestion(question);
+                    }
                 }
+            }
+            else
+            {
+                MessageBox.Show($"Lesson {lesson.Name} not saved!");
             }
         }
     }
