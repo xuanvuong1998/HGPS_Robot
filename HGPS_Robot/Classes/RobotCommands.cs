@@ -87,6 +87,9 @@ namespace HGPS_Robot
                         SpeakAsync(CurrentCommand.Value);
                         break;
 
+                    case "playaudio":
+                        AudioHelper.PlayAudio(CurrentCommand.Value);
+                        break;
                     case "myspeech":
                         MySpeech(CurrentCommand.Value);
                         break;

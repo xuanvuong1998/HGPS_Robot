@@ -17,7 +17,7 @@ namespace HGPS_Robot
             ThreadStart starter = Update;
             starter += () =>
             {
-                //MessageBox.Show("System updated");
+                MessageBox.Show("System updated");
             };
             Thread thread = new Thread(starter) { IsBackground = true };
             thread.Start();

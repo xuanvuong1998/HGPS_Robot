@@ -24,8 +24,6 @@ namespace HGPS_Robot
             InitializeComponent();
         }
 
-
-
         private void Form1_Shown(object sender, EventArgs e)
         {
             this.CenterToScreen();
@@ -56,8 +54,10 @@ namespace HGPS_Robot
             LessonStatusHelper.LessonStatus = status;
 
             if (status.LessonState != null)
-            {
-                if (status.LessonState.Contains("starting"))
+            {                
+
+                if (status.LessonState.Contains("starting") || 
+                    GlobalFlowControl.Lesson.Starting == false)
                 {
                     this.Invoke(new Action(() => { picClose.Visible = false;  }));
                     var teacherId = status.LessonState.Split('-')[1];

@@ -101,7 +101,7 @@ namespace HGPS_Robot
                     }
                     break;
             }
-            LessonHelper.InsertPraise(speech);
+            LessonHelper.InsertPraise(speech);            
         }
         
         private void AnalyzePersonalPerformance()

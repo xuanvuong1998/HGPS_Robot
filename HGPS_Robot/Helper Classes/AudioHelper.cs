@@ -12,14 +12,13 @@ namespace HGPS_Robot
     {
         public static void PlayPraiseSound()
         {
-            string startupPath = Directory.GetCurrentDirectory();
-            SoundPlayer player = new SoundPlayer(startupPath + @"\media\applause.wav");
-            player.Play();
+            PlayAudio("applause.wav");
         }
 
         public static void PlayAudio(string fileLocation)
         {
-            SoundPlayer player = new SoundPlayer(fileLocation);            
+            string startupPath = Directory.GetCurrentDirectory();
+            SoundPlayer player = new SoundPlayer(startupPath + fileLocation);            
         }
     }
 }

@@ -24,12 +24,14 @@ namespace HGPS_Robot
 
         public static void Start(string lessonName, int startSlideNum, string voiceName)
         {
-            
+
             //UpperBodyHelper.MoveRandomlyAllMotors();
+            GlobalFlowControl.Lesson.Starting = true;
             form2 = new LessonSpeechUI();
-            Synthesizer.SetSpeed(-2);
-            
+            Synthesizer.SetSpeed(1);
+
             form2.ShowForm();
+            
             _lessonName = lessonName;
             QuestionNumber = 0;
                         
@@ -70,6 +72,8 @@ namespace HGPS_Robot
             _robotCommands.InsertCommand(cmdType, cmdValue);
         }
 
+        
+
         public static void InsertPraise(string speech)
         {
             //this method will insert a 'speak' command into
@@ -77,9 +81,13 @@ namespace HGPS_Robot
             int slideNum = CurrentSlideNumber;
 
             var robotCommand = new RobotCommand("speak", speech);
+            var robotCommand2 = new RobotCommand("playaudio", "applause.wav");
             var _nextProgSlide = progData[slideNum]; //next slide since slide 1 starts from index 0
             _nextProgSlide.Commands.Add(robotCommand);
+            _nextProgSlide.Commands.Add(robotCommand2);
             progData[slideNum] = _nextProgSlide;
+            
+            
         }
 
         [Obsolete]

@@ -20,7 +20,7 @@ namespace HGPS_Robot
             InitializeComponent();
         }
 
-        private async void Form3_Shown(object sender, EventArgs e)
+        private void Form3_Shown(object sender, EventArgs e)
         {
             this.CenterToScreen();
             this.FormBorderStyle = FormBorderStyle.None;
@@ -44,7 +44,7 @@ namespace HGPS_Robot
 
             SystemUpdateHelper.Start();
 
-            //InitSpeechAndChatbot();
+            InitSpeechAndChatbot();
 
             //UpperBodyHelper.Init();  
         }
