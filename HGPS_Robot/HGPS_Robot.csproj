@@ -256,6 +256,12 @@
     <Compile Include="Forms\ChatbotUI.Designer.cs">
       <DependentUpon>ChatbotUI.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\InConversationUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\InConversationUI.Designer.cs">
+      <DependentUpon>InConversationUI.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\MainUI.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -307,6 +313,9 @@
     <EmbeddedResource Include="Forms\ChatbotUI.resx">
       <DependentUpon>ChatbotUI.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\InConversationUI.resx">
+      <DependentUpon>InConversationUI.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\LessonUI.resx">
       <DependentUpon>LessonUI.cs</DependentUpon>
     </EmbeddedResource>
@@ -350,6 +359,7 @@
     <None Include="Resources\CoddieLessonUI.PNG" />
     <None Include="Resources\CoddieLessonUI1.PNG" />
     <None Include="Resources\CoddieLessonSpeechUI.PNG" />
+    <None Include="Resources\listening.gif" />
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />

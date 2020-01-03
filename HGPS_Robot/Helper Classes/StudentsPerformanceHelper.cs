@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 namespace HGPS_Robot
 {
     public static class StudentsPerformanceHelper
-    {
+    {        
+
         public static Dictionary<string, int> CalculateScore(List<StudentHistoryDTO> studHistories)
         {
             if (studHistories != null)
@@ -76,6 +77,9 @@ namespace HGPS_Robot
             }
             return 0;
         }
+
+
+        
 
         public static StudentsPerformance GetSummary(List<StudentHistoryDTO> studHistories)
         {

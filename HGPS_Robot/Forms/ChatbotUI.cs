@@ -17,6 +17,7 @@ namespace HGPS_Robot
     {
         private int waitingActivateCount;
         private Timer checkingTimer = new Timer();
+        InConversationUI conversationUI = new InConversationUI();
         
         private void InitTimers()
         {
@@ -71,7 +72,7 @@ namespace HGPS_Robot
                 if (Recognizer.KeywordRecognized)
                 {
                     checkingTimer.Start();
-                    Conversation.Start();
+                    conversationUI.ShowDialog();               
                     return;
                 }            
                 waitingActivateCount++;                

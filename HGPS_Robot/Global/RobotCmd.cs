@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SpeechLibrary;
 
 namespace HGPS_Robot
 {
@@ -21,8 +22,7 @@ namespace HGPS_Robot
         public string Praise { get; set; }
         public string LessonStatus { get; set; }
 
-        public List<StudentHistoryDTO> AssessPerformance { get; set; }
-
+        public static List<StudentHistoryDTO> AssessPerformance { get; set; }
 
         #region Student Performance
         private void AnalyzeStudentPerformance(List<StudentHistoryDTO> list)
@@ -38,7 +38,16 @@ namespace HGPS_Robot
                 case 1:
                     var performance = StudentsPerformanceHelper.GetSummary(list);
                     speech = "The average score for this class currently at " + performance.AverageScore.ToString();
-                    speech += " Well done!";
+                    
+                    if (performance.AverageScore == 0)
+                    {
+                        speech += ". No one got any correct answer";
+                    }
+                    else
+                    {
+                        speech += ". Well done!";
+                    }
+                                        
                     break;
 
                 case 2:
@@ -53,9 +62,9 @@ namespace HGPS_Robot
                         topStudents = StudentsPerformanceHelper.GetTopStudents(list);
                         if (topStudents.Count == 1)
                         {
-                            speech = $"Currently the top students for this class is {topStudents.FirstOrDefault().Key} with" +
+                            speech = $"Currently the top student for this class is {topStudents.FirstOrDefault().Key}. " +
                                      $" with a score of {topStudents.FirstOrDefault().Value.ToString()}";
-                            speech += " The rest of you please try your best!"; ;
+                            speech += ". The rest of you please try your best!"; ;
                         }
                         else if (topStudents.Count <= 5)
                         {
@@ -64,8 +73,8 @@ namespace HGPS_Robot
                                 speech += stud.Key;
                                 speech += ", ";
                             }
-                            speech += " are currently the top students in this class";
-                            speech += $" with a score of {topStudents.FirstOrDefault().Value.ToString()}";
+                            speech += " are currently the top students in this class,";
+                            speech += $" with a score of {topStudents.FirstOrDefault().Value.ToString()}.";
                             speech += " Great job everyone!";
                         }
                     }
@@ -76,7 +85,7 @@ namespace HGPS_Robot
                     if (topStudents.Count == 1)
                     {
                         speech = $"Currently the top students for this class is {topStudents.FirstOrDefault().Key}" +
-                                 $" with a score of {topStudents.FirstOrDefault().Value.ToString()}";
+                                 $" with a score of {topStudents.FirstOrDefault().Value.ToString()}.";
                         speech += " The rest of you please try your best!"; ;
                     }
                     else if (topStudents.Count <= 5)
@@ -86,13 +95,33 @@ namespace HGPS_Robot
                             speech += stud.Key;
                             speech += ", ";
                         }
-                        speech += " are currently the top students in this class";
-                        speech += $" with a score of {topStudents.FirstOrDefault().Value.ToString()}";
+                        speech += " are currently the top students in this class,";
+                        speech += $" with a score of {topStudents.FirstOrDefault().Value.ToString()}.";
                         speech += " Great job everyone!";
                     }
                     break;
             }
             LessonHelper.InsertPraise(speech);
+        }
+        
+        private void AnalyzePersonalPerformance()
+        {
+            string studentId = Praise.Split('-')[0];
+            string message = Praise.Split('-')[1];
+            
+            if (message.ToLower() == "auto")
+            {
+                if (AssessPerformance != null)
+                {
+                    var stdHis = AssessPerformance
+                                .Where(x => x.Student_id == studentId)
+                                .FirstOrDefault();                    
+                }
+            }
+            else
+            {
+                LessonHelper.InsertPraise(message);
+            }
         }
         #endregion
 
@@ -117,6 +146,11 @@ namespace HGPS_Robot
             if (Chatbot != null)
             {
 
+            }
+
+            if (Praise != null)
+            {
+                AnalyzePersonalPerformance();
             }
 
             if (AssessPerformance != null)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace HGPS_Robot
 {
     class MathIntepreter
     {        
-        private static bool IsOperator(string word)
+        public static bool IsOperator(string word)
         {
             string[] ops = { "*", "/", "+", "-" };
 
@@ -20,26 +21,32 @@ namespace HGPS_Robot
             return false;            
         }
 
-        private static bool IsContainOperator(string query)
+        public static bool IsContainOperator(string query)
         {
-            string ops = "+-*/";
-            foreach (var op in ops)
+            foreach (var item in query.Split(' '))
             {
-                if (query.Contains(ops)) return true;
+                if (IsOperator(item)) return true;
             }
 
             return false;
         }
         
-        private static bool IsNumber(string word)
+        // Make sure word is correct format first
+        public static double ParseNumber(string word)
         {
-            foreach (var c in word)
-            {
-                if (!char.IsDigit(c)) return false;
-            }
-            return true;
+            return double.Parse(word, NumberStyles.AllowThousands);
         }
-        private static bool IsContainOperand(string query)
+
+        public static bool IsNumber(string word)
+        {
+            double num;
+            bool res = double.TryParse(word, NumberStyles.AllowThousands
+                    , CultureInfo.InvariantCulture, out num);
+
+            return res;
+            
+        }
+        public static bool IsContainOperand(string query)
         {
             var words = query.Split(' ');
             int numberOccurCnt = 0;
@@ -61,12 +68,7 @@ namespace HGPS_Robot
                         
 
         public static string ProcessOperation(string query)
-        {
-            if (query[query.Length - 1] == '?')
-            {
-                query = query.Remove(query.Length - 1);
-            }
-
+        {            
             string[] words = query.Split(' ');
 
             int i;
@@ -76,9 +78,11 @@ namespace HGPS_Robot
                 if (IsOperator(words[i]))
                 {
                     if (i == 0 || !IsNumber(words[i - 1])) return "invalid";                                        
-                    bool orderFlag = true; // true: operator, false: operand
-                    que = words[i - 1];                    
-                    while(i < words.Length && (IsNumber(words[i]) || IsOperator(words[i])))
+                    bool orderFlag = true; // true: operator, false: operand                    
+                    double tmp = ParseNumber(words[i - 1]);
+                    words[i - 1] = "" + tmp;
+                    que = words[i - 1];
+                    while (i < words.Length && (IsNumber(words[i]) || IsOperator(words[i])))
                     {
                         if (orderFlag) // required operator
                         {
@@ -86,7 +90,12 @@ namespace HGPS_Robot
                         }
                         else // required operand
                         {
-                            if (!IsNumber(words[i])) return "invalid";                            
+                            if (!IsNumber(words[i])) return "invalid";
+
+                            // in case number with commas
+
+                            double tmp2 = ParseNumber(words[i]);
+                            words[i] = "" + tmp2;
                         }
                         que += words[i];
                         i++;
@@ -98,9 +107,14 @@ namespace HGPS_Robot
 
             if (que == "") return "invalid";    
 
-            var res = new DataTable().Compute(que, null);
+            var res = new DataTable().Compute(que, null).ToString();
 
-            return res.ToString();
+            if (res.Contains(".")) 
+            {
+                res = res.Substring(0, Math.Min(res.IndexOf(".") + 3, res.Length));
+            }
+            if (res == "∞") res = "Infinity";            
+            return res;
         }
         
     }

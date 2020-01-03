@@ -33,19 +33,20 @@ namespace HGPS_Robot
 
         private static string[] dontUnderstandWords = {
             "sorry, this question is out of my knowledge",
-            "sorry, could you ask another simpler question",
+            "I am still thinking about it",
             "sorry, I am not sure I can understand what you meant"
         };
 
 
         private static int minQueryLength = 7;
-        private static int maxRecogTime = 10;
-
+        private static int maxRecogTime = 12;
+        private static int unableToReplyCount;
         public static void Init()
         {
             var subKey = GlobalData.SpeechKey;
             var region = GlobalData.SpeechRegion;
             Recognizer.Setup(subKey, region);
+            Recognizer.SilenceTimeOut = 1500;
 
             var botId = GlobalData.BotId;
             var directLi = GlobalData.DirectLine;
@@ -73,6 +74,7 @@ namespace HGPS_Robot
 
         private static bool IsEndConversationKeyword(string words)
         {
+            words = words.ToLower();
             foreach (var item in endConversationKeyword)
             {
                 if (words.Contains(item)) return true;
@@ -80,9 +82,19 @@ namespace HGPS_Robot
             return false;
         }
 
-        public static async Task ProcessResponse(string question)
+        private static string Filter(string question)
         {
-            
+            if (!char.IsLetterOrDigit(question[question.Length - 1]))
+            {
+                question = question.Remove(question.Length - 1);
+            }            
+
+            return question;
+        }
+
+        public static async Task<string> ProcessResponse(string question)
+        {
+            question = Filter(question);
             string reply = "";
             if (MathIntepreter.IsContainMathOperation(question))
             {
@@ -106,18 +118,19 @@ namespace HGPS_Robot
                 reply = PickOne(dontUnderstandWords);
             }
 
-            Synthesizer.Speak(reply);
+            return reply;
         }
 
         public static void Start()
         {
-            GlobalFlowControl.ChatBot.ResetBeforeNewConversation();
-            Synthesizer.Speak(PickOne(startNewConversationKeyword));
+            GlobalFlowControl.ChatBot.ResetBeforeNewConversation();            
 
             Task.Factory.StartNew(async () =>
-            {
+            {                
+                Synthesizer.Speak(PickOne(startNewConversationKeyword));
                 do
                 {
+                    unableToReplyCount = 0;
                     var ques = await Recognizer.RecognizeQueryWithTimeOut(minQueryLength, maxRecogTime)
                                     .ConfigureAwait(false);
 
@@ -126,7 +139,8 @@ namespace HGPS_Robot
                         GlobalFlowControl.ChatBot.ConversationEnable = false;
                     }
                     else
-                    if (IsEndConversationKeyword(ques))
+                    if (ques.ToLower() == "no." || ques.ToLower() == "no" ||
+                        IsEndConversationKeyword(ques))
                     {
                         Synthesizer.Speak("Ok, Bye");
 
@@ -134,14 +148,22 @@ namespace HGPS_Robot
                     }
                     else
                     {
-                        await ProcessResponse(ques);
+                        string reply = await ProcessResponse(ques);
+                        Synthesizer.Speak(reply);
+                        
+                        if (reply.Contains("sorry,"))
+                        {
+                            unableToReplyCount++;
+                        }
+                                                
+                        if (unableToReplyCount >= 2) break;
                         Wait(1000);
-
+                        
                         Synthesizer.Speak(PickOne(confirmToContinueKeyword));
                     }
-                                        
+
                 } while (GlobalFlowControl.ChatBot.ConversationEnable);
-                
+
             });
 
         }

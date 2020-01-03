@@ -18,6 +18,6 @@ namespace HGPS_Robot
         public static readonly string DirectLine = ConfigurationManager.AppSettings["DirectLineSecret"];
         public static readonly string BotId = ConfigurationManager.AppSettings["BotId"];
 
-        public static string ActivationKeywords = "cody|coding";
+        public static string ActivationKeywords = "cody|coding|corey|ok google";
     }
 }

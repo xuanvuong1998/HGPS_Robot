@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using SpeechLibrary;
 
 namespace HGPS_Robot
 {
@@ -26,6 +27,8 @@ namespace HGPS_Robot
             
             //UpperBodyHelper.MoveRandomlyAllMotors();
             form2 = new LessonSpeechUI();
+            Synthesizer.SetSpeed(-2);
+            
             form2.ShowForm();
             _lessonName = lessonName;
             QuestionNumber = 0;
@@ -96,7 +99,8 @@ namespace HGPS_Robot
         {
             GlobalFlowControl.Lesson.Starting = false;
             try
-            {                
+            {
+                Synthesizer.SetSpeed(0);
                 LessonStatusHelper.Update("", null, "end", null, null, null);
                 if (_thread != null && _thread.IsAlive)
                 {
