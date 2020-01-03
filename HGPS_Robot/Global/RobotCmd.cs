@@ -22,7 +22,7 @@ namespace HGPS_Robot
         public string Praise { get; set; }
         public string LessonStatus { get; set; }
 
-        public static List<StudentHistoryDTO> AssessPerformance { get; set; }
+        public List<StudentHistoryDTO> AssessPerformance { get; set; }
 
         #region Student Performance
         private void AnalyzeStudentPerformance(List<StudentHistoryDTO> list)
