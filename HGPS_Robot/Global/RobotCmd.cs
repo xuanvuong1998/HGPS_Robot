@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,7 +27,7 @@ namespace HGPS_Robot
 
         #region Student Performance
         private void AnalyzeStudentPerformance(List<StudentHistoryDTO> list)
-        {
+        {            
             var rdm = new Random();
             var rdmNum = rdm.Next(1, 4); // generate random number 1-3
 
@@ -66,6 +67,7 @@ namespace HGPS_Robot
                     speech = GetTopStudentsPraise(list);
                     break;
             }
+
             LessonHelper.InsertPraise(speech);            
         }
         

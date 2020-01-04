@@ -10,6 +10,7 @@ using System.Media;
 using System.Threading.Tasks;
 using System.Configuration;
 using SpeechLibrary;
+using System.Diagnostics;
 
 namespace HGPS_Robot
 {
@@ -22,7 +23,7 @@ namespace HGPS_Robot
         public event CommandUpdateHandler OnCommandUpdate;
         private List<RobotCommand> _commands;
         private SoundPlayer _soundPlayer = new SoundPlayer();        
-        private const int QUIZ_BUFFER_SECONDS = 3;
+        private const int QUIZ_BUFFER_SECONDS = 2;
         public RobotCommands(List<RobotCommand> commands)
         {
             _commands = commands;
@@ -88,6 +89,7 @@ namespace HGPS_Robot
                         break;
 
                     case "playaudio":
+                        Debug.WriteLine("Play Audio: " + CurrentCommand.Value);
                         AudioHelper.PlayAudio(CurrentCommand.Value);
                         break;
                     case "myspeech":
@@ -128,8 +130,9 @@ namespace HGPS_Robot
                             LessonHelper.QuestionNumber += 1;
                             quiz.QuestionNumber = LessonHelper.QuestionNumber;
                             StartQuiz(quiz);
-                            Wait(Convert.ToInt32(quiz.TimeOut) * 1000 + QUIZ_BUFFER_SECONDS * 1000);
+                            Wait(Convert.ToInt32(quiz.TimeOut) * 1000);                           
                             StopQuiz();
+                            Wait(QUIZ_BUFFER_SECONDS * 1000);
                         }
                         break;
                     case "review":

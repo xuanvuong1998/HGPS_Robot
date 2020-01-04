@@ -11,7 +11,8 @@ namespace HGPS_Robot
     public class UpperBodyHelper
     {
         static int[] minPos = { 2048, 2000, 2730, 1200, 2816, 1870, 2200, 1930 };
-        static int[] maxPos = { 2840, 1400, 2150, 2048, 2030, 1430, 2048, 2240 };
+        //static int[] maxPos = { 2840, 1400, 2150, 2048, 2030, 1430, 2048, 2240 };
+        static int[] maxPos = { 2640, 1600, 2350, 1848, 2230, 1530, 2048, 2240 };
         public static class Head
         {
             const string HEAD_UP = "HEAD_UP";
@@ -262,20 +263,7 @@ namespace HGPS_Robot
                 Wait(delay);
             }
         }
-
-        public static void MoveBaseRandomly(int command)
-        {
-            switch (command)
-            {
-                case 0:
-                    BaseHelper.TurnLeftDuring(1.5);
-                    break;
-                case 1:
-                    BaseHelper.TurnRightDuring(1.5);
-                    break;
-            }
-        }
-
+       
         public static void MoveRandomlyAllMotorsOneTime()
         {
             for (int i = 1; i <= 8; i++)
@@ -287,13 +275,12 @@ namespace HGPS_Robot
         public static void MoveRandomlyAllMotors()
         {
             Task.Factory.StartNew(() =>
-            {
-                GlobalFlowControl.ChatBot.Talking = true;                
+            {                
                 do
                 {                    
                     for (int i = 1; i <= 8; i++)
                     {
-                        MoveRandomly(i, 1);
+                        MoveRandomly(i, 0.7);
                     }
 
                     Wait(3000);
@@ -304,9 +291,7 @@ namespace HGPS_Robot
 
         }
         public static void MoveRandomly(int motorId, double delta)
-        {
-            delta = 0.6;
-
+        {            
             int x = minPos[motorId - 1];
             int y = maxPos[motorId - 1];
 

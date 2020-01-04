@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,7 +15,7 @@ namespace HGPS_Robot
         public static int QuestionNumber { get; set; } = 0;
         public static string LessonId { get; set; } = "";
         public static int CurrentSlideNumber { get; private set; } = 0;
-        
+
         private static Thread _thread = null;
         private static RobotCommands _robotCommands = null;
         private static LessonSpeechUI form2;
@@ -23,28 +24,28 @@ namespace HGPS_Robot
         static LessonHelper() { }
 
         public static void Start(string lessonName, int startSlideNum, string voiceName)
-        {           
+        {
             GlobalFlowControl.Lesson.Starting = true;
             UpperBodyHelper.MoveRandomlyAllMotors();
             form2 = new LessonSpeechUI();
-            Synthesizer.SetSpeed(5);
+            Synthesizer.SetSpeed(-1);
 
             form2.ShowForm();
-            
+
             _lessonName = lessonName;
             QuestionNumber = 0;
-                        
+
             _thread = new Thread(new ThreadStart(() =>
             {
                 int endSlideNum = FileHelper.GetLessonSlidesNumber(lessonName);
                 string codePath = FileHelper.BasePath + @"\" + lessonName + @"\code.pptx";
                 progData = PowerpointHelper.GetSlidesData(codePath);
-                
+
                 for (CurrentSlideNumber = startSlideNum; CurrentSlideNumber <= endSlideNum; CurrentSlideNumber++)
                 {
                     LessonStatusHelper.Update(lessonName, CurrentSlideNumber, "started", null, null, null);
-                    RobotProgSlide _currentProgSlide = progData[CurrentSlideNumber-1];
-                    _robotCommands = new RobotCommands(_currentProgSlide.Commands);                    
+                    RobotProgSlide _currentProgSlide = progData[CurrentSlideNumber - 1];
+                    _robotCommands = new RobotCommands(_currentProgSlide.Commands);
                     _robotCommands.OnCommandUpdate += _robotCommands_OnCommandUpdate;
                     _robotCommands.Execute();
                 }
@@ -53,17 +54,18 @@ namespace HGPS_Robot
             _thread.Start();
         }
 
-        public static void SaveLessonHistory(string lessonName, string teacherId)
+        public static void SaveLessonHistory(string lessonName, string teacherId, string className)
         {
             var lessonHistory = new LessonHistory
-            {                
+            {
                 Lesson_name = lessonName,
                 DateTime = DateTime.Now,
-                Teacher_id = teacherId                
+                Teacher_id = teacherId,
+                Class_name = className
             };
 
             WebHelper.AddLessonHistory(lessonHistory);
-            
+
         }
 
         public static void InsertCommand(string cmdType, string cmdValue)
@@ -71,7 +73,7 @@ namespace HGPS_Robot
             _robotCommands.InsertCommand(cmdType, cmdValue);
         }
 
-        
+
 
         public static void InsertPraise(string speech)
         {
@@ -83,10 +85,8 @@ namespace HGPS_Robot
             var robotCommand2 = new RobotCommand("playaudio", "applause.wav");
             var _nextProgSlide = progData[slideNum]; //next slide since slide 1 starts from index 0
             _nextProgSlide.Commands.Add(robotCommand);
-            _nextProgSlide.Commands.Add(robotCommand2);
-            progData[slideNum] = _nextProgSlide;
-            
-            
+            _nextProgSlide.Commands.Add(robotCommand2);            
+                        
         }
 
         [Obsolete]
@@ -108,7 +108,7 @@ namespace HGPS_Robot
             try
             {
                 Synthesizer.SetSpeed(0);
-                LessonStatusHelper.Update("", null, "end", null, null, null);
+                LessonStatusHelper.Update("", null, "ended", null, null, null);
                 if (_thread != null && _thread.IsAlive)
                 {
                     form2.CloseForm();
@@ -150,13 +150,13 @@ namespace HGPS_Robot
             {
                 form2.ShowMessage(e.CommandValue);
             }
-        }       
+        }
         private static void OnLessonEnded()
         {
             EndLesson();
             LessonEnded?.Invoke(null, EventArgs.Empty);
         }
 
-        
+
     }
 }

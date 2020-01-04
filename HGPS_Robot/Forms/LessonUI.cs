@@ -64,14 +64,21 @@ namespace HGPS_Robot
                     GlobalFlowControl.Lesson.Starting == false)
                 {
                     this.Invoke(new Action(() => { picClose.Visible = false;  }));
-                    var teacherId = status.LessonState.Split('-')[1];
-                    string voiceName = null;
-                    if (status.LessonState.Split('-').Length > 1)
+                    var lessonStt = status.LessonState.Split('-');
+                    var teacherId = lessonStt[1];
+                    string voiceName = "Voice 1";
+                    if (lessonStt.Length > 2)
                     {
-                        voiceName = status.LessonState.Split('-')[2];
+                        voiceName = lessonStt[2];
+                    }
+                    string className = null;
+
+                    if (lessonStt.Length > 3)
+                    {
+                        className = lessonStt[3];
                     }
                     
-                    LessonHelper.SaveLessonHistory(status.LessonName, teacherId);
+                    LessonHelper.SaveLessonHistory(status.LessonName, teacherId, className);
                     LessonHelper.LessonId = status.LessonId;
 
                     //this.Invoke(new MethodInvoker(() => this.Hide()));

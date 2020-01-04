@@ -36,7 +36,7 @@ namespace HGPS_Robot
 
             InitSpeechAndChatbot();
 
-            UpperBodyHelper.Init();
+            //UpperBodyHelper.Init();
         }
 
         private void SystemUpdateHelper_SystemUpdated(object sender, EventArgs e)
