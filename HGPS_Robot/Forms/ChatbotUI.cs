@@ -66,11 +66,11 @@ namespace HGPS_Robot
             waitingActivateCount = 0;
             do
             {
-                await Recognizer.RecognizeKeywordWithTimeout(GlobalData.ActivationKeywords, 7)
+                await Recognizer.RecognizeKeywordWithTimeout(GlobalData.ActivationKeywords, 10)
                                     .ConfigureAwait(false);
                 
                 if (Recognizer.KeywordRecognized)
-                {
+                {                    
                     checkingTimer.Start();
                     conversationUI.ShowDialog();               
                     return;

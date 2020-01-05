@@ -130,9 +130,11 @@ namespace HGPS_Robot
                             LessonHelper.QuestionNumber += 1;
                             quiz.QuestionNumber = LessonHelper.QuestionNumber;
                             StartQuiz(quiz);
-                            Wait(Convert.ToInt32(quiz.TimeOut) * 1000 + QUIZ_BUFFER_SECONDS * 1000);                           
+                            Wait(Convert.ToInt32(quiz.TimeOut) * 1000 + QUIZ_BUFFER_SECONDS * 700);
+                            Debug.WriteLine("Stopping quiz");
                             StopQuiz();
-                            Wait(QUIZ_BUFFER_SECONDS * 1000);
+                            Debug.WriteLine("Stopped");
+                            Wait(QUIZ_BUFFER_SECONDS * 700);
                         }
                         break;
                     case "review":

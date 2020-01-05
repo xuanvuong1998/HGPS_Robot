@@ -31,21 +31,42 @@ namespace HGPS_Robot
             var rdm = new Random();
             var rdmNum = rdm.Next(1, 4); // generate random number 1-3
 
+            int incorrectCnt = StudentsPerformanceHelper.GetNumberOfInCorrectStudent(list);
+            int correctCnt = StudentsPerformanceHelper.GetNumberOfCorrectStudent(list);
+                        
             var speech = "";
+            if (correctCnt == 0)
+            {
+                speech = "I am very sad now, because no one got any correct answer for this question. ";
+            }
+            else
+            {                
+                if (incorrectCnt == 0)
+                {
+                    speech = "Congratulation! No one did any mistake for this question. ";
+                }else if (correctCnt > incorrectCnt)
+                {
+                    speech = "Well, I am every happy to see many of you got correct answer. ";
+                }else {
+                    speech = $"There are {correctCnt} students had correct answers, " +
+                    $"and {incorrectCnt} students did not. ";
+                }
+                
+            }
             
             switch (rdmNum)
             {
                 case 1:
-                    var performance = StudentsPerformanceHelper.GetSummary(list);
-                    speech = "The average score for this class currently at " + performance.AverageScore.ToString();
+                    var performance = StudentsPerformanceHelper.GetSummary(list);                                 
                     
-                    if (performance.AverageScore == 0)
+                    if (performance.AverageScore > 0)                    
                     {
-                        speech += ". No one got any correct answer";
+                        speech += "The average score for this class currently at " + performance.AverageScore.ToString();
+                        speech += ". Well done!";
                     }
                     else
                     {
-                        speech += ". Well done!";
+                        speech += ". Come on everyone, try your best!";
                     }
                                         
                     break;
@@ -54,17 +75,17 @@ namespace HGPS_Robot
                     var numOfFullScore = StudentsPerformanceHelper.GetNumOfFullScore(list);
                     if (numOfFullScore != 0)
                     {
-                        speech = $"We have {numOfFullScore.ToString()} students with full score!";
+                        speech += $"We have {numOfFullScore.ToString()} students with full score!";
                         speech += " Great job!";
                     }
                     else
                     {
-                        speech = GetTopStudentsPraise(list);
+                        speech += GetTopStudentsPraise(list);
                     }
                     break;
 
                 case 3:
-                    speech = GetTopStudentsPraise(list);
+                    speech += GetTopStudentsPraise(list);
                     break;
             }
 
@@ -78,7 +99,11 @@ namespace HGPS_Robot
                 var speech = new StringBuilder(); 
 
                 var topStudents = StudentsPerformanceHelper.GetTopStudents(list);
-                if (topStudents.Count == 1)
+
+                if (topStudents.FirstOrDefault().Value == 0)
+                {
+                    speech.Append(". Keep moving, don't quit");
+                }else if (topStudents.Count == 1)
                 {
                     speech.Append($"Currently the top students for this class is {topStudents.FirstOrDefault().Key}" +
                              $" with a score of {topStudents.FirstOrDefault().Value.ToString()}. ");

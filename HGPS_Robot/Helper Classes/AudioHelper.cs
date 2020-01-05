@@ -16,7 +16,7 @@ namespace HGPS_Robot
         }
 
         public static void PlayAudio(string fileLocation)
-        {
+        {            
             string startupPath = Directory.GetCurrentDirectory() + @"\media\";
             SoundPlayer player = new SoundPlayer(startupPath + fileLocation);
             player.PlaySync();

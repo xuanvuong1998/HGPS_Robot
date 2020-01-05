@@ -8,6 +8,25 @@ namespace HGPS_Robot
 {
     public static class StudentsPerformanceHelper
     {        
+        public static int GetNumberOfCorrectStudent(List<StudentHistoryDTO> stdHis)
+        {
+            int cnt = 0;
+            foreach (var item in stdHis)
+            {
+                cnt += item.ResultInBinaryString.Last() == '1' ? 1 : 0;
+            }
+            return cnt;
+        }
+
+        public static int GetNumberOfInCorrectStudent(List<StudentHistoryDTO> stdHis)
+        {
+            int cnt = 0;
+            foreach (var item in stdHis)
+            {
+                cnt += item.ResultInBinaryString.Last() == '1' ? 0 : 1;
+            }
+            return cnt;
+        }
 
         public static Dictionary<string, int> CalculateScore(List<StudentHistoryDTO> studHistories)
         {

@@ -15,7 +15,7 @@ namespace HGPS_Robot
         private static string[] startNewConversationKeyword =
             { "Hi! I am Cody. How can I help you with?",
             "Yes, I am here, nice to talking with you",
-            "Hi, my name is Cody. Nice to become your buddy!" };
+            "Hi, Cody here, a teaching assitant robot. Feel free to ask me any question" };
 
         private static string[] confirmToContinueKeyword =
         {
@@ -56,7 +56,32 @@ namespace HGPS_Robot
 
         private static string PickOne(string[] list)
         {
-            return list[new Random().Next(list.Length)];
+            var x = Recognizer.RecognizedWords;
+            var speech = list[new Random().Next(list.Length)]; 
+            if (x.Contains("google") || x.Contains("siri")
+                || x.Contains("cortana") || x.Contains("alexa"))
+            {
+                if (x.Contains("google"))
+                {
+                    speech = "I am not google. I am Cody, Codding buddy in education";
+                }
+                if (x.Contains("siri"))
+                {
+                    speech = "I am not siri. I am Cody, Codding buddy in education";
+                }
+                if (x.Contains("cortana"))
+                {
+                    speech = "I am not cortana. I am Cody, Codding buddy in education";
+                }
+                if (x.Contains("alexa"))
+                {
+                    speech = "I am not alexa. I am Cody, Codding buddy in education";
+                }
+                speech += ". How can help you today?";
+            }
+
+
+            return speech;
         }
 
 
@@ -115,6 +140,7 @@ namespace HGPS_Robot
 
             if (reply.ToLower().Contains("don't understand"))
             {
+                unableToReplyCount++;
                 reply = PickOne(dontUnderstandWords);
             }
 
@@ -126,7 +152,8 @@ namespace HGPS_Robot
             GlobalFlowControl.ChatBot.ResetBeforeNewConversation();            
 
             Task.Factory.StartNew(async () =>
-            {                
+            {
+                
                 Synthesizer.Speak(PickOne(startNewConversationKeyword));
                 do
                 {
@@ -149,12 +176,7 @@ namespace HGPS_Robot
                     else
                     {
                         string reply = await ProcessResponse(ques);
-                        Synthesizer.Speak(reply);
-                        
-                        if (reply.Contains("sorry,"))
-                        {
-                            unableToReplyCount++;
-                        }
+                        Synthesizer.Speak(reply);                                                
                                                 
                         if (unableToReplyCount >= 2) break;
                         Wait(1000);
