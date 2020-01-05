@@ -283,7 +283,7 @@ namespace HGPS_Robot
                         MoveRandomly(i, 0.7);
                     }
 
-                    Wait(3000);
+                    Wait(4000);
 
                 } while (GlobalFlowControl.Lesson.Starting);
                 ResetAll();
