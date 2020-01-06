@@ -93,13 +93,20 @@ namespace HGPS_Robot
         public static void Pause()
         {
             _robotCommands.PauseSpeak();
-            _thread.Suspend();
+            if (_thread != null && _thread.IsAlive)
+            {
+                _thread.Suspend();
+            }
+            
         }
 
         [Obsolete]
         public static void Resume()
         {
-            _thread.Resume();
+            if (_thread != null && _thread.IsAlive)
+            {
+                _thread.Resume();
+            }                
             _robotCommands.ResumeSpeak();
         }
         public static void EndLesson()
@@ -114,7 +121,10 @@ namespace HGPS_Robot
                     form2.CloseForm();
                     if (_robotCommands != null)
                         _robotCommands.StopSpeak();
-                    _thread.Abort();
+                    if (_thread != null && _thread.IsAlive)
+                    {
+                        _thread.Abort();
+                    }                    
                 }
             }
             catch
