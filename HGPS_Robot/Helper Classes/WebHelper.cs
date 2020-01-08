@@ -23,7 +23,7 @@ namespace HGPS_Robot
         public static async Task<LessonStatus> GetStatus()
         {
             using (var client = new HttpClient())
-            {
+            {                
                 client.BaseAddress = new Uri(BASE_ADDRESS);
                 var response = await client.GetAsync("api/StatusApi/GetLessonStatus");
 

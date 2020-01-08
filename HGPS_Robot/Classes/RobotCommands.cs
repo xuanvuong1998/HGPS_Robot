@@ -31,7 +31,7 @@ namespace HGPS_Robot
 
 
         public void PauseSpeak()
-        {
+        {            
             Synthesizer.Pause();
         }
         public void ResumeSpeak()

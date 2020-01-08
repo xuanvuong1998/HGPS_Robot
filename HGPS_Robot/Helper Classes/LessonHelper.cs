@@ -28,7 +28,7 @@ namespace HGPS_Robot
             GlobalFlowControl.Lesson.Starting = true;
             UpperBodyHelper.MoveRandomlyAllMotors();
             form2 = new LessonSpeechUI();
-            Synthesizer.SetSpeed(-1);
+            Synthesizer.SetSpeed(3);
 
             form2.ShowForm();
 

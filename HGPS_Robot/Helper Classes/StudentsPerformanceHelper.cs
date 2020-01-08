@@ -7,7 +7,52 @@ using System.Threading.Tasks;
 namespace HGPS_Robot
 {
     public static class StudentsPerformanceHelper
-    {        
+    {
+        private static string GetTopStreakPraise(List<StudentHistoryDTO> list)
+        {
+            if (list != null)
+            {
+                var speech = new StringBuilder();
+                var studentsStreak = StudentsPerformanceHelper.GetCorrectStreak(list);
+                var numOfQuestions = StudentsPerformanceHelper.GetNumberOfQuestions(list);
+
+                var maxStreak = studentsStreak.Values.Max();
+                var studentsFullStreak = new List<string>();
+                foreach (var stud in studentsStreak)
+                {
+                    if (stud.Value == maxStreak)
+                        studentsFullStreak.Add(stud.Key);
+                }
+
+                if (studentsFullStreak.Count == 1)
+                {
+                    speech.Append($"Only {studentsFullStreak[0]} has gotten every question correct! ");
+                    speech.Append($"A round of applause for {studentsFullStreak[0]}. ");
+                }
+                else if (studentsFullStreak.Count > 1)
+                {
+                    if (studentsFullStreak.Count > 1 && studentsFullStreak.Count <= 5)
+                    {
+                        foreach (var stud in studentsFullStreak)
+                        {
+                            speech.Append($"{stud}, ");
+                        }
+                        speech.Append("have gotten every question correct! ");
+                    }
+                    else if (studentsFullStreak.Count > 5)
+                    {
+                        speech.Append("I am very happy that many of you gotten all questions correct! ");
+                    }
+                    speech.Append("Keep up the good work! ");
+                }
+                else
+                {
+                    return null;
+                }
+                return speech.ToString();
+            }
+            return null;
+        }
         public static int GetNumberOfCorrectStudent(List<StudentHistoryDTO> stdHis)
         {
             int cnt = 0;
