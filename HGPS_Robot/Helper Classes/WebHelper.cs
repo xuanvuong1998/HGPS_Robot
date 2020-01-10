@@ -23,7 +23,7 @@ namespace HGPS_Robot
         public static async Task<LessonStatus> GetStatus()
         {
             using (var client = new HttpClient())
-            {                
+            {
                 client.BaseAddress = new Uri(BASE_ADDRESS);
                 var response = await client.GetAsync("api/StatusApi/GetLessonStatus");
 
@@ -60,7 +60,7 @@ namespace HGPS_Robot
                 }
             }
         }
-       
+
 
         public static List<SavedLessons> GetSavedLessons()
         {
@@ -79,6 +79,22 @@ namespace HGPS_Robot
             return null;
         }
 
+        public static List<TablePosition> GetTablePositions()
+        {
+            var client = new HttpClient();
+            client.BaseAddress = new Uri(BASE_ADDRESS);
+            var response = client.GetAsync("api/TablePositionApi/GetPositions").Result;
+            var resultsJson = response.Content.ReadAsStringAsync().Result;
+
+            if (resultsJson != null)
+            {
+                resultsJson = Regex.Unescape(resultsJson);
+                resultsJson = resultsJson.Substring(1, resultsJson.Length - 2);
+                var results = JsonConvert.DeserializeObject<List<TablePosition>>(resultsJson);
+                return results;
+            }
+            return null;
+        }
 
 
         public static async Task<string> AddLesson(Lesson lesson)
@@ -126,7 +142,7 @@ namespace HGPS_Robot
                     using (var req = new HttpRequestMessage(HttpMethod.Post, "api/QuestionApi/AddQuestion"))
                     {
                         req.Content = new StringContent(JsonConvert.SerializeObject(question), Encoding.UTF8, "application/json");
-                        await client.SendAsync(req);                        
+                        await client.SendAsync(req);
                     }
                 }
             }

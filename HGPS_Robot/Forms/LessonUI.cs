@@ -42,6 +42,7 @@ namespace HGPS_Robot
 
             SyncHelper.StatusChanged += SyncHelper_StatusChanged;
             SyncHelper.RobotCommandChanged += SyncHelper_RobotCommandChanged;
+          
         }
 
         private void SyncHelper_RobotCommandChanged(object sender, RobotCommandEventArgs e)
@@ -91,7 +92,7 @@ namespace HGPS_Robot
                     }
 
                 }
-                else if (status.LessonState == "pause")
+                else if (status.LessonState == "pause" || status.LessonState == "asking")
                 {
                     LessonHelper.Pause();
                 }

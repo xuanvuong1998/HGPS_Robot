@@ -26,7 +26,46 @@ namespace HGPS_Robot
         public List<StudentHistoryDTO> AssessPerformance { get; set; }
         #endregion
 
+        public void AskRandomStudent(List<StudentHistoryDTO> list)
+        {
+            var rdm = new Random();
+            int rdmNum = rdm.Next(1, 11);
+            if (rdmNum < 0)
+            {
+                //ask
+                int rdmStudentIndex = rdm.Next(0, list.Count);
+                var student = list[rdmStudentIndex];
+                string speech = student.UserAccountFullName + ", ";
+                int num = rdm.Next(0, 3);
+                switch (num)
+                {
+                    case 0:
+                        speech += "can you share what is your answer?";
+                        break;
+                    case 1:
+                        speech += "is this question easy or difficult?";
+                        break;
+                    case 2:
+                        speech += "what did you choose as your answer for this question?";
+                        break;
+                }
+                //Get position of student
+                var position = StudentPositionHelper.FindTablePosByStdId(student.Student_id);
 
+                if (position != null)
+                {
+
+                    //Go to student
+                    LessonHelper.InsertCommand("gountil", position);
+                    LessonHelper.InsertCommand("speak", speech);
+                    LessonHelper.InsertCommand("asking", "1");
+                }
+            }
+
+            AnalyzeStudentPerformance(AssessPerformance);
+
+            LessonHelper.InsertCommand("asking", "0");
+        }
 
         #region Student Performance
         private void AnalyzeStudentPerformance(List<StudentHistoryDTO> list)
@@ -56,6 +95,7 @@ namespace HGPS_Robot
                 speech = "Come on guys, don't give up. ";
 
                 LessonHelper.InsertPraise(speech);
+
 
                 return;
             }
@@ -101,7 +141,7 @@ namespace HGPS_Robot
             var numOfFullScore = StudentsPerformanceHelper.GetNumOfFullScore(list);
             if (numOfFullScore != 0)
             {
-                speech += $"Awesome, we have {numOfFullScore.ToString()} students with full score! ";                                                                
+                speech += $"Awesome, we have {numOfFullScore.ToString()} students with full score! ";
             }
 
             switch (rdmNum)
@@ -134,7 +174,7 @@ namespace HGPS_Robot
                 var x = new Random().Next(0, 3);
 
                 if (topStudents.Count == 1)
-                {                   
+                {
                     switch (x)
                     {
                         case 0:
@@ -143,15 +183,15 @@ namespace HGPS_Robot
                             break;
                         case 1:
                             speech.Append($"{topStudents.FirstOrDefault().Key} is having the" +
-                                $" highest score in the class, congratulation! ");                            
+                                $" highest score in the class, congratulation! ");
                             break;
                         case 2:
                             speech.Append($"With the score of {topStudents.FirstOrDefault().Value.ToString()}. " +
                                 $"I wanna say that, now, {topStudents.FirstOrDefault().Key} is the top student" +
-                                $", congratulation {topStudents.FirstOrDefault().Key}. ");                                
+                                $", congratulation {topStudents.FirstOrDefault().Key}. ");
                             break;
                     }
-                                        
+
                     speech.Append("The rest of you please try your best!");
                 }
                 else if (topStudents.Count <= 5)
@@ -227,7 +267,8 @@ namespace HGPS_Robot
 
             if (AssessPerformance != null)
             {
-                AnalyzeStudentPerformance(AssessPerformance);
+                AskRandomStudent(AssessPerformance);
+
             }
         }
     }

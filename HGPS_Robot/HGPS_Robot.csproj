@@ -115,7 +115,7 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="Robot">
-      <HintPath>..\..\..\..\..\Desktop\Robotx64\Robot\bin\Debug\Robot.dll</HintPath>
+      <HintPath>..\..\..\..\..\Desktop\CODDIE\Robotx64\Robot\bin\Debug\Robot.dll</HintPath>
     </Reference>
     <Reference Include="SpeechLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
@@ -250,6 +250,7 @@
   <ItemGroup>
     <Compile Include="Chatbot\Conversation.cs" />
     <Compile Include="Chatbot\MathIntepreter.cs" />
+    <Compile Include="Data Models\TablePosition.cs" />
     <Compile Include="Forms\ChatbotUI.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -299,6 +300,7 @@
     <Compile Include="Helper Classes\LessonStatusHelper.cs" />
     <Compile Include="Helper Classes\PowerpointHelper.cs" />
     <Compile Include="Helper Classes\LessonHelper.cs" />
+    <Compile Include="Helper Classes\StudentPositionHelper.cs" />
     <Compile Include="Helper Classes\StudentsPerformanceHelper.cs" />
     <Compile Include="Helper Classes\SystemUpdateHelper.cs" />
     <Compile Include="Helper Classes\SyncHelper.cs" />
@@ -373,12 +375,5 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.CognitiveServices.Speech.1.8.0\build\net461\Microsoft.CognitiveServices.Speech.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CognitiveServices.Speech.1.8.0\build\net461\Microsoft.CognitiveServices.Speech.targets'))" />
-  </Target>
   <Import Project="..\packages\Microsoft.CognitiveServices.Speech.1.8.0\build\net461\Microsoft.CognitiveServices.Speech.targets" Condition="Exists('..\packages\Microsoft.CognitiveServices.Speech.1.8.0\build\net461\Microsoft.CognitiveServices.Speech.targets')" />
 </Project>

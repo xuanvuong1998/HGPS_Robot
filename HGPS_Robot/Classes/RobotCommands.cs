@@ -134,13 +134,25 @@ namespace HGPS_Robot
                             Debug.WriteLine("Stopping quiz");
                             StopQuiz();
                             Debug.WriteLine("Stopped");
-                            Wait(QUIZ_BUFFER_SECONDS * 700);
+                            Wait(QUIZ_BUFFER_SECONDS * 1000);
                         }
                         break;
-                    case "review":
-
+                    case "gountil":
+                        BaseHelper.GoUntilReachedGoalOrCanceled(CurrentCommand.Value);
                         break;
 
+                    case "asking":
+                        var status = LessonStatusHelper.LessonStatus;
+                        if (Convert.ToInt32(CurrentCommand.Value) == 1)
+                        {
+                            status.LessonState = "asking";
+                        }
+                        else
+                        {
+                            status.LessonState = "notAsking";
+                        }
+                        WebHelper.UpdateStatus(status);
+                        break;
                     default:
                         //MessageBox.Show($"Unknown Type: {CurrentCommand.Type}");
                         break;
