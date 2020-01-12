@@ -117,12 +117,20 @@ namespace HGPS_Robot
            Move(ROS.BaseDirection.FORWARD);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="interval">movement period (seconds)</param>
         public static void ForwardDuring(int interval)
         {
             interval *= 1000;
             Forward();
             WaitToStop(interval);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="interval">seconds</param>
         public static void BackwardDuring(int interval)
         {
             interval *= 1000;
@@ -168,16 +176,16 @@ namespace HGPS_Robot
             switch (direction)
             {
                 case "forward":
-                    Forward();
+                    ForwardDuring(2);
                     break;
                 case "backward":
-                    Backward();
-                    break;
+                    BackwardDuring(2);
+                    break; 
                 case "left-turn":
-                    TurnLeft();
+                    TurnLeftDuring(2);
                     break;
                 case "right-turn":
-                    TurnRight();
+                    TurnRightDuring(2);
                     break;
                 case "stop":
                     Stop();
@@ -204,6 +212,7 @@ namespace HGPS_Robot
         }
         static public void Go(string location)
         {
+            MessageBox.Show("Go " + location); return;
             try
             {
                 GlobalFlowControl.Navigation.ResetBeforeNavigation();
@@ -215,7 +224,7 @@ namespace HGPS_Robot
 
         static public void GoUntilReachedGoalOrCanceled(string location)
         {
-            MessageBox.Show("Go " + location); return;
+            MessageBox.Show("Go " + location); return;          
             Go(location);
             while (GlobalFlowControl.Navigation.Moving == true) ;
         }

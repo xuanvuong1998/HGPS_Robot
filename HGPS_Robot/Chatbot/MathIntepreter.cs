@@ -34,13 +34,13 @@ namespace HGPS_Robot
         // Make sure word is correct format first
         public static double ParseNumber(string word)
         {
-            return double.Parse(word, NumberStyles.AllowThousands);
+            return double.Parse(word, NumberStyles.Any);
         }
 
         public static bool IsNumber(string word)
         {
             double num;
-            bool res = double.TryParse(word, NumberStyles.AllowThousands
+            bool res = double.TryParse(word, NumberStyles.Any
                     , CultureInfo.InvariantCulture, out num);
 
             return res;

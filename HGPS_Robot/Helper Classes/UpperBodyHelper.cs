@@ -272,21 +272,30 @@ namespace HGPS_Robot
             }
         }
 
+        /// <summary>
+        /// Move during lesson and chatbot
+        /// </summary>
         public static void MoveRandomlyAllMotors()
         {
+            System.Windows.Forms.MessageBox.Show("DANCE"); return;
             Task.Factory.StartNew(() =>
-            {                
+            {
+                GlobalFlowControl.UpperBody.MovingRandomly = true;
                 do
                 {                    
                     for (int i = 1; i <= 8; i++)
                     {
-                        MoveRandomly(i, 0.7);
+                        MoveRandomly(i, 0.7); 
                     }
+
+                    if (GlobalFlowControl.Navigation.Moving) break;
 
                     Wait(4000);
 
-                } while (GlobalFlowControl.Lesson.Starting);
+                } while (GlobalFlowControl.Lesson.Starting 
+                        && GlobalFlowControl.Navigation.Moving == false);
                 ResetAll();
+                GlobalFlowControl.UpperBody.MovingRandomly = false;
             });
 
         }
@@ -317,8 +326,11 @@ namespace HGPS_Robot
             gesKind = gesKind.ToUpper();
             switch (gesKind)
             {
-                case "RANDOM":
+                case "RANDOM_ONE_TIME":
                     MoveRandomlyAllMotorsOneTime();
+                    break;
+                case "RANDOM_UNTIL":
+                    MoveRandomlyAllMotors();
                     break;
                 case "HEAD_UP":
                     Head.Up();

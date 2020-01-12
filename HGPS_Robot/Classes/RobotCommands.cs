@@ -58,14 +58,11 @@ namespace HGPS_Robot
         public void InsertCommand(string cmdType, string cmdValue)
         {
             var robotCommand = new RobotCommand(cmdType, cmdValue);
-            _commands.Insert(commandIteration + 1, robotCommand);
+            //_commands.Insert(commandIteration + 1, robotCommand);
+            _commands.Add(robotCommand);
         }
 
-        public void InsertPraise(string cmdType, string cmdValue)
-        {
-            var robotCommand = new RobotCommand(cmdType, cmdValue);
-
-        }
+    
 
         int commandIteration = 0;
         private void CommandHandler()
@@ -78,6 +75,7 @@ namespace HGPS_Robot
 
                 UpdateCommand(CurrentCommand.Type.ToLower(), CurrentCommand.Value);
 
+                Debug.WriteLine(CurrentCommand.Type + "/" + CurrentCommand.Value);
                 switch (CurrentCommand.Type.ToLower())
                 {
                     case "speak":
@@ -89,7 +87,6 @@ namespace HGPS_Robot
                         break;
 
                     case "playaudio":
-                        Debug.WriteLine("Play Audio: " + CurrentCommand.Value);
                         AudioHelper.PlayAudio(CurrentCommand.Value);
                         break;
                     case "myspeech":
@@ -124,17 +121,27 @@ namespace HGPS_Robot
                         quiz.TimeOut = CurrentCommand.Value;
                         break;
 
+                    case "gesture":
+                        UpperBodyHelper.DoGestures(CurrentCommand.Value);
+                        break;
+
                     case "start":
                         if (CurrentCommand.Value.ToLower() == "quiz")
                         {
                             LessonHelper.QuestionNumber += 1;
                             quiz.QuestionNumber = LessonHelper.QuestionNumber;
                             StartQuiz(quiz);
-                            Wait(Convert.ToInt32(quiz.TimeOut) * 1000 + QUIZ_BUFFER_SECONDS * 700);
+                            Wait(Convert.ToInt32(quiz.TimeOut) * 1000 + QUIZ_BUFFER_SECONDS * 1000);
+                            // This QUIZ BUFFER TO give extra time for all student submit the answer
+
                             Debug.WriteLine("Stopping quiz");
                             StopQuiz();
-                            Debug.WriteLine("Stopped");
+                           
                             Wait(QUIZ_BUFFER_SECONDS * 1000);
+
+                            Debug.WriteLine("QUIZ COMPLETED");
+
+                            // This QUIZ BUFFER TO give extra time for teacher send student result to robot
                         }
                         break;
                     case "gountil":
@@ -152,6 +159,7 @@ namespace HGPS_Robot
                             status.LessonState = "notAsking";
                         }
                         WebHelper.UpdateStatus(status);
+                        Wait(1500);
                         break;
                     default:
                         //MessageBox.Show($"Unknown Type: {CurrentCommand.Type}");

@@ -15,6 +15,11 @@ namespace HGPS_Robot
             TablePositions = WebHelper.GetTablePositions();
         }
 
+        public static void DeleteAllPositions()
+        {
+            WebHelper.DeleteAllTablePositions();
+        }
+
         public static string FindTablePosByStdId(string stdId)
         {
             return TablePositions.Where(x => x.Student_Id == stdId)

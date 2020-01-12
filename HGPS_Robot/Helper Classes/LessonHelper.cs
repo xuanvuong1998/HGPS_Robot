@@ -26,7 +26,7 @@ namespace HGPS_Robot
         public static void Start(string lessonName, int startSlideNum, string voiceName)
         {
             GlobalFlowControl.Lesson.Starting = true;
-            //UpperBodyHelper.MoveRandomlyAllMotors();
+            UpperBodyHelper.MoveRandomlyAllMotors();
             form2 = new LessonSpeechUI();
             Synthesizer.SetSpeed(2);
 
@@ -44,6 +44,7 @@ namespace HGPS_Robot
 
                 for (CurrentSlideNumber = startSlideNum; CurrentSlideNumber <= endSlideNum; CurrentSlideNumber++)
                 {
+                    Debug.WriteLine("Current Slide -----------" + CurrentSlideNumber);
                     LessonStatusHelper.Update(lessonName, CurrentSlideNumber, "started", null, null, null);
                     RobotProgSlide _currentProgSlide = progData[CurrentSlideNumber - 1];
                     _robotCommands = new RobotCommands(_currentProgSlide.Commands);
@@ -81,13 +82,17 @@ namespace HGPS_Robot
             //this method will insert a 'speak' command into
             //the end of next slide
             int slideNum = CurrentSlideNumber;
-
-            var robotCommand = new RobotCommand("speak", speech);
-            var robotCommand2 = new RobotCommand("playaudio", "applause.wav");
+            
             var _nextProgSlide = progData[slideNum]; //next slide since slide 1 starts from index 0
-            _nextProgSlide.Commands.Add(robotCommand);
-            _nextProgSlide.Commands.Add(robotCommand2);            
-                        
+            _nextProgSlide.Commands.Add(new RobotCommand("asking", "0"));
+            _nextProgSlide.Commands.Add(new RobotCommand("speak", speech));
+            _nextProgSlide.Commands.Add(new RobotCommand("playaudio", "applause.wav"));            
+            
+            if (GlobalFlowControl.UpperBody.MovingRandomly == false)
+            {
+                _nextProgSlide.Commands.Add(new RobotCommand("gountil", "center"));              
+                _nextProgSlide.Commands.Add(new RobotCommand("gesture", "random_until"));
+            }                      
         }
 
         [Obsolete]

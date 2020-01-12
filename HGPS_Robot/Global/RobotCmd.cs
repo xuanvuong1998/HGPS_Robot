@@ -30,23 +30,31 @@ namespace HGPS_Robot
         {
             var rdm = new Random();
             int rdmNum = rdm.Next(1, 11);
-            if (rdmNum < 0)
+            if (rdmNum <= 10)
             {
                 //ask
+                Debug.WriteLine("ASKING STUDENT");
+      
                 int rdmStudentIndex = rdm.Next(0, list.Count);
                 var student = list[rdmStudentIndex];
-                string speech = student.UserAccountFullName + ", ";
-                int num = rdm.Next(0, 3);
+                string speech = student.UserAccountFullName + "! ";
+                int num = rdm.Next(0, 5);
                 switch (num)
                 {
                     case 0:
-                        speech += "can you share what is your answer?";
+                        speech += "Can you share what is your answer?";
                         break;
                     case 1:
-                        speech += "is this question easy or difficult?";
+                        speech += "Did you have your own answer? Is this question easy or difficult?";
                         break;
                     case 2:
-                        speech += "what did you choose as your answer for this question?";
+                        speech += "What did you choose as your answer for this question?";
+                        break;
+                    case 3:
+                        speech += "What do you think about this question?";
+                        break;
+                    case 4:
+                        speech += "Can you share your answer to the class and explain why did you choose it?";
                         break;
                 }
                 //Get position of student
@@ -64,7 +72,6 @@ namespace HGPS_Robot
 
             AnalyzeStudentPerformance(AssessPerformance);
 
-            LessonHelper.InsertCommand("asking", "0");
         }
 
         #region Student Performance
@@ -92,14 +99,14 @@ namespace HGPS_Robot
                         speech = "Sorry to say this, but none of you had a correct answer. ";
                         break;
                 }
-                speech = "Come on guys, don't give up. ";
+                speech += "Come on guys, don't give up. ";
 
                 LessonHelper.InsertPraise(speech);
 
 
                 return;
             }
-            else if (incorrectCnt == 0)
+            else
             {
                 var x = rdm.Next(0, 3);
                 if (incorrectCnt == 0)
@@ -113,7 +120,7 @@ namespace HGPS_Robot
                             speech = "Amazing! Everybody answers are correct. ";
                             break;
                         case 2:
-                            speech = "Incredibly! All of you got the correct answer. ";
+                            speech = "Incredible! All of you got the correct answer. ";
                             break;
                     }
 
@@ -121,7 +128,7 @@ namespace HGPS_Robot
                     LessonHelper.InsertPraise(speech);
                     return;
                 }
-                else if (correctCnt >= 6)
+                else if (correctCnt >= incorrectCnt)
                 {
                     switch (x)
                     {

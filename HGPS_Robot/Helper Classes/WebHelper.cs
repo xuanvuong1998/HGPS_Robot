@@ -16,8 +16,8 @@ namespace HGPS_Robot
 {
     public static class WebHelper
     {
-        private const string BASE_ADDRESS = "http://robo-ta.com/";
-        //private const string BASE_ADDRESS = "https://localhost:44353/";
+        //private const string BASE_ADDRESS = "http://robo-ta.com/";
+        private const string BASE_ADDRESS = "https://localhost:44353/";
         private const string ACCESS_TOKEN = "1H099XeDsRteM89yy91QonxH3mEd0DoE";
 
         public static async Task<LessonStatus> GetStatus()
@@ -79,10 +79,21 @@ namespace HGPS_Robot
             return null;
         }
 
+        public static async void DeleteAllTablePositions()
+        {
+            var client = new HttpClient
+            {
+                BaseAddress = new Uri(BASE_ADDRESS)
+            };
+            
+            await client.GetAsync("api/TablePositionApi/DeleteAll");       
+            
+        }
+
         public static List<TablePosition> GetTablePositions()
         {
             var client = new HttpClient();
-            client.BaseAddress = new Uri(BASE_ADDRESS);
+            client.BaseAddress = new Uri(BASE_ADDRESS); 
             var response = client.GetAsync("api/TablePositionApi/GetPositions").Result;
             var resultsJson = response.Content.ReadAsStringAsync().Result;
 

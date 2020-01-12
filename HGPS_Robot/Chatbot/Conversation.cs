@@ -109,7 +109,8 @@ namespace HGPS_Robot
 
         private static string Filter(string question)
         {
-            if (!char.IsLetterOrDigit(question[question.Length - 1]))
+            
+            while (!char.IsLetterOrDigit(question[question.Length - 1]))
             {
                 question = question.Remove(question.Length - 1);
             }            

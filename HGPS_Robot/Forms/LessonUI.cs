@@ -94,6 +94,7 @@ namespace HGPS_Robot
                 }
                 else if (status.LessonState == "pause" || status.LessonState == "asking")
                 {
+                    Debug.WriteLine("PAUSING");
                     LessonHelper.Pause();
                 }
                 else if (status.LessonState == "continue")

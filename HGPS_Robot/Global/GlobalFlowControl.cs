@@ -73,6 +73,11 @@ namespace HGPS_Robot
             public static bool Starting { get; set; }
         }
 
+        public class UpperBody
+        {
+            public static bool MovingRandomly { get; set; }
+        }
+
         public class ChatBot
         {
             public static bool Talking { get; set; }
