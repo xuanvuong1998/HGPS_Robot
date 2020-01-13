@@ -36,7 +36,7 @@ namespace HGPS_Robot
 
             InitSpeechAndChatbot();           
 
-            StudentPositionHelper.DeleteAllPositions();
+            //StudentPositionHelper.DeleteAllPositions();
 
             UpperBodyHelper.Init();
             BaseHelper.Connect();
