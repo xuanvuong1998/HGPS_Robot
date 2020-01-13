@@ -39,6 +39,7 @@ namespace HGPS_Robot
             StudentPositionHelper.DeleteAllPositions();
 
             UpperBodyHelper.Init();
+            BaseHelper.Connect();
         }
 
         private void SystemUpdateHelper_SystemUpdated(object sender, EventArgs e)

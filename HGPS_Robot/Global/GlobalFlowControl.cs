@@ -70,7 +70,11 @@ namespace HGPS_Robot
 
         public class Lesson
         {
+            public static string Name { get; set; }
+
             public static bool Starting { get; set; }
+
+            public static string ApproachStudent { get; set; }
         }
 
         public class UpperBody

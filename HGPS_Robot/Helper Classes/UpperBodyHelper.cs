@@ -205,7 +205,7 @@ namespace HGPS_Robot
         }
 
         public static void SavePosturesTODB(List<List<int>> postures, string postureName)
-        {            
+        {
             upperBody.SavePosturesTODB(postures, postureName);
         }
 
@@ -238,12 +238,12 @@ namespace HGPS_Robot
 
         public static void MoveWhileMoving()
         {
-            
+
         }
 
         public static void MoveWhileGreeting()
         {
-           
+
         }
 
 
@@ -263,7 +263,7 @@ namespace HGPS_Robot
                 Wait(delay);
             }
         }
-       
+
         public static void MoveRandomlyAllMotorsOneTime()
         {
             for (int i = 1; i <= 8; i++)
@@ -277,30 +277,29 @@ namespace HGPS_Robot
         /// </summary>
         public static void MoveRandomlyAllMotors()
         {
-            System.Windows.Forms.MessageBox.Show("DANCE"); return;
+            //System.Windows.Forms.MessageBox.Show("DANCE"); return;
             Task.Factory.StartNew(() =>
             {
-                GlobalFlowControl.UpperBody.MovingRandomly = true;
+                //GlobalFlowControl.UpperBody.MovingRandomly = true;
                 do
-                {                    
+                {
                     for (int i = 1; i <= 8; i++)
                     {
-                        MoveRandomly(i, 0.7); 
+                        MoveRandomly(i, 0.7);
                     }
 
-                    if (GlobalFlowControl.Navigation.Moving) break;
+                    //if (GlobalFlowControl.Navigation.Moving) break;
 
                     Wait(4000);
 
-                } while (GlobalFlowControl.Lesson.Starting 
-                        && GlobalFlowControl.Navigation.Moving == false);
+                } while (GlobalFlowControl.Lesson.Starting);
                 ResetAll();
-                GlobalFlowControl.UpperBody.MovingRandomly = false;
+                //GlobalFlowControl.UpperBody.MovingRandomly = false;
             });
 
         }
         public static void MoveRandomly(int motorId, double delta)
-        {            
+        {
             int x = minPos[motorId - 1];
             int y = maxPos[motorId - 1];
 

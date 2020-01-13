@@ -30,7 +30,7 @@ namespace HGPS_Robot
         {
             var rdm = new Random();
             int rdmNum = rdm.Next(1, 11);
-            if (rdmNum <= 10)
+            if (rdmNum <= 10 && GlobalFlowControl.Lesson.Name != "Ants and the lollipop")
             {
                 //ask
                 Debug.WriteLine("ASKING STUDENT");
@@ -62,12 +62,17 @@ namespace HGPS_Robot
 
                 if (position != null)
                 {
+                    GlobalFlowControl.Lesson.ApproachStudent = position;
 
                     //Go to student
                     LessonHelper.InsertCommand("gountil", position);
                     LessonHelper.InsertCommand("speak", speech);
                     LessonHelper.InsertCommand("asking", "1");
                 }
+            }
+            else
+            {
+                GlobalFlowControl.Lesson.ApproachStudent = null;
             }
 
             AnalyzeStudentPerformance(AssessPerformance);

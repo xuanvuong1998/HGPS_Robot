@@ -35,7 +35,7 @@ namespace HGPS_Robot
                 string[] CommandLines = Code.Split(';');
                 foreach (var cmdLine in CommandLines)
                 {
-                    if (!String.IsNullOrEmpty(cmdLine))
+                    if (!String.IsNullOrEmpty(cmdLine.Trim()))
                     {
                         var cmdInfo = cmdLine.Split(new[] { '/' }, 2);
                         if (cmdInfo[0].ToLower() == "teacherid") TeacherId = cmdInfo[1];

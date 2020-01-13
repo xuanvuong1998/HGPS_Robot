@@ -86,13 +86,14 @@ namespace HGPS_Robot
             var _nextProgSlide = progData[slideNum]; //next slide since slide 1 starts from index 0
             _nextProgSlide.Commands.Add(new RobotCommand("asking", "0"));
             _nextProgSlide.Commands.Add(new RobotCommand("speak", speech));
-            _nextProgSlide.Commands.Add(new RobotCommand("playaudio", "applause.wav"));            
-            
-            if (GlobalFlowControl.UpperBody.MovingRandomly == false)
+            _nextProgSlide.Commands.Add(new RobotCommand("playaudio", "applause.wav"));
+
+            if (GlobalFlowControl.Lesson.ApproachStudent != null)
             {
-                _nextProgSlide.Commands.Add(new RobotCommand("gountil", "center"));              
-                _nextProgSlide.Commands.Add(new RobotCommand("gesture", "random_until"));
-            }                      
+                var currentLocation = GlobalFlowControl.Lesson.ApproachStudent;
+                string centerLocation = "C" + ((currentLocation[1] - '0' + 1) / 2) ;
+                _nextProgSlide.Commands.Add(new RobotCommand("gountil", centerLocation));
+            }
         }
 
         [Obsolete]
@@ -117,6 +118,7 @@ namespace HGPS_Robot
         }
         public static void EndLesson()
         {
+            BaseHelper.Go("A0");
             GlobalFlowControl.Lesson.Starting = false;
             try
             {
