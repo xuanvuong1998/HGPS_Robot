@@ -34,10 +34,10 @@ namespace HGPS_Robot
                 List<RobotCommand> _commands = new List<RobotCommand>();
                 string[] CommandLines = Code.Split(';');
                 foreach (var cmdLine in CommandLines)
-                {
+                {                    
                     if (!String.IsNullOrEmpty(cmdLine.Trim()))
                     {
-                        var cmdInfo = cmdLine.Split(new[] { '/' }, 2);
+                        var cmdInfo = cmdLine.Trim().Split(new[] { '/' }, 2);
                         if (cmdInfo[0].ToLower() == "teacherid") TeacherId = cmdInfo[1];
                         if (cmdInfo[0].ToLower() == "subject") Subject = cmdInfo[1];
 

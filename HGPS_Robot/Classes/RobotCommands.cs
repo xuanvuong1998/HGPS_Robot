@@ -72,10 +72,12 @@ namespace HGPS_Robot
             for (commandIteration = 0; commandIteration < _commands.Count; commandIteration++)
             {
                 CurrentCommand = _commands[commandIteration];
-
+                    
+                
+                
                 UpdateCommand(CurrentCommand.Type.ToLower(), CurrentCommand.Value);
-
-                Debug.WriteLine(CurrentCommand.Type + "/" + CurrentCommand.Value);
+                
+                Debug.WriteLine(CurrentCommand.Type + "/" + CurrentCommand.Value);                
                 switch (CurrentCommand.Type.ToLower())
                 {
                     case "speak":
