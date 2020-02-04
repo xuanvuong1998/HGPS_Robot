@@ -195,6 +195,7 @@ namespace HGPS_Robot
 
         public static void Init()
         {
+            return;
             upperBody = new UpperBody(motorIds);
             ResetAll();
         }
@@ -277,6 +278,7 @@ namespace HGPS_Robot
         /// </summary>
         public static void MoveRandomlyAllMotors()
         {
+            return;
             //System.Windows.Forms.MessageBox.Show("DANCE"); return;
             Task.Factory.StartNew(() =>
             {

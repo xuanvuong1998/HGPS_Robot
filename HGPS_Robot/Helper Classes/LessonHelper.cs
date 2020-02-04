@@ -25,12 +25,10 @@ namespace HGPS_Robot
 
         public static void Start(string lessonName, int startSlideNum, string voiceName)
         {
-            GlobalFlowControl.Lesson.Starting = true;
+            GlobalFlowControl.Lesson.ResetAll();
             //UpperBodyHelper.MoveRandomlyAllMotors();
             form2 = new LessonSpeechUI();
-            Synthesizer.SetSpeed(1);
 
-            StudentPositionHelper.LoadTablesInfo();
             form2.ShowForm();
 
             _lessonName = lessonName;

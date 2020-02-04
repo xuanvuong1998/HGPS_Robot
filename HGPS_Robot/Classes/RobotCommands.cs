@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Configuration;
 using SpeechLibrary;
 using System.Diagnostics;
+using Timer = System.Timers.Timer;
 
 namespace HGPS_Robot
 {
@@ -24,6 +25,11 @@ namespace HGPS_Robot
         private List<RobotCommand> _commands;
         private SoundPlayer _soundPlayer = new SoundPlayer();        
         private const int QUIZ_BUFFER_SECONDS = 2;
+
+        private Timer quizTimer = new Timer();
+        private int quizTimerTick, quizTime;
+
+        
         public RobotCommands(List<RobotCommand> commands)
         {
             _commands = commands;
@@ -71,9 +77,7 @@ namespace HGPS_Robot
 
             for (commandIteration = 0; commandIteration < _commands.Count; commandIteration++)
             {
-                CurrentCommand = _commands[commandIteration];
-                    
-                
+                CurrentCommand = _commands[commandIteration];                                    
                 
                 UpdateCommand(CurrentCommand.Type.ToLower(), CurrentCommand.Value);
                 
@@ -133,7 +137,9 @@ namespace HGPS_Robot
                             LessonHelper.QuestionNumber += 1;
                             quiz.QuestionNumber = LessonHelper.QuestionNumber;
                             StartQuiz(quiz);
-                            Wait(Convert.ToInt32(quiz.TimeOut) * 1000 + QUIZ_BUFFER_SECONDS * 1000);
+                            //Wait(Convert.ToInt32(quiz.TimeOut) * 1000 + QUIZ_BUFFER_SECONDS * 1000);                                                        
+
+                            Wait(QUIZ_BUFFER_SECONDS * 1000);
                             // This QUIZ BUFFER TO give extra time for all student submit the answer
 
                             Debug.WriteLine("Stopping quiz");
@@ -171,7 +177,6 @@ namespace HGPS_Robot
         }
         private void Speak(string text)
         {
-
             Synthesizer.Speak(text);
         }
         private void SpeakAsync(string text)
@@ -212,12 +217,41 @@ namespace HGPS_Robot
             while (MediaPlaying) ; //wait for media to finish playing
             Thread.Sleep(2000); // wait for 2 seconds before resuming
         }
+
+        private void StartQuizTimer()
+        {
+            GlobalFlowControl.Lesson.StartingQuiz = true;
+            quizTimer.Interval = 1000;
+            quizTimer.AutoReset = true;
+            quizTimer.Elapsed += Timer_Elapsed;
+            quizTimerTick = 0;
+        }
+
+        private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            quizTimerTick++;
+            
+            if (quizTimerTick >= quizTime || GlobalFlowControl.Lesson.StartingQuiz == false)
+            {
+                quizTimer.Stop();
+            }
+        }
+
         private void StartQuiz(Quiz q)
         {
+            // unselect student for asking after ending a quiz
+            GlobalFlowControl.Lesson.ChosenStudent = null;
+            
             var status = LessonStatusHelper.LessonStatus;
             status.CurQuiz = q;
             status.LessonId = LessonHelper.LessonId;
             WebHelper.UpdateStatus(status);
+
+            quizTime = int.Parse(q.TimeOut);
+            
+            StartQuizTimer();
+                        
+
         }
         private void StopQuiz()
         {

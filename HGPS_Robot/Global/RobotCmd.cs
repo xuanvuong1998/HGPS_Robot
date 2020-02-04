@@ -28,15 +28,43 @@ namespace HGPS_Robot
 
         public void AskRandomStudent(List<StudentHistoryDTO> list)
         {
+
             var rdm = new Random();
-            int rdmNum = rdm.Next(1, 11);
-            if (rdmNum <= 10 && GlobalFlowControl.Lesson.Name != "Ants and the lollipop")
+            int rdmNum = rdm.Next(1, 11);            
+            if (GlobalFlowControl.Lesson.ChosenStudent != null 
+                || rdmNum <= 10)                
             {
                 //ask
                 Debug.WriteLine("ASKING STUDENT");
-      
-                int rdmStudentIndex = rdm.Next(0, list.Count);
-                var student = list[rdmStudentIndex];
+
+                StudentHistoryDTO student;
+
+                if (GlobalFlowControl.Lesson.ChosenStudent == null)
+                {
+                    student = list.FirstOrDefault(x => 
+                            x.Student_id == GlobalFlowControl.Lesson.ChosenStudent);
+                    
+                }
+                else
+                {
+                    int randNum;
+
+                    // All students their all turns to be asked (approached) by robot
+                    if (GlobalFlowControl.Lesson.ChosenStudentList.Count
+                         == list.Count)
+                    {
+                        GlobalFlowControl.Lesson.ChosenStudentList.Clear();
+                    }
+                    do
+                    {
+                        randNum = rdm.Next(0, list.Count);
+                    } while (GlobalFlowControl.Lesson.IsStudentChosenBefore(list[randNum].Student_id));
+
+                    student = list[randNum];
+
+                    GlobalFlowControl.Lesson.ChosenStudentList.Add(student.Student_id); 
+                }
+                                     
                 string speech = student.UserAccountFullName + "! ";
                 int num = rdm.Next(0, 5);
                 switch (num)
@@ -254,7 +282,8 @@ namespace HGPS_Robot
         {
             if (Navigation != null)
             {
-                BaseHelper.Go(Navigation);
+                GlobalFlowControl.Lesson.ChosenStudent = Navigation;
+                //BaseHelper.Go(Navigation);
             }
 
             if (Movement != null)
@@ -270,6 +299,14 @@ namespace HGPS_Robot
             if (Chatbot != null)
             {
 
+            }
+
+            if (LessonStatus != null)
+            {
+                if (LessonStatus == "StopQuestion")
+                {
+                    GlobalFlowControl.Lesson.StartingQuiz = false;
+                }
             }
 
             if (Praise != null)

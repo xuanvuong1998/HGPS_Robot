@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SpeechLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -75,6 +76,26 @@ namespace HGPS_Robot
             public static bool Starting { get; set; }
 
             public static string ApproachStudent { get; set; }
+
+            public static bool StartingQuiz { get; set; }
+
+            // StudentID who be chosen to ask robot go there for asking question
+            public static string ChosenStudent { get; set; }
+
+            public static List<string> ChosenStudentList { get; set; }
+
+            public static bool IsStudentChosenBefore(string std)
+            {
+                return ChosenStudentList.Contains(std);                   
+            }
+
+            public static void ResetAll()
+            {
+                Starting = true;
+                Synthesizer.SetSpeed(1);
+                StudentPositionHelper.LoadTablesInfo();
+            }
+
         }
 
         public class UpperBody
