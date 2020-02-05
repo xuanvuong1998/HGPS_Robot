@@ -139,7 +139,7 @@ namespace HGPS_Robot
                             StartQuiz(quiz);
                             //Wait(Convert.ToInt32(quiz.TimeOut) * 1000 + QUIZ_BUFFER_SECONDS * 1000);                                                        
 
-                            Wait(QUIZ_BUFFER_SECONDS * 1000);
+                            Wait(QUIZ_BUFFER_SECONDS * 800);
                             // This QUIZ BUFFER TO give extra time for all student submit the answer
 
                             Debug.WriteLine("Stopping quiz");
@@ -147,7 +147,9 @@ namespace HGPS_Robot
                            
                             Wait(QUIZ_BUFFER_SECONDS * 1000);
 
-                            Debug.WriteLine("QUIZ COMPLETED");
+                            var now = DateTime.Now;
+                            
+                            Debug.WriteLine(now + " : QUIZ COMPLETED");
 
                             // This QUIZ BUFFER TO give extra time for teacher send student result to robot
                         }
@@ -225,15 +227,19 @@ namespace HGPS_Robot
             quizTimer.AutoReset = true;
             quizTimer.Elapsed += Timer_Elapsed;
             quizTimerTick = 0;
+
+            quizTimer.Start();
         }
 
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             quizTimerTick++;
+            Debug.WriteLine("Timeout: " + quizTimerTick + " < " + quizTime);
             
             if (quizTimerTick >= quizTime || GlobalFlowControl.Lesson.StartingQuiz == false)
             {
-                quizTimer.Stop();
+                GlobalFlowControl.Lesson.StartingQuiz = false;
+                quizTimer.Stop();             
             }
         }
 
@@ -245,12 +251,19 @@ namespace HGPS_Robot
             var status = LessonStatusHelper.LessonStatus;
             status.CurQuiz = q;
             status.LessonId = LessonHelper.LessonId;
+            status.AskQuestionNumber = q.QuestionNumber;
+
+            LessonStatusHelper.LessonStatus = status;
             WebHelper.UpdateStatus(status);
 
             quizTime = int.Parse(q.TimeOut);
             
             StartQuizTimer();
-                        
+
+            while (GlobalFlowControl.Lesson.StartingQuiz)
+            {
+                // Busy-waiting: wait for quiz timeout or all students already submitted the answers
+            };
 
         }
         private void StopQuiz()
@@ -258,6 +271,7 @@ namespace HGPS_Robot
             var status = LessonStatusHelper.LessonStatus;
             status.CurQuiz = null;
             status.LessonState = "quiz completed";
+            
             WebHelper.UpdateStatus(status);
         }
         private void UpdateCommand(string type, string value)

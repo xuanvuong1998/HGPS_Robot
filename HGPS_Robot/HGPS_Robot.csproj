@@ -300,6 +300,7 @@
     <Compile Include="Helper Classes\LessonStatusHelper.cs" />
     <Compile Include="Helper Classes\PowerpointHelper.cs" />
     <Compile Include="Helper Classes\LessonHelper.cs" />
+    <Compile Include="Helper Classes\RobotActionHelper.cs" />
     <Compile Include="Helper Classes\StudentPositionHelper.cs" />
     <Compile Include="Helper Classes\StudentsPerformanceHelper.cs" />
     <Compile Include="Helper Classes\SystemUpdateHelper.cs" />

@@ -94,6 +94,7 @@ namespace HGPS_Robot
                 Starting = true;
                 Synthesizer.SetSpeed(1);
                 StudentPositionHelper.LoadTablesInfo();
+                ChosenStudentList = new List<string>();
             }
 
         }

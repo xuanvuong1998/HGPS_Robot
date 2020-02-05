@@ -27,6 +27,7 @@ namespace HGPS_Robot
         {
             GlobalFlowControl.Lesson.ResetAll();
             //UpperBodyHelper.MoveRandomlyAllMotors();
+            //RobotActionHelper.MoveDuringLesson();
             form2 = new LessonSpeechUI();
 
             form2.ShowForm();
@@ -40,14 +41,35 @@ namespace HGPS_Robot
                 string codePath = FileHelper.BasePath + @"\" + lessonName + @"\code.pptx";
                 progData = PowerpointHelper.GetSlidesData(codePath);
 
-                for (CurrentSlideNumber = startSlideNum; CurrentSlideNumber <= endSlideNum; CurrentSlideNumber++)
+                for (CurrentSlideNumber = 1; CurrentSlideNumber <= endSlideNum; CurrentSlideNumber++)
                 {
-                    Debug.WriteLine("Current Slide -----------" + CurrentSlideNumber);
-                    LessonStatusHelper.Update(lessonName, CurrentSlideNumber, "started", null, null, null);
-                    RobotProgSlide _currentProgSlide = progData[CurrentSlideNumber - 1];
-                    _robotCommands = new RobotCommands(_currentProgSlide.Commands);
-                    _robotCommands.OnCommandUpdate += _robotCommands_OnCommandUpdate;
-                    _robotCommands.Execute();
+                    if (CurrentSlideNumber < startSlideNum)
+                    {
+                        RobotProgSlide _currentProgSlide = progData[CurrentSlideNumber - 1];
+
+                        var commands = _currentProgSlide.Commands;
+
+                        foreach (var cmd in commands)
+                        {
+                            if (cmd.Type.ToLower() == "start" && cmd.Value.ToLower() == "quiz")
+                            {
+                                QuestionNumber++;
+                            }
+                        }
+    
+                        
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Current Slide -----------" + CurrentSlideNumber);
+                        LessonStatusHelper.Update(lessonName, CurrentSlideNumber, "started", null, null, null);
+                        RobotProgSlide _currentProgSlide = progData[CurrentSlideNumber - 1];
+                        _robotCommands = new RobotCommands(_currentProgSlide.Commands);
+
+
+                        _robotCommands.OnCommandUpdate += _robotCommands_OnCommandUpdate;
+                        _robotCommands.Execute();
+                    }
                 }
                 OnLessonEnded();
             }));
@@ -73,7 +95,13 @@ namespace HGPS_Robot
             _robotCommands.InsertCommand(cmdType, cmdValue);
         }
 
-
+        public static void InsertNextSlideCommand(string cmdType, string cmdValue)
+        {
+            int slideNum = CurrentSlideNumber;
+            var _nextProgSlide = progData[slideNum]; //next slide since slide 1 starts from index 0
+            _nextProgSlide.Commands.Add(new RobotCommand(cmdType, cmdValue));
+           
+        }
 
         public static void InsertPraise(string speech)
         {

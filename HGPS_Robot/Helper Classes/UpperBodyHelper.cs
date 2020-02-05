@@ -233,7 +233,7 @@ namespace HGPS_Robot
 
                 MoveAllMotors(list, 1500);
 
-                UpperBodyHelper.ResetAll();
+                ResetAll();
             });
         }
 
@@ -294,7 +294,8 @@ namespace HGPS_Robot
 
                     Wait(4000);
 
-                } while (GlobalFlowControl.Lesson.Starting);
+                } while (GlobalFlowControl.Lesson.Starting
+                 || GlobalFlowControl.ChatBot.Talking);
                 ResetAll();
                 //GlobalFlowControl.UpperBody.MovingRandomly = false;
             });

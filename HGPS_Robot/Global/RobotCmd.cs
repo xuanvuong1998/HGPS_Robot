@@ -30,7 +30,8 @@ namespace HGPS_Robot
         {
 
             var rdm = new Random();
-            int rdmNum = rdm.Next(1, 11);            
+            int rdmNum = rdm.Next(1, 11);
+            GlobalFlowControl.Lesson.ApproachStudent = null;
             if (GlobalFlowControl.Lesson.ChosenStudent != null 
                 || rdmNum <= 10)                
             {
@@ -39,17 +40,21 @@ namespace HGPS_Robot
 
                 StudentHistoryDTO student;
 
-                if (GlobalFlowControl.Lesson.ChosenStudent == null)
+                if (GlobalFlowControl.Lesson.ChosenStudent != null)
                 {
                     student = list.FirstOrDefault(x => 
                             x.Student_id == GlobalFlowControl.Lesson.ChosenStudent);
-                    
+
+                    if (GlobalFlowControl.Lesson.IsStudentChosenBefore(student.Student_id) == false)
+                    {
+                        GlobalFlowControl.Lesson.ChosenStudentList.Add(student.Student_id);
+                    }
                 }
                 else
                 {
                     int randNum;
 
-                    // All students their all turns to be asked (approached) by robot
+                    // All students have their all turns to be asked (approached) by robot
                     if (GlobalFlowControl.Lesson.ChosenStudentList.Count
                          == list.Count)
                     {
@@ -58,8 +63,10 @@ namespace HGPS_Robot
                     do
                     {
                         randNum = rdm.Next(0, list.Count);
+                        Debug.WriteLine("Random Student: " + randNum);
                     } while (GlobalFlowControl.Lesson.IsStudentChosenBefore(list[randNum].Student_id));
 
+                    
                     student = list[randNum];
 
                     GlobalFlowControl.Lesson.ChosenStudentList.Add(student.Student_id); 
@@ -96,12 +103,39 @@ namespace HGPS_Robot
                     LessonHelper.InsertCommand("gountil", position);
                     LessonHelper.InsertCommand("speak", speech);
                     LessonHelper.InsertCommand("asking", "1");
+
+                    bool studentResult = student.ResultInBinaryString.Last() == '1';
+                    string resultSpeech = "";
+
+
+                    if (studentResult)
+                    {
+                        switch (num)
+                        {
+                            case 0: case 1:
+                                resultSpeech = "Excellent ";
+                                break;
+                            case 2: case 3:
+                                resultSpeech = "Not bad ";
+                                break;
+                            case 4:
+                                resultSpeech = "Very good";
+                                break;
+
+                        }
+                        resultSpeech += student.Student_id + "! Your answer is correct!";  
+                    }
+                    else
+                    {                       
+                        resultSpeech = "Sorry " + student.Student_id + ". Your answer is not correct!";
+                    }
+                    
+                    LessonHelper.InsertCommand("wait", "1500");
+                    LessonHelper.InsertCommand("speak", resultSpeech);
+
                 }
             }
-            else
-            {
-                GlobalFlowControl.Lesson.ApproachStudent = null;
-            }
+            
 
             AnalyzeStudentPerformance(AssessPerformance);
 
@@ -280,8 +314,10 @@ namespace HGPS_Robot
         // From Teacher Panel
         public void ProcessCommand()
         {
+            
             if (Navigation != null)
             {
+                Debug.WriteLine("CHosen Student" + Navigation);
                 GlobalFlowControl.Lesson.ChosenStudent = Navigation;
                 //BaseHelper.Go(Navigation);
             }
@@ -303,6 +339,7 @@ namespace HGPS_Robot
 
             if (LessonStatus != null)
             {
+                Debug.WriteLine(LessonStatus + " Lesson Status");
                 if (LessonStatus == "StopQuestion")
                 {
                     GlobalFlowControl.Lesson.StartingQuiz = false;
