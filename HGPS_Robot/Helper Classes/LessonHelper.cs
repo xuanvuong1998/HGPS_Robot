@@ -132,25 +132,55 @@ namespace HGPS_Robot
             _robotCommands.ResumeSpeak();
         }
 
+        public static void SendEmotionFeedBackToServer(string feedback)
+        {
+            LessonStatusHelper.LessonStatus.LessonState = feedback;
+
+            WebHelper.UpdateStatus(LessonStatusHelper.LessonStatus);
+        }
+
         [Obsolete]
         public static void Pause()
         {
-            _robotCommands.PauseSpeak();
-            if (_thread != null && _thread.IsAlive)
+            try
             {
-                _thread.Suspend();
+                _robotCommands.PauseSpeak();
+                if (_thread != null && _thread.IsAlive
+                    && _thread.ThreadState == System.Threading.ThreadState.Running)
+                {
+                    _thread.Suspend();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
             }
             
+            
+        }
+
+        public static void Wait(int miliSec)
+        {
+            Thread.Sleep(miliSec);
         }
 
         [Obsolete]
         public static void Resume()
         {
-            if (_thread != null && _thread.IsAlive)
+            try
             {
-                _thread.Resume();
-            }                
-            _robotCommands.ResumeSpeak();
+                if (_thread != null && _thread.IsAlive
+                && _thread.ThreadState == System.Threading.ThreadState.Suspended)
+                {
+                    _thread.Resume();
+                }
+                _robotCommands.ResumeSpeak();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+            
         }
         public static void EndLesson()
         {

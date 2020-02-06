@@ -227,11 +227,14 @@ namespace HGPS_Robot
 
             var status = LessonStatusHelper.LessonStatus;
 
+            var previousLessonStatus = status.LessonState;
             status.LessonState = "TakeEmotionSurvey";
 
             WebHelper.UpdateStatus(status);
 
             while (!GlobalFlowControl.Lesson.StudentFeedbackReceived) ;
+
+            LessonStatusHelper.LessonStatus.LessonState = previousLessonStatus;
 
             Debug.WriteLine("Received student feedback");
 

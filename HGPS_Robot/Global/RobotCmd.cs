@@ -317,27 +317,25 @@ namespace HGPS_Robot
             if (sadPc >= 0.3) // roughly 1/3 unhappy, give teacher time to explain
                               // for unhappy students again or engage some activities
             {
-                LessonHelper.Pause();
+                LessonHelper.Pause();               
                 LessonHelper.ResumeSpeak();
-                Synthesizer.Speak("Well. Since there are some of you, not quite" +
-                    "clear with the topic, I will invite Mr Nizam to explain the " +
-                   "clear all your uncertainties. ");
-
+                Synthesizer.Speak("Well, since some of you are not sure of this topic, let Mr Nizam explain again. ");
+                LessonHelper.SendEmotionFeedBackToServer("survey-unhappy");
             } // Ok, happy or neutral
             else
             {
                 LessonHelper.Pause();
                 LessonHelper.ResumeSpeak();
-                Synthesizer.Speak("Luckily, most of you are happy with the current" +
-                    "progress. Why don't we continue the lesson? Do you agree? ");
+                Synthesizer.Speak("Wow, most of you understand the topic! Let us continue with the lesson. ");
+                //LessonHelper.SendEmotionFeedBackToServer("survey-happy");
+                LessonHelper.Wait(2000);
                 LessonHelper.Resume();
             }
         }
 
         // From Teacher Panel
         public void ProcessCommand()
-        {
-            
+        {         
             if (Navigation != null)
             {
                 Debug.WriteLine("CHosen Student" + Navigation);
