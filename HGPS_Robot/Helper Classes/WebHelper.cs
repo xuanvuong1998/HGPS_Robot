@@ -11,6 +11,7 @@ using System.Web.Script.Serialization;
 using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Net.Mime;
+using System.Diagnostics;
 
 namespace HGPS_Robot
 {
@@ -61,9 +62,13 @@ namespace HGPS_Robot
                     {
                         req.Content = new StringContent(JsonConvert.SerializeObject(status), Encoding.UTF8, "application/json");
                         await client.SendAsync(req);
+                        
+                        
+                        
                     }
                 }
             }
+
         }
 
 

@@ -56,13 +56,16 @@ namespace HGPS_Robot
                                 QuestionNumber++;
                             }
                         }
-    
-                        
+
+
                     }
                     else
                     {
                         Debug.WriteLine("Current Slide -----------" + CurrentSlideNumber);
                         LessonStatusHelper.Update(lessonName, CurrentSlideNumber, "started", null, null, null);
+
+                        Debug.WriteLine("After update function");
+
                         RobotProgSlide _currentProgSlide = progData[CurrentSlideNumber - 1];
                         _robotCommands = new RobotCommands(_currentProgSlide.Commands);
 
@@ -100,7 +103,7 @@ namespace HGPS_Robot
             int slideNum = CurrentSlideNumber;
             var _nextProgSlide = progData[slideNum]; //next slide since slide 1 starts from index 0
             _nextProgSlide.Commands.Add(new RobotCommand(cmdType, cmdValue));
-           
+
         }
 
         public static void InsertPraise(string speech)
@@ -108,7 +111,7 @@ namespace HGPS_Robot
             //this method will insert a 'speak' command into
             //the end of next slide
             int slideNum = CurrentSlideNumber;
-            
+
             var _nextProgSlide = progData[slideNum]; //next slide since slide 1 starts from index 0
             _nextProgSlide.Commands.Add(new RobotCommand("asking", "0"));
             _nextProgSlide.Commands.Add(new RobotCommand("speak", speech));
@@ -117,7 +120,7 @@ namespace HGPS_Robot
             if (GlobalFlowControl.Lesson.ApproachStudent != null)
             {
                 var currentLocation = GlobalFlowControl.Lesson.ApproachStudent;
-                string centerLocation = "C" + ((currentLocation[1] - '0' + 1) / 2) ;
+                string centerLocation = "C" + ((currentLocation[1] - '0' + 1) / 2);
                 _nextProgSlide.Commands.Add(new RobotCommand("gountil", centerLocation));
             }
         }
@@ -146,7 +149,7 @@ namespace HGPS_Robot
             {
                 _robotCommands.PauseSpeak();
                 if (_thread != null && _thread.IsAlive
-                    && _thread.ThreadState == System.Threading.ThreadState.Running)
+                   )
                 {
                     _thread.Suspend();
                 }
@@ -155,8 +158,8 @@ namespace HGPS_Robot
             {
                 Debug.WriteLine(ex.Message);
             }
-            
-            
+
+
         }
 
         public static void Wait(int miliSec)
@@ -167,20 +170,21 @@ namespace HGPS_Robot
         [Obsolete]
         public static void Resume()
         {
+            Debug.WriteLine("Inside resume function");
             try
             {
+                _robotCommands.ResumeSpeak();
                 if (_thread != null && _thread.IsAlive
-                && _thread.ThreadState == System.Threading.ThreadState.Suspended)
+                )
                 {
                     _thread.Resume();
                 }
-                _robotCommands.ResumeSpeak();
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
             }
-            
+
         }
         public static void EndLesson()
         {
@@ -198,7 +202,7 @@ namespace HGPS_Robot
                     if (_thread != null && _thread.IsAlive)
                     {
                         _thread.Abort();
-                    }                    
+                    }
                 }
             }
             catch

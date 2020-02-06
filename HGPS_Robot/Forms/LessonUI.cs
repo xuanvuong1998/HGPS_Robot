@@ -101,6 +101,7 @@ namespace HGPS_Robot
                 }
                 else if (status.LessonState == "continue")
                 {
+                    Debug.WriteLine("Continue from server");
                     LessonHelper.Resume();
                 }
                 else if (status.LessonState == "end")

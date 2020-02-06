@@ -143,6 +143,8 @@ namespace HGPS_Robot
                             LessonHelper.QuestionNumber += 1;
                             quiz.QuestionNumber = LessonHelper.QuestionNumber;
                             StartQuiz(quiz);
+
+                            LessonStatusHelper.LessonStatus.CurQuiz = null;
                             //Wait(Convert.ToInt32(quiz.TimeOut) * 1000 + QUIZ_BUFFER_SECONDS * 1000);                                                        
 
                             Wait(QUIZ_BUFFER_SECONDS * 800);

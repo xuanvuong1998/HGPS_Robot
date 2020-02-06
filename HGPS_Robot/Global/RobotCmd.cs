@@ -317,10 +317,10 @@ namespace HGPS_Robot
             if (sadPc >= 0.3) // roughly 1/3 unhappy, give teacher time to explain
                               // for unhappy students again or engage some activities
             {
+                LessonHelper.SendEmotionFeedBackToServer("survey-unhappy");
                 LessonHelper.Pause();               
                 LessonHelper.ResumeSpeak();
                 Synthesizer.Speak("Well, since some of you are not sure of this topic, let Mr Nizam explain again. ");
-                LessonHelper.SendEmotionFeedBackToServer("survey-unhappy");
             } // Ok, happy or neutral
             else
             {
