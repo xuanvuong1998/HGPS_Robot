@@ -89,12 +89,15 @@ namespace HGPS_Robot
                 return ChosenStudentList.Contains(std);                   
             }
 
+            public static bool StudentFeedbackReceived { get; set; }
+            
             public static void ResetAll()
             {
                 Starting = true;
                 Synthesizer.SetSpeed(1);
                 StudentPositionHelper.LoadTablesInfo();
                 ChosenStudentList = new List<string>();
+                StudentFeedbackReceived = false;
             }
 
         }

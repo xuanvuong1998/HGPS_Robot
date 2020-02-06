@@ -311,6 +311,29 @@ namespace HGPS_Robot
         }
         #endregion
 
+
+        private void AnalyzeEmotion(double happyPc, double sadPc, double neutralPc)
+        {
+            if (sadPc >= 0.3) // roughly 1/3 unhappy, give teacher time to explain
+                              // for unhappy students again or engage some activities
+            {
+                LessonHelper.Pause();
+                LessonHelper.ResumeSpeak();
+                Synthesizer.Speak("Well. Since there are some of you, not quite" +
+                    "clear with the topic, I will invite Mr Nizam to explain the " +
+                   "clear all your uncertainties. ");
+
+            } // Ok, happy or neutral
+            else
+            {
+                LessonHelper.Pause();
+                LessonHelper.ResumeSpeak();
+                Synthesizer.Speak("Luckily, most of you are happy with the current" +
+                    "progress. Why don't we continue the lesson? Do you agree? ");
+                LessonHelper.Resume();
+            }
+        }
+
         // From Teacher Panel
         public void ProcessCommand()
         {
@@ -344,6 +367,27 @@ namespace HGPS_Robot
                 {
                     GlobalFlowControl.Lesson.StartingQuiz = false;
                 }
+            }
+
+            if (SpecialAction != null)
+            {
+                Debug.WriteLine("Special Action : " + SpecialAction);
+
+                string thing = SpecialAction.Split('-')[0];
+                string info = SpecialAction.Split('-')[1];
+
+                if (thing == "Emotion")
+                {
+
+                    GlobalFlowControl.Lesson.StudentFeedbackReceived = true;
+                    double sadPc = double.Parse(info.Split(';')[0]);
+                    double neutralPc = double.Parse(info.Split(';')[1]);
+                    double happyPc = double.Parse(info.Split(';')[2]);
+
+                    AnalyzeEmotion(happyPc, sadPc, neutralPc);
+                    
+                }
+                
             }
 
             if (Praise != null)

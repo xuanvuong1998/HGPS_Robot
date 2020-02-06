@@ -77,62 +77,68 @@ namespace HGPS_Robot
 
             for (commandIteration = 0; commandIteration < _commands.Count; commandIteration++)
             {
-                CurrentCommand = _commands[commandIteration];                                    
+
                 
-                UpdateCommand(CurrentCommand.Type.ToLower(), CurrentCommand.Value);
+                CurrentCommand = _commands[commandIteration];
+                var cmd = CurrentCommand.Type;
+                var val = CurrentCommand.Value;
                 
-                Debug.WriteLine(CurrentCommand.Type + "/" + CurrentCommand.Value);                
-                switch (CurrentCommand.Type.ToLower())
+                UpdateCommand(cmd.ToLower(), val);
+                
+                Debug.WriteLine(cmd + "/" + val); 
+                
+                
+                switch (cmd.ToLower())
                 {
                     case "speak":
-                        Speak(CurrentCommand.Value);
+                        Speak(val);
                         break;
 
                     case "speakasync":
-                        SpeakAsync(CurrentCommand.Value);
+                        SpeakAsync(val);
                         break;
 
                     case "playaudio":
-                        AudioHelper.PlayAudio(CurrentCommand.Value);
+                        AudioHelper.PlayAudio(val);
                         break;
                     case "myspeech":
-                        MySpeech(CurrentCommand.Value);
+                        MySpeech(val);
                         break;
 
                     case "myspeechasync":
-                        MySpeechAsync(CurrentCommand.Value);
+                        MySpeechAsync(val);
                         break;
 
                     case "move":
-                        Move(CurrentCommand.Value);
+                        Move(val);
                         break;
 
                     case "wait":
-                        Wait(Convert.ToInt32(CurrentCommand.Value));
+                        Wait(Convert.ToInt32(val));
                         break;
 
                     case "playmedia":
-                        PlayMedia(CurrentCommand.Value);
+                        PlayMedia(val);
                         break;
 
                     case "quizformat":
-                        quiz.QuizFormat = CurrentCommand.Value;
+                        quiz.QuizFormat = val;
                         break;
 
                     case "answer":
-                        quiz.Answer = CurrentCommand.Value;
+                        quiz.Answer = val;
                         break;
 
                     case "timeout":
-                        quiz.TimeOut = CurrentCommand.Value;
+                        quiz.TimeOut = val;
                         break;
 
                     case "gesture":
-                        UpperBodyHelper.DoGestures(CurrentCommand.Value);
+                        UpperBodyHelper.DoGestures(val);
                         break;
 
                     case "start":
-                        if (CurrentCommand.Value.ToLower() == "quiz")
+                        if (val.ToLower() == "quiz")
                         {
                             LessonHelper.QuestionNumber += 1;
                             quiz.QuestionNumber = LessonHelper.QuestionNumber;
@@ -153,14 +159,18 @@ namespace HGPS_Robot
 
                             // This QUIZ BUFFER TO give extra time for teacher send student result to robot
                         }
+                        else if (val.ToLower() == "emotion-survey")
+                        {
+                            TakeEmotionSurvey();
+                        }
                         break;
                     case "gountil":
-                        BaseHelper.GoUntilReachedGoalOrCanceled(CurrentCommand.Value);
+                        BaseHelper.GoUntilReachedGoalOrCanceled(val);
                         break;
 
                     case "asking":
                         var status = LessonStatusHelper.LessonStatus;
-                        if (Convert.ToInt32(CurrentCommand.Value) == 1)
+                        if (Convert.ToInt32(val) == 1)
                         {
                             status.LessonState = "asking";
                         }
@@ -171,8 +181,9 @@ namespace HGPS_Robot
                         WebHelper.UpdateStatus(status);
                         Wait(1500);
                         break;
+                    
                     default:
-                        //MessageBox.Show($"Unknown Type: {CurrentCommand.Type}");
+                        //MessageBox.Show($"Unknown Type: {cmd}");
                         break;
                 }
             }
@@ -209,6 +220,24 @@ namespace HGPS_Robot
         {
             Thread.Sleep(milliseconds);
         }
+
+        private void TakeEmotionSurvey()
+        {
+            Debug.WriteLine("Request server to take student's emotion survey");
+
+            var status = LessonStatusHelper.LessonStatus;
+
+            status.LessonState = "TakeEmotionSurvey";
+
+            WebHelper.UpdateStatus(status);
+
+            while (!GlobalFlowControl.Lesson.StudentFeedbackReceived) ;
+
+            Debug.WriteLine("Received student feedback");
+
+            GlobalFlowControl.Lesson.StudentFeedbackReceived = false; // Reset for the next feedback
+        }
+
         private void PlayMedia(string url)
         {
             MediaPlaying = true;

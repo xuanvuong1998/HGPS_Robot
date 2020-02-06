@@ -122,6 +122,16 @@ namespace HGPS_Robot
             }
         }
 
+        public static void PauseSpeak()
+        {
+            _robotCommands.PauseSpeak();
+        }
+
+        public static void ResumeSpeak()
+        {
+            _robotCommands.ResumeSpeak();
+        }
+
         [Obsolete]
         public static void Pause()
         {

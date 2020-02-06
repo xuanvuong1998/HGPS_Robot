@@ -20,6 +20,9 @@ namespace HGPS_Robot
         private const string BASE_ADDRESS = "https://localhost:44353/";
         private const string ACCESS_TOKEN = "1H099XeDsRteM89yy91QonxH3mEd0DoE";
 
+
+        
+
         public static async Task<LessonStatus> GetStatus()
         {
             using (var client = new HttpClient())
@@ -41,6 +44,8 @@ namespace HGPS_Robot
                 return null;
             }
         }
+
+        
 
         public static async void UpdateStatus(LessonStatus status)
         {
