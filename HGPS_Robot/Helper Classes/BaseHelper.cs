@@ -212,7 +212,6 @@ namespace HGPS_Robot
         }
         static public void Go(string location)
         {
-            MessageBox.Show("Go " + location); return;
             try
             {
                 GlobalFlowControl.Navigation.ResetBeforeNavigation();

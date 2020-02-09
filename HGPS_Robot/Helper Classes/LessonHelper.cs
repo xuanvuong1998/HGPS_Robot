@@ -32,7 +32,7 @@ namespace HGPS_Robot
         {
             GlobalFlowControl.Lesson.ResetAll();
             //UpperBodyHelper.MoveRandomlyAllMotors();
-            //RobotActionHelper.MoveDuringLesson();
+            RobotActionHelper.MoveDuringLesson();
             form2 = new LessonSpeechUI();
 
             form2.ShowForm();
