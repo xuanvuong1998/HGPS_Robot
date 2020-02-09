@@ -77,8 +77,15 @@ namespace HGPS_Robot
 
             for (commandIteration = 0; commandIteration < _commands.Count; commandIteration++)
             {
+                while (LessonHelper.PauseRequested)
+                {
+                    Thread.Sleep(500);
+                    Debug.WriteLine("Busy waiting");
+                    //LessonHelper.Pause();
+                }
 
-                
+                Debug.WriteLine("Not busy waiting any more");
+
                 CurrentCommand = _commands[commandIteration];
                 var cmd = CurrentCommand.Type;
                 var val = CurrentCommand.Value;
@@ -236,6 +243,7 @@ namespace HGPS_Robot
 
             while (!GlobalFlowControl.Lesson.StudentFeedbackReceived) ;
 
+            Wait(2000); // Remove thread conflict
             LessonStatusHelper.LessonStatus.LessonState = previousLessonStatus;
 
             Debug.WriteLine("Received student feedback");
@@ -268,6 +276,8 @@ namespace HGPS_Robot
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             quizTimerTick++;
+
+            if (LessonHelper.PauseRequested) quizTimerTick--;
             Debug.WriteLine("Timeout: " + quizTimerTick + " < " + quizTime);
             
             if (quizTimerTick >= quizTime || GlobalFlowControl.Lesson.StartingQuiz == false)

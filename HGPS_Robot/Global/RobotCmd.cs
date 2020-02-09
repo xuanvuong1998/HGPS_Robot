@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using SpeechLibrary;
 
@@ -119,7 +120,7 @@ namespace HGPS_Robot
                                 resultSpeech = "Not bad ";
                                 break;
                             case 4:
-                                resultSpeech = "Very good";
+                                resultSpeech = "Very good ";
                                 break;
 
                         }
@@ -130,7 +131,6 @@ namespace HGPS_Robot
                         resultSpeech = "Sorry " + student.Student_id + ". Your answer is not correct!";
                     }
                     
-                    LessonHelper.InsertCommand("wait", "1500");
                     LessonHelper.InsertCommand("speak", resultSpeech);
 
                 }
@@ -311,25 +311,33 @@ namespace HGPS_Robot
         }
         #endregion
 
-
         private void AnalyzeEmotion(double happyPc, double sadPc, double neutralPc)
         {
             if (sadPc >= 0.3) // roughly 1/3 unhappy, give teacher time to explain
                               // for unhappy students again or engage some activities
             {
                 LessonHelper.SendEmotionFeedBackToServer("survey-unhappy");
-                LessonHelper.Pause();               
+                LessonHelper.PauseLesson();    
+                
                 LessonHelper.ResumeSpeak();
                 Synthesizer.Speak("Well, since some of you are not sure of this topic, let Mr Nizam explain again. ");
             } // Ok, happy or neutral
             else
             {
-                LessonHelper.Pause();
+                Debug.WriteLine("Before Pause Lesson");
+                LessonHelper.PauseLesson();
+                Debug.WriteLine("After pause lesson");
                 LessonHelper.ResumeSpeak();
+
                 Synthesizer.Speak("Wow, most of you understand the topic! Let us continue with the lesson. ");
                 //LessonHelper.SendEmotionFeedBackToServer("survey-happy");
+                Debug.WriteLine("After speak the feedback");
                 LessonHelper.Wait(2000);
-                LessonHelper.Resume();
+
+                Debug.WriteLine("After wait 2 seconds");
+                LessonHelper.ResumeLesson();
+
+                Debug.WriteLine("After resume");
             }
         }
 

@@ -97,8 +97,9 @@ namespace HGPS_Robot
                     _question.Points = Convert.ToInt32(cmd.Value);
                     break;
 
-                case "start":
-                    Question = _question;
+                case "start": 
+                    if (cmd.Value.ToLower() == "quiz")
+                            Question = _question;
                     break;
             }
         }

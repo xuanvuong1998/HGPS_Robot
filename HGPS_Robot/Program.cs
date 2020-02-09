@@ -10,14 +10,15 @@ namespace HGPS_Robot
 {
     static class Program
     {
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main()
         {
-            //MathIntepreter.ProcessOperation("What is the result of 1,000,000 / 0 ?");    
-
+            //MathIntepreter.ProcessOperation("What is the result of 1,000,000 / 0 ?"); 
+            
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

@@ -97,12 +97,12 @@ namespace HGPS_Robot
                 else if (status.LessonState == "pause" || status.LessonState == "asking")
                 {
                     Debug.WriteLine("PAUSING");
-                    LessonHelper.Pause();
+                    LessonHelper.PauseLesson();
                 }
                 else if (status.LessonState == "continue")
                 {
                     Debug.WriteLine("Continue from server");
-                    LessonHelper.Resume();
+                    LessonHelper.ResumeLesson();
                 }
                 else if (status.LessonState == "end")
                 {

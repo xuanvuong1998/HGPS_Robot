@@ -17,10 +17,15 @@ namespace HGPS_Robot
         public static int CurrentSlideNumber { get; private set; } = 0;
 
         private static Thread _thread = null;
+        public static bool PauseRequested { get; set; } = false;
         private static RobotCommands _robotCommands = null;
         private static LessonSpeechUI form2;
         private static string _lessonName = null;
         private static List<RobotProgSlide> progData = null;
+
+        public static AutoResetEvent manualResetEvent = new AutoResetEvent(false);
+
+        
         static LessonHelper() { }
 
         public static void Start(string lessonName, int startSlideNum, string voiceName)
@@ -37,12 +42,14 @@ namespace HGPS_Robot
 
             _thread = new Thread(new ThreadStart(() =>
             {
+                   
                 int endSlideNum = FileHelper.GetLessonSlidesNumber(lessonName);
                 string codePath = FileHelper.BasePath + @"\" + lessonName + @"\code.pptx";
                 progData = PowerpointHelper.GetSlidesData(codePath);
 
                 for (CurrentSlideNumber = 1; CurrentSlideNumber <= endSlideNum; CurrentSlideNumber++)
                 {
+                    
                     if (CurrentSlideNumber < startSlideNum)
                     {
                         RobotProgSlide _currentProgSlide = progData[CurrentSlideNumber - 1];
@@ -142,49 +149,49 @@ namespace HGPS_Robot
             WebHelper.UpdateStatus(LessonStatusHelper.LessonStatus);
         }
 
-        [Obsolete]
+        public static void PauseLesson()
+        {
+            Debug.WriteLine("Pausing Lesson");
+            PauseSpeak();
+            PauseRequested = true;
+        }
+
+        /// <summary>
+        /// Use this function when the calling function belongs to the same the thread
+        /// </summary>
         public static void Pause()
         {
+            Debug.WriteLine("ManuaReset pausing");
             try
             {
-                _robotCommands.PauseSpeak();
-                if (_thread != null && _thread.IsAlive
-                   )
-                {
-                    _thread.Suspend();
-                }
+                manualResetEvent.WaitOne(); 
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
             }
 
-
         }
 
-        public static void Wait(int miliSec)
-        {
-            Thread.Sleep(miliSec);
-        }
-
-        [Obsolete]
-        public static void Resume()
+        public static void ResumeLesson()
         {
             Debug.WriteLine("Inside resume function");
             try
             {
+                PauseRequested = false;
                 _robotCommands.ResumeSpeak();
-                if (_thread != null && _thread.IsAlive
-                )
-                {
-                    _thread.Resume();
-                }
+                //manualResetEvent.Set(); 
+                
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
             }
 
+        }
+        public static void Wait(int miliSec)
+        {
+            Thread.Sleep(miliSec);
         }
         public static void EndLesson()
         {
