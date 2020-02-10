@@ -33,7 +33,7 @@ namespace HGPS_Robot
             var rdm = new Random();
             int rdmNum = rdm.Next(1, 11);
             if (GlobalFlowControl.Lesson.ChosenStudent != null 
-                || rdmNum <= 10)                
+                || rdmNum <= 8)                
             {
                 //ask
                 Debug.WriteLine("ASKING STUDENT");
