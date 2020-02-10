@@ -18,6 +18,7 @@ namespace HGPS_Robot
 
         public static void MoveDuringLesson()
         {
+            
             var rdm = new Random();
             Task.Factory.StartNew(() =>
             {
@@ -30,13 +31,13 @@ namespace HGPS_Robot
 
                     if (GlobalFlowControl.Lesson.Starting == false) break;
 
-                    int x = rdm.Next(8);
+                    //int x = rdm.Next(12);
                     
-                    if (x <= 4)
-                    {
-                        Debug.WriteLine("Go C" + x);
-                        BaseHelper.Go("C" + x);
-                    }
+                    //if (x <= 4)
+                    //{
+                    //    Debug.WriteLine("Go C" + x);
+                    //    BaseHelper.Go("C" + x);
+                    //}
 
                     Wait(4000);
 

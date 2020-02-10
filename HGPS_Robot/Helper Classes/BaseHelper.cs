@@ -223,7 +223,6 @@ namespace HGPS_Robot
 
         static public void GoUntilReachedGoalOrCanceled(string location)
         {
-            MessageBox.Show("Go " + location); return;          
             Go(location);
             while (GlobalFlowControl.Navigation.Moving == true) ;
         }

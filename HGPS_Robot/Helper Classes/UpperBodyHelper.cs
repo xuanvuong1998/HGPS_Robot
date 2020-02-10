@@ -193,9 +193,14 @@ namespace HGPS_Robot
 
         private static UpperBody upperBody;
 
+        public static void SetSpeedAll(int speed)
+        {
+            upperBody.SetSpeed(speed);
+        }
         public static void Init()
         {
             upperBody = new UpperBody(motorIds);
+            SetSpeedAll(30);
             ResetAll();
         }
 
