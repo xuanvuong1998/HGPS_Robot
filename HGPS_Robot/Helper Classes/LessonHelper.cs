@@ -22,9 +22,6 @@ namespace HGPS_Robot
         private static LessonSpeechUI form2;
         private static string _lessonName = null;
         private static List<RobotProgSlide> progData = null;
-
-        public static AutoResetEvent manualResetEvent = new AutoResetEvent(false);
-
         
         static LessonHelper() { }
 
@@ -69,8 +66,6 @@ namespace HGPS_Robot
                     {
                         Debug.WriteLine("Current Slide -----------" + CurrentSlideNumber);
                         LessonStatusHelper.Update(lessonName, CurrentSlideNumber, "started", null, null, null);
-
-                        Debug.WriteLine("After update function");
 
                         RobotProgSlide _currentProgSlide = progData[CurrentSlideNumber - 1];
                         _robotCommands = new RobotCommands(_currentProgSlide.Commands);
@@ -155,22 +150,7 @@ namespace HGPS_Robot
             PauseRequested = true;
         }
 
-        /// <summary>
-        /// Use this function when the calling function belongs to the same the thread
-        /// </summary>
-        public static void Pause()
-        {
-            Debug.WriteLine("ManuaReset pausing");
-            try
-            {
-                manualResetEvent.WaitOne(); 
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-            }
-
-        }
+      
 
         public static void ResumeLesson()
         {

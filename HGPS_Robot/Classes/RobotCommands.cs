@@ -84,8 +84,6 @@ namespace HGPS_Robot
                     //LessonHelper.Pause();
                 }
 
-                Debug.WriteLine("Not busy waiting any more");
-
                 CurrentCommand = _commands[commandIteration];
                 var cmd = CurrentCommand.Type;
                 var val = CurrentCommand.Value;
@@ -243,7 +241,7 @@ namespace HGPS_Robot
 
             while (!GlobalFlowControl.Lesson.StudentFeedbackReceived) ;
 
-            Wait(2000); // Remove thread conflict
+            Wait(5000); // Remove thread conflict
             LessonStatusHelper.LessonStatus.LessonState = previousLessonStatus;
 
             Debug.WriteLine("Received student feedback");
