@@ -49,7 +49,7 @@ namespace HGPS_Robot
 
                 for (CurrentSlideNumber = 1; CurrentSlideNumber <= endSlideNum; CurrentSlideNumber++)
                 {
-                    
+                    GlobalFlowControl.Lesson.ApproachStudent = null;   
                     if (CurrentSlideNumber < startSlideNum)
                     {
                         RobotProgSlide _currentProgSlide = progData[CurrentSlideNumber - 1];

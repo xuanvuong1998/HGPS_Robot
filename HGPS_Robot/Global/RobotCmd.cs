@@ -32,7 +32,6 @@ namespace HGPS_Robot
 
             var rdm = new Random();
             int rdmNum = rdm.Next(1, 11);
-            GlobalFlowControl.Lesson.ApproachStudent = null;
             if (GlobalFlowControl.Lesson.ChosenStudent != null 
                 || rdmNum <= 10)                
             {
