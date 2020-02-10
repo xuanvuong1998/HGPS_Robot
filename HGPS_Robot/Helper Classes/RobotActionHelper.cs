@@ -18,31 +18,39 @@ namespace HGPS_Robot
 
         public static void MoveDuringLesson()
         {
-            
             var rdm = new Random();
             Task.Factory.StartNew(() =>
             {
                 do
                 {
-                    for (int i = 1; i <= 8; i++)
+                    if (GlobalFlowControl.Lesson.ApproachStudent != null)
                     {
-                        UpperBodyHelper.MoveRandomly(i, 0.7);
+                        UpperBodyHelper.ResetAll();
+                        Thread.Sleep(1000); // Reduce too-busy-waiting                      
                     }
+                    else
+                    {
+                        for (int i = 1; i <= 8; i++)
+                        {
+                            UpperBodyHelper.MoveRandomly(i, 0.7);
+                        }
 
-                    if (GlobalFlowControl.Lesson.Starting == false) break;
-
-                    //int x = rdm.Next(12);
+                        if (GlobalFlowControl.Lesson.Starting == false) break;
+                        
+                        if (GlobalFlowControl.Lesson.ApproachStudent != null)
+                        {
+                            UpperBodyHelper.ResetAll();
+                        }
+                        else
+                        {
+                            Wait(4000);
+                        }
+                    }
                     
-                    //if (x <= 4)
-                    //{
-                    //    Debug.WriteLine("Go C" + x);
-                    //    BaseHelper.Go("C" + x);
-                    //}
-
-                    Wait(4000);
 
                 } while (GlobalFlowControl.Lesson.Starting);
 
+                UpperBodyHelper.ResetAll();
             });
         }
     }

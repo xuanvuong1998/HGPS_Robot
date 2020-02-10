@@ -407,11 +407,13 @@ namespace HGPS_Robot
 
         public static void ResetAll()
         {
+            SetSpeedAll(50);
             Head.Reset();
             Shoulder.LeftS.Reset();
             Shoulder.RightS.Reset();
             Elbow.LeftS.Reset();
             Elbow.RightS.Reset();
+            SetSpeedAll(30);
         }
 
         public static void ResetHead()

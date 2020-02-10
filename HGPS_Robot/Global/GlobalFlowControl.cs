@@ -74,8 +74,10 @@ namespace HGPS_Robot
             public static string Name { get; set; }
 
             public static bool Starting { get; set; }
-
-            public static string ApproachStudent { get; set; }
+         
+            public static string ApproachStudent {
+                get; set;
+            }
 
             public static bool StartingQuiz { get; set; }
 
