@@ -107,7 +107,6 @@ namespace HGPS_Robot
                     bool studentResult = student.ResultInBinaryString.Last() == '1';
                     string resultSpeech = "";
 
-
                     if (studentResult)
                     {
                         switch (num)

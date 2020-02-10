@@ -23,21 +23,31 @@ namespace HGPS_Robot
             {
                 do
                 {
-                    if (GlobalFlowControl.Lesson.ApproachStudent != null)
+                    if (GlobalFlowControl.Navigation.Moving)
                     {
                         UpperBodyHelper.ResetAll();
                         Thread.Sleep(1000); // Reduce too-busy-waiting                      
                     }
                     else
                     {
-                        for (int i = 1; i <= 8; i++)
+                        for (int i = 1; i <= 6; i++)
                         {
                             UpperBodyHelper.MoveRandomly(i, 0.7);
                         }
 
+                        int headMovementRdm = rdm.Next(2);
+
+                        if (headMovementRdm == 0)
+                        {
+                            UpperBodyHelper.Head.Left();
+                        }
+                        else{
+                            UpperBodyHelper.Head.Right();
+                        }
+
                         if (GlobalFlowControl.Lesson.Starting == false) break;
                         
-                        if (GlobalFlowControl.Lesson.ApproachStudent != null)
+                        if (GlobalFlowControl.Navigation.Moving)
                         {
                             UpperBodyHelper.ResetAll();
                         }

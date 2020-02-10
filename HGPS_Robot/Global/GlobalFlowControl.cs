@@ -96,7 +96,7 @@ namespace HGPS_Robot
             public static void ResetAll()
             {
                 Starting = true;
-                Synthesizer.SetSpeed(1);
+                Synthesizer.SetSpeed(-1);
                 StudentPositionHelper.LoadTablesInfo();
                 ChosenStudentList = new List<string>();
                 StudentFeedbackReceived = false;
