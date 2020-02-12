@@ -241,9 +241,9 @@ namespace HGPS_Robot
 
             while (!GlobalFlowControl.Lesson.StudentFeedbackReceived) ;
 
-            Wait(5000); // Remove thread conflict
             LessonStatusHelper.LessonStatus.LessonState = previousLessonStatus;
-
+            Wait(10000); // Remove thread conflict
+            
             Debug.WriteLine("Received student feedback");
 
             GlobalFlowControl.Lesson.StudentFeedbackReceived = false; // Reset for the next feedback

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using SpeechLibrary;
 
 namespace HGPS_Robot
@@ -17,11 +18,16 @@ namespace HGPS_Robot
         #region properties
         public string Navigation { get; set; }
         public string Movement { get; set; }
+        [JsonIgnore]
         public string Gesture { get; set; }
+        [JsonIgnore]
         public string Chatbot { get; set; }
+        [JsonIgnore]
         public string Video { get; set; }
+        [JsonIgnore]
         public string Audio { get; set; }
         public string SpecialAction { get; set; }
+        [JsonIgnore]
         public string Praise { get; set; }
         public string LessonStatus { get; set; }
         public List<StudentHistoryDTO> AssessPerformance { get; set; }
@@ -288,25 +294,7 @@ namespace HGPS_Robot
         }
 
 
-        private void AnalyzePersonalPerformance()
-        {
-            string studentId = Praise.Split('-')[0];
-            string message = Praise.Split('-')[1];
-
-            if (message.ToLower() == "auto")
-            {
-                if (AssessPerformance != null)
-                {
-                    var stdHis = AssessPerformance
-                                .Where(x => x.Student_id == studentId)
-                                .FirstOrDefault();
-                }
-            }
-            else
-            {
-                LessonHelper.InsertPraise(message);
-            }
-        }
+        
         #endregion
 
         private void AnalyzeEmotion(double happyPc, double sadPc, double neutralPc)
@@ -315,8 +303,7 @@ namespace HGPS_Robot
                               // for unhappy students again or engage some activities
             {
                 LessonHelper.SendEmotionFeedBackToServer("survey-unhappy");
-                LessonHelper.PauseLesson();    
-                
+                LessonHelper.PauseLesson();                   
                 LessonHelper.ResumeSpeak();
                 Synthesizer.Speak("Well, since some of you are not sure of this topic, let Mr Nizam explain again. ");
             } // Ok, happy or neutral
@@ -394,10 +381,7 @@ namespace HGPS_Robot
                 
             }
 
-            if (Praise != null)
-            {
-                AnalyzePersonalPerformance();
-            }
+           
 
             if (AssessPerformance != null)
             {
