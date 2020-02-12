@@ -22,8 +22,6 @@ namespace HGPS_Robot
         private const string ACCESS_TOKEN = "1H099XeDsRteM89yy91QonxH3mEd0DoE";
 
 
-        
-
         public static async Task<LessonStatus> GetStatus()
         {
             using (var client = new HttpClient())

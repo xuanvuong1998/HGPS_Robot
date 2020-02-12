@@ -34,9 +34,7 @@ namespace HGPS_Robot
             SystemUpdateHelper.Start();
             SystemUpdateHelper.SystemUpdated += SystemUpdateHelper_SystemUpdated;
 
-            InitSpeechAndChatbot();           
-
-            //StudentPositionHelper.DeleteAllPositions();
+            InitSpeechAndChatbot();
 
             UpperBodyHelper.Init();
             BaseHelper.Connect();

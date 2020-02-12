@@ -81,7 +81,7 @@ namespace HGPS_Robot
 
             public static bool StartingQuiz { get; set; }
 
-            // StudentID who be chosen to ask robot go there for asking question
+            // StudentID who be chosen to ask robot go there for asking after a quiz finished
             public static string ChosenStudent { get; set; }
 
             public static List<string> ChosenStudentList { get; set; }
@@ -97,9 +97,11 @@ namespace HGPS_Robot
             {
                 Starting = true;
                 Synthesizer.SetSpeed(-1);
-                StudentPositionHelper.LoadTablesInfo();
+                TablePositionHelper.LoadTablesInfo();
+                TablePositionHelper.DeleteChosenStudentList();
                 ChosenStudentList = new List<string>();
                 StudentFeedbackReceived = false;
+                
             }
 
         }

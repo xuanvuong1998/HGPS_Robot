@@ -12,6 +12,7 @@ using System.Configuration;
 using SpeechLibrary;
 using System.Diagnostics;
 using Timer = System.Timers.Timer;
+using HGPS_Robot.Utils;
 
 namespace HGPS_Robot
 {
@@ -80,8 +81,6 @@ namespace HGPS_Robot
                 while (LessonHelper.PauseRequested)
                 {
                     Thread.Sleep(500);
-                    Debug.WriteLine("Busy waiting");
-                    //LessonHelper.Pause();
                 }
 
                 CurrentCommand = _commands[commandIteration];
@@ -188,19 +187,79 @@ namespace HGPS_Robot
                         WebHelper.UpdateStatus(status);
                         Wait(1500);
                         break;
-                    
+                    case "lesson":
+                        if (val == "pause")
+                        {
+                            LessonHelper.SendPausedStatusToServer("paused");
+                            LessonHelper.PauseLesson();
+                        }else if (val == "continue")
+                        {
+                            LessonHelper.SendPausedStatusToServer("resumed");
+                            LessonHelper.ResumeLesson();
+                        }
+                        break;
+                    case "robot":
+                        if (val == "pickup-std")
+                        {
+
+                            RandomAskStudentQuestion();
+                            
+                        }
+                        break;
                     default:
                         //MessageBox.Show($"Unknown Type: {cmd}");
                         break;
                 }
             }
         }
+
+        private void RandomAskStudentQuestion()
+        {
+            TablePositionHelper.RandomStudentForAsking();
+
+            string rdmStd = TablePositionHelper.LatestChosenStudent;
+
+            BaseHelper.Go(TablePositionHelper.FindTablePosByStdId(rdmStd));
+
+            Synthesizer.Speak(rdmStd + ". " + "Can you stand up?");
+
+            Wait(3000);
+
+            int rdmIndex = new Random().Next(3);
+
+            string speech = "";
+
+            switch (rdmIndex)
+            {
+                case 0:
+                    speech = "I have a question for you. Are you ready to answer?";
+                    break;
+
+                case 1:
+                    speech = "I am going to ask you a question. Please think carefully " +
+                        "and give me the answer. ";
+                    break;
+
+                case 3:
+                    speech = "Ok. I want to challenge you by asking a question. " +
+                        "Please listen carefully and answer. ";
+                    break;
+            }
+            
+            Synthesizer.Speak(speech);
+
+            Wait(3000);
+                    
+        }
+
         private void Speak(string text)
         {
+            text = SynthesizerFilter.ChangeWords(text);
             Synthesizer.Speak(text);
         }
         private void SpeakAsync(string text)
         {
+            text = SynthesizerFilter.ChangeWords(text);
             Synthesizer.SpeakAsync(text);
         }
         private void MySpeech(string file)
@@ -242,7 +301,7 @@ namespace HGPS_Robot
             while (!GlobalFlowControl.Lesson.StudentFeedbackReceived) ;
 
             LessonStatusHelper.LessonStatus.LessonState = previousLessonStatus;
-            Wait(10000); // Remove thread conflict
+            Wait(8000); // Remove thread conflict
             
             Debug.WriteLine("Received student feedback");
 

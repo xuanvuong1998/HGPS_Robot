@@ -250,6 +250,7 @@
   <ItemGroup>
     <Compile Include="Chatbot\Conversation.cs" />
     <Compile Include="Chatbot\MathIntepreter.cs" />
+    <Compile Include="Data Models\StudentGroup.cs" />
     <Compile Include="Data Models\TablePosition.cs" />
     <Compile Include="Forms\ChatbotUI.cs">
       <SubType>Form</SubType>
@@ -297,11 +298,12 @@
     <Compile Include="Forms\LessonUI.Designer.cs">
       <DependentUpon>LessonUI.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helper Classes\GroupChallengeHelper.cs" />
     <Compile Include="Helper Classes\LessonStatusHelper.cs" />
     <Compile Include="Helper Classes\PowerpointHelper.cs" />
     <Compile Include="Helper Classes\LessonHelper.cs" />
     <Compile Include="Helper Classes\RobotActionHelper.cs" />
-    <Compile Include="Helper Classes\StudentPositionHelper.cs" />
+    <Compile Include="Helper Classes\TablePositionHelper.cs" />
     <Compile Include="Helper Classes\StudentsPerformanceHelper.cs" />
     <Compile Include="Helper Classes\SystemUpdateHelper.cs" />
     <Compile Include="Helper Classes\SyncHelper.cs" />
@@ -314,6 +316,7 @@
     <Compile Include="Data Models\RobotLesson.cs" />
     <Compile Include="Data Models\RobotSlide.cs" />
     <Compile Include="Data Models\SlideViewerData.cs" />
+    <Compile Include="Utils\SynthesizerFilter.cs" />
     <EmbeddedResource Include="Forms\ChatbotUI.resx">
       <DependentUpon>ChatbotUI.cs</DependentUpon>
     </EmbeddedResource>

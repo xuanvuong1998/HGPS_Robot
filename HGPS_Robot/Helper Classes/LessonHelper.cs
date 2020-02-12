@@ -64,6 +64,11 @@ namespace HGPS_Robot
                     }
                     else
                     {
+                        while (LessonHelper.PauseRequested)
+                        {
+                            Thread.Sleep(1000); // Remove busy waiting overloading
+                        }
+
                         Debug.WriteLine("Current Slide -----------" + CurrentSlideNumber);
                         LessonStatusHelper.Update(lessonName, CurrentSlideNumber, "started", null, null, null);
 
@@ -136,9 +141,13 @@ namespace HGPS_Robot
             _robotCommands.ResumeSpeak();
         }
 
-        public static void SendEmotionFeedBackToServer(string feedback)
+        /// <summary>
+        /// To change the label of the button to 'continue' in teacher panel UI
+        /// </summary>
+       
+        public static void SendPausedStatusToServer(string stt)
         {
-            LessonStatusHelper.LessonStatus.LessonState = feedback;
+            LessonStatusHelper.LessonStatus.LessonState = stt;
 
             WebHelper.UpdateStatus(LessonStatusHelper.LessonStatus);
         }
