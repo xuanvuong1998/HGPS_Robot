@@ -250,6 +250,8 @@
   <ItemGroup>
     <Compile Include="Chatbot\Conversation.cs" />
     <Compile Include="Chatbot\MathIntepreter.cs" />
+    <Compile Include="Data Models\GroupChallengeDTO.cs" />
+    <Compile Include="Data Models\GroupChallengeRecord.cs" />
     <Compile Include="Data Models\StudentGroup.cs" />
     <Compile Include="Data Models\TablePosition.cs" />
     <Compile Include="Forms\ChatbotUI.cs">

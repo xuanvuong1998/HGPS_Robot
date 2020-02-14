@@ -1,11 +1,8 @@
-﻿using System;
+﻿using SpeechLibrary;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using SpeechLibrary;
 
 namespace HGPS_Robot
 {
@@ -13,6 +10,7 @@ namespace HGPS_Robot
     {
         public static event EventHandler LessonEnded;
         public static int QuestionNumber { get; set; } = 0;
+        public static int ChallengeNumber { get; set; } = 0;
         public static string LessonId { get; set; } = "";
         public static int CurrentSlideNumber { get; private set; } = 0;
 
@@ -22,12 +20,13 @@ namespace HGPS_Robot
         private static LessonSpeechUI form2;
         private static string _lessonName = null;
         private static List<RobotProgSlide> progData = null;
-        
+
         static LessonHelper() { }
 
         public static void Start(string lessonName, int startSlideNum, string voiceName)
         {
             GlobalFlowControl.Lesson.ResetAll();
+            Synthesizer.SelectVoiceByName(GlobalData.GetVoiceNameFromVoiceNumber(voiceName));
             //UpperBodyHelper.MoveRandomlyAllMotors();
             RobotActionHelper.MoveDuringLesson();
             form2 = new LessonSpeechUI();
@@ -39,7 +38,7 @@ namespace HGPS_Robot
 
             _thread = new Thread(new ThreadStart(() =>
             {
-                   
+
                 int endSlideNum = FileHelper.GetLessonSlidesNumber(lessonName);
                 string codePath = FileHelper.BasePath + @"\" + lessonName + @"\code.pptx";
                 progData = PowerpointHelper.GetSlidesData(codePath);
@@ -54,12 +53,12 @@ namespace HGPS_Robot
 
                         foreach (var cmd in commands)
                         {
-                            if (cmd.Type.ToLower() == "start" && cmd.Value.ToLower() == "quiz")
-                            {
-                                QuestionNumber++;
-                            }
+                            if (cmd.Type.ToLower() == "start")
+                                if (cmd.Value.ToLower() == "quiz" || cmd.Value.ToLower() == "group-challenge")
+                                {
+                                    QuestionNumber++;
+                                }
                         }
-
 
                     }
                     else
@@ -144,7 +143,7 @@ namespace HGPS_Robot
         /// <summary>
         /// To change the label of the button to 'continue' in teacher panel UI
         /// </summary>
-       
+
         public static void SendPausedStatusToServer(string stt)
         {
             LessonStatusHelper.LessonStatus.LessonState = stt;
@@ -159,7 +158,7 @@ namespace HGPS_Robot
             PauseRequested = true;
         }
 
-      
+
 
         public static void ResumeLesson()
         {
@@ -169,7 +168,7 @@ namespace HGPS_Robot
                 PauseRequested = false;
                 _robotCommands.ResumeSpeak();
                 //manualResetEvent.Set(); 
-                
+
             }
             catch (Exception ex)
             {

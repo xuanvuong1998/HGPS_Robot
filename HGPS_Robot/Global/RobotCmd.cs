@@ -16,20 +16,14 @@ namespace HGPS_Robot
     public class RobotCmd
     {
         #region properties
+
         public string Navigation { get; set; }
         public string Movement { get; set; }
-        [JsonIgnore]
-        public string Gesture { get; set; }
-        [JsonIgnore]
-        public string Chatbot { get; set; }
-        [JsonIgnore]
-        public string Video { get; set; }
-        [JsonIgnore]
-        public string Audio { get; set; }
         public string SpecialAction { get; set; }
-        [JsonIgnore]
-        public string Praise { get; set; }
         public string LessonStatus { get; set; }
+        public GroupChallengeDTO GroupChallenge { get; set; }
+        public string Gesture { get; set; }
+              
         public List<StudentHistoryDTO> AssessPerformance { get; set; }
         #endregion
 
@@ -294,16 +288,17 @@ namespace HGPS_Robot
         }
 
 
-        
+
         #endregion
 
+        #region Emotion Survey
         private void AnalyzeEmotion(double happyPc, double sadPc, double neutralPc)
         {
             if (sadPc >= 0.3) // roughly 1/3 unhappy, give teacher time to explain
                               // for unhappy students again or engage some activities
             {
-                LessonHelper.SendPausedStatusToServer("paused");
-                LessonHelper.PauseLesson();                   
+                //LessonHelper.SendPausedStatusToServer("paused");
+                LessonHelper.PauseLesson();
                 LessonHelper.ResumeSpeak();
                 Synthesizer.Speak("Well, since some of you are not sure of this topic, let Mr Nizam explain again. ");
             } // Ok, happy or neutral
@@ -315,25 +310,62 @@ namespace HGPS_Robot
                 LessonHelper.ResumeSpeak();
 
                 Synthesizer.Speak("Wow, most of you understand the topic! Let us continue with the lesson. ");
-                //LessonHelper.SendEmotionFeedBackToServer("survey-happy");
-                Debug.WriteLine("After speak the feedback");
-                //LessonHelper.Wait(2000);
-
-                //Debug.WriteLine("After wait 2 seconds");
+               
                 LessonHelper.ResumeLesson();
 
                 Debug.WriteLine("After resume");
             }
         }
+        #endregion
 
+
+        #region GroupChallenge
+
+        public void UpdateGroupSubmission()
+        {
+            var records = GlobalFlowControl.Lesson.GroupRecords;
+
+            var groupRecord = records.SingleOrDefault
+                (x => x.ChallengeNumber == LessonHelper.ChallengeNumber
+                   && x.GroupNumber == GroupChallenge.GroupNumber);
+
+            if (groupRecord == null)
+            {
+                
+                var newR = new GroupChallengeRecord
+                {
+                    ChallengeNumber = LessonHelper.ChallengeNumber,
+                    GroupNumber = GroupChallenge.GroupNumber,
+                    
+                }
+            }
+                
+            
+        }
+
+        public void ProcessGroupChallenge()
+        {
+            var gr = GroupChallenge;
+            if (gr.SubmissionCount == 1)
+            {
+                Synthesizer.SpeakAsync("Wow, Group " + gr.GroupNumber + " has just submitted.");
+            }
+            else if (gr.SubmissionCount >= 2)
+            {
+                Synthesizer.SpeakAsync("Group " + gr.GroupNumber + $" has submitted {gr.SubmissionCount} times. so " +
+                    "Group " + gr.GroupNumber + "have no more try to submit");
+            }
+
+            
+        }
+
+        #endregion
         // From Teacher Panel
         public void ProcessCommand()
         {         
             if (Navigation != null)
             {
-                Debug.WriteLine("CHosen Student" + Navigation);
-                GlobalFlowControl.Lesson.ChosenStudent = Navigation;
-                //BaseHelper.Go(Navigation);
+                GlobalFlowControl.Lesson.ChosenStudent = Navigation;                
             }
 
             if (Movement != null)
@@ -346,9 +378,10 @@ namespace HGPS_Robot
                 UpperBodyHelper.DoGestures(Gesture);
             }
 
-            if (Chatbot != null)
+            if (GroupChallenge != null)
             {
-
+                
+                
             }
 
             if (LessonStatus != null)
@@ -382,7 +415,6 @@ namespace HGPS_Robot
             }
 
            
-
             if (AssessPerformance != null)
             {
                 AskRandomStudent(AssessPerformance);

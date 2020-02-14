@@ -134,7 +134,18 @@ namespace HGPS_Robot
                         break;
 
                     case "timeout":
-                        quiz.TimeOut = val;
+                        quiz.TimeOut = int.Parse(val);
+                        break;
+
+                    case "optiona":
+                    case "optionb":
+                    case "optionc":
+                    case "optiond":
+                        quiz.Choices += val + ";";
+                        break;
+
+                    case "points":
+                        quiz.Points = int.Parse(val);
                         break;
 
                     case "gesture":
@@ -142,16 +153,16 @@ namespace HGPS_Robot
                         break;
 
                     case "start":
-                        if (val.ToLower() == "quiz")
+                        if (val.ToLower() == "quiz" || val.ToLower() == "group-challenge")
                         {
                             LessonHelper.QuestionNumber += 1;
+                            if (val.ToLower() == "group-challenge") LessonHelper.ChallengeNumber++;
                             quiz.QuestionNumber = LessonHelper.QuestionNumber;
                             StartQuiz(quiz);
 
                             LessonStatusHelper.LessonStatus.CurQuiz = null;
-                            //Wait(Convert.ToInt32(quiz.TimeOut) * 1000 + QUIZ_BUFFER_SECONDS * 1000);                                                        
 
-                            Wait(QUIZ_BUFFER_SECONDS * 800);
+                            Wait(QUIZ_BUFFER_SECONDS * 1000);
                             // This QUIZ BUFFER TO give extra time for all student submit the answer
 
                             Debug.WriteLine("Stopping quiz");
@@ -168,7 +179,7 @@ namespace HGPS_Robot
                         else if (val.ToLower() == "emotion-survey")
                         {
                             TakeEmotionSurvey();
-                        }
+                        } 
                         break;
                     case "gountil":
                         BaseHelper.GoUntilReachedGoalOrCanceled(val);
@@ -357,7 +368,7 @@ namespace HGPS_Robot
             LessonStatusHelper.LessonStatus = status;
             WebHelper.UpdateStatus(status);
 
-            quizTime = int.Parse(q.TimeOut);
+            quizTime = q.TimeOut;
             
             StartQuizTimer();
 

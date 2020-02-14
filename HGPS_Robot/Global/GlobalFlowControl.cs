@@ -86,6 +86,8 @@ namespace HGPS_Robot
 
             public static List<string> ChosenStudentList { get; set; }
 
+            public static List<GroupChallengeRecord> GroupRecords { get; set; }
+
             public static bool IsStudentChosenBefore(string std)
             {
                 return ChosenStudentList.Contains(std);                   
@@ -99,7 +101,9 @@ namespace HGPS_Robot
                 Synthesizer.SetSpeed(-1);
                 TablePositionHelper.LoadTablesInfo();
                 TablePositionHelper.DeleteChosenStudentList();
-                ChosenStudentList = new List<string>();
+                if (ChosenStudentList != null) ChosenStudentList.Clear();
+                else ChosenStudentList = new List<string>();
+
                 StudentFeedbackReceived = false;
                 
             }

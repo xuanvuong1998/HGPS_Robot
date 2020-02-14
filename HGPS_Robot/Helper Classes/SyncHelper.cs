@@ -24,6 +24,7 @@ namespace HGPS_Robot
             _hubConnection = new HubConnection(_baseAddress);
             _hub = _hubConnection.CreateHubProxy("SyncHub");
             _hub.On<string>("statusChanged", (status) => OnStatusChanged(status));
+
             _hub.On<RobotCmd>("haveRobotCommands", (command) => OnRobotCommand(command));            
             _hubConnection.Start().Wait();
             _hub.Invoke("Notify", CLIENT_NAME, _hubConnection.ConnectionId);

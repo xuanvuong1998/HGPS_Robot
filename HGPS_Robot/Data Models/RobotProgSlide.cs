@@ -63,6 +63,10 @@ namespace HGPS_Robot
                     {
                         _question.Type = 1;
                     }
+                    else if (cmd.Value.ToLower() == "group-challenge")
+                    {
+                        _question.Type = 2;
+                    }
                     break;
 
                 case "question":

@@ -12,7 +12,10 @@ namespace HGPS_Robot
         public string QuizFormat { get; set; }
         public int QuestionNumber { get; set; }
         public string Answer { get; set; }
-        public string TimeOut { get; set; }
+        public int TimeOut { get; set; }
+        public int Points { get; set; }
+
+        public string Choices { get; set; } = "";// ChoiceA;ChoiceB;ChoiceC;ChoiceD
 
         public Quiz() { }
     }

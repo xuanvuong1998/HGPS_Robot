@@ -13,6 +13,12 @@ namespace HGPS_Robot
         public static readonly string Voice2 = ConfigurationManager.AppSettings["Voice 2"];
         public static readonly string Voice3 = ConfigurationManager.AppSettings["Voice 3"];
 
+        public static string GetVoiceNameFromVoiceNumber(string voiceNumber)
+        {
+            if (voiceNumber == "Voice 1") return Voice1;
+            if (voiceNumber == "Voice 2") return Voice2;
+            return Voice3;
+        }
         public static readonly string SpeechKey = ConfigurationManager.AppSettings["SpeechRecognitionSubscriptionKey"];
         public static readonly string SpeechRegion = ConfigurationManager.AppSettings["SubscriptionRegion"];
         public static readonly string DirectLine = ConfigurationManager.AppSettings["DirectLineSecret"];
