@@ -27,6 +27,7 @@ namespace HGPS_Robot
 
         public static void Start(string lessonName, int startSlideNum, string voiceName)
         {
+            Debug.WriteLine("Start lesson" + Directory.GetCurrentDirectory());
             GlobalFlowControl.Lesson.ResetAll();
             //UpperBodyHelper.MoveRandomlyAllMotors();
             RobotActionHelper.MoveDuringLesson();
@@ -74,7 +75,6 @@ namespace HGPS_Robot
 
                         RobotProgSlide _currentProgSlide = progData[CurrentSlideNumber - 1];
                         _robotCommands = new RobotCommands(_currentProgSlide.Commands);
-
 
                         _robotCommands.OnCommandUpdate += _robotCommands_OnCommandUpdate;
                         _robotCommands.Execute();

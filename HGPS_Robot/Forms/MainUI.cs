@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,7 +37,7 @@ namespace HGPS_Robot
             SystemUpdateHelper.SystemUpdated += SystemUpdateHelper_SystemUpdated;
 
             InitSpeechAndChatbot();
-
+            
             UpperBodyHelper.Init();
             BaseHelper.Connect();
         }
@@ -80,8 +82,13 @@ namespace HGPS_Robot
         private void InitSpeechAndChatbot()
         {
             Synthesizer.Setup();
-            Synthesizer.SelectVoiceByName(GlobalData.Voice1);
+
+            Synthesizer.SelectVoiceByName(GlobalData.Voice3);
+
             Conversation.Init();
+
+            
+
         }
 
         private void MainUI_KeyDown(object sender, KeyEventArgs e)

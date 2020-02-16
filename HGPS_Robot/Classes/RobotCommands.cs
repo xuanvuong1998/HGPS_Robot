@@ -201,7 +201,6 @@ namespace HGPS_Robot
                     case "robot":
                         if (val == "pickup-std")
                         {
-
                             RandomAskStudentQuestion();
                             
                         }
@@ -232,7 +231,7 @@ namespace HGPS_Robot
             switch (rdmIndex)
             {
                 case 0:
-                    speech = "I have a question for you. Are you ready to answer?";
+                    speech = "I have a question for you. Are you ready?";
                     break;
 
                 case 1:
@@ -240,7 +239,7 @@ namespace HGPS_Robot
                         "and give me the answer. ";
                     break;
 
-                case 3:
+                case 2:
                     speech = "Ok. I want to challenge you by asking a question. " +
                         "Please listen carefully and answer. ";
                     break;
