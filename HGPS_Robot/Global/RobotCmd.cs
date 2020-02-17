@@ -21,7 +21,7 @@ namespace HGPS_Robot
         public string Movement { get; set; }
         public string SpecialAction { get; set; }
         public string LessonStatus { get; set; }
-        public GroupChallengeDTO GroupChallenge { get; set; }
+        public string GroupChallenge { get; set; }
         public string Gesture { get; set; }
               
         public List<StudentHistoryDTO> AssessPerformance { get; set; }
@@ -321,42 +321,48 @@ namespace HGPS_Robot
 
         #region GroupChallenge
 
-        public void UpdateGroupSubmission()
+        public GroupChallengeRecord UpdateGroupSubmission()
         {
+            var groupNumber = int.Parse(GroupChallenge.Split('-')[0]);
+            var result = GroupChallenge.Split('-')[1];
+            var submittedTime = int.Parse(GroupChallenge.Split('-')[2]);
             var records = GlobalFlowControl.Lesson.GroupRecords;
 
             var groupRecord = records.SingleOrDefault
                 (x => x.ChallengeNumber == LessonHelper.ChallengeNumber
-                   && x.GroupNumber == GroupChallenge.GroupNumber);
+                   && x.GroupNumber == groupNumber);
 
             if (groupRecord == null)
             {
-                
-                var newR = new GroupChallengeRecord
+                groupRecord = new GroupChallengeRecord
                 {
                     ChallengeNumber = LessonHelper.ChallengeNumber,
-                    GroupNumber = GroupChallenge.GroupNumber,
-                    
-                }
+                    GroupNumber = groupNumber,
+                };
+                groupRecord.Submission.Add(submittedTime + "-" + result);
+                records.Add(groupRecord);
             }
-                
-            
+            else
+            {
+                groupRecord.Submission.Add(submittedTime + "-" + result);
+            }
+
+            return groupRecord;
         }
 
         public void ProcessGroupChallenge()
         {
-            var gr = GroupChallenge;
-            if (gr.SubmissionCount == 1)
-            {
-                Synthesizer.SpeakAsync("Wow, Group " + gr.GroupNumber + " has just submitted.");
-            }
-            else if (gr.SubmissionCount >= 2)
-            {
-                Synthesizer.SpeakAsync("Group " + gr.GroupNumber + $" has submitted {gr.SubmissionCount} times. so " +
-                    "Group " + gr.GroupNumber + "have no more try to submit");
-            }
+            var groupRecord = UpdateGroupSubmission();
 
+            var subCnt = groupRecord.GetSubmissionCount();
+            var groupNum = groupRecord.GroupNumber;
             
+            Debug.WriteLine("Group " + groupNum + " has submitted " + subCnt + " times. ");
+            Synthesizer.Speak("Group " + groupNum + " has submitted " + subCnt + " times. ");
+
+            var lastRes = groupRecord.GetFinalSubmission();
+
+            Debug.WriteLine("Last submission " + lastRes);
         }
 
         #endregion
@@ -380,8 +386,7 @@ namespace HGPS_Robot
 
             if (GroupChallenge != null)
             {
-                
-                
+                ProcessGroupChallenge();   
             }
 
             if (LessonStatus != null)

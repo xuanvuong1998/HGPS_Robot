@@ -69,7 +69,6 @@ namespace HGPS_Robot
 
         }
 
-
         public static List<SavedLessons> GetSavedLessons()
         {
             var client = new HttpClient();

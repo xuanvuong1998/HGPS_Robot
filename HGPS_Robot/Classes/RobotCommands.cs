@@ -160,6 +160,11 @@ namespace HGPS_Robot
                             quiz.QuestionNumber = LessonHelper.QuestionNumber;
                             StartQuiz(quiz);
 
+                            if (val.ToLower() == "group-challenge")
+                            {
+                                AssessGroupChallenge();
+                            }
+                            
                             LessonStatusHelper.LessonStatus.CurQuiz = null;
 
                             Wait(QUIZ_BUFFER_SECONDS * 1000);
@@ -222,6 +227,14 @@ namespace HGPS_Robot
                         break;
                 }
             }
+        }
+
+        private void AssessGroupChallenge()
+        {
+            Synthesizer.Speak("Time over everybody. Here is the result of this challenge. ");
+
+           
+            
         }
 
         private void RandomAskStudentQuestion()
@@ -312,7 +325,7 @@ namespace HGPS_Robot
             while (!GlobalFlowControl.Lesson.StudentFeedbackReceived) ;
 
             LessonStatusHelper.LessonStatus.LessonState = previousLessonStatus;
-            Wait(8000); // Remove thread conflict
+            Wait(7500); // Remove thread conflict
             
             Debug.WriteLine("Received student feedback");
 

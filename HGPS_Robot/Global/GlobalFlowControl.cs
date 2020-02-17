@@ -86,7 +86,7 @@ namespace HGPS_Robot
 
             public static List<string> ChosenStudentList { get; set; }
 
-            public static List<GroupChallengeRecord> GroupRecords { get; set; }
+            public static List<GroupChallengeRecord> GroupRecords { get; set; } = new List<GroupChallengeRecord>();
 
             public static bool IsStudentChosenBefore(string std)
             {

@@ -8,10 +8,14 @@ namespace HGPS_Robot
 {
     class GroupChallengeHelper
     {
-        public static List<StudentGroup> Groups { get; set; } = new List<StudentGroup>();
+        public List<GroupChallengeRecord> SortGroupByRanks(int challengeNumber)
+        {
+            var records = GlobalFlowControl.Lesson.GroupRecords;
 
-        
-        // testing
+            records = records.Where(x => x.ChallengeNumber == challengeNumber).ToList();
 
+            
+            
+        }
     }
 }

@@ -102,7 +102,8 @@ namespace HGPS_Robot
                     break;
 
                 case "start": 
-                    if (cmd.Value.ToLower() == "quiz")
+                    if (cmd.Value.ToLower() == "quiz" 
+                        || cmd.Value.ToLower() == "group-challenge")
                             Question = _question;
                     break;
             }

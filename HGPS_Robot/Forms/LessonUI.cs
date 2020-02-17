@@ -81,7 +81,7 @@ namespace HGPS_Robot
 
                     GlobalFlowControl.Lesson.Name = status.LessonName;
 
-                    LessonHelper.SaveLessonHistory(status.LessonName, teacherId, className);
+                    //LessonHelper.SaveLessonHistory(status.LessonName, teacherId, className); will save internally in server
                     LessonHelper.LessonId = status.LessonId;
 
                     //this.Invoke(new MethodInvoker(() => this.Hide()));
@@ -106,6 +106,7 @@ namespace HGPS_Robot
                 }
                 else if (status.LessonState == "end")
                 {
+                    GlobalFlowControl.Lesson.StartingQuiz = false;
                     try
                     {
                         if (InvokeRequired)
