@@ -21,33 +21,38 @@ namespace HGPS_Robot
             {
                 ChallengeNumber = 1,
                 GroupNumber = 1,
-                Submission = new List<string> { "5-1", "7-1", "12-0" }
+                Submission = new List<string> { "5-0", "8-0", "12-0" }
             };
             var p2 = new GroupChallengeRecord
             {
                 ChallengeNumber = 1,
                 GroupNumber = 2,
-                Submission = new List<string> { "2-0", "10-0", "20-1" }
+                Submission = new List<string> { "2-1", "10-0", "50-0" }
             };
             var p3 = new GroupChallengeRecord
             {
                 ChallengeNumber = 1,
                 GroupNumber = 3,
-                Submission = new List<string> { "4-0", "10-0", "30-1" }
+                Submission = new List<string> { "4-1", "10-0", "30-1" }
             };
             var p4 = new GroupChallengeRecord
             {
                 ChallengeNumber = 1,
                 GroupNumber = 4,
-                Submission = new List<string> { "4-0", "20-1", "27-1" }
+                Submission = new List<string> { "5-1", "7-1", "50-1" }
+            };
+            var p5 = new GroupChallengeRecord
+            {
+                ChallengeNumber = 1,
+                GroupNumber = 5,
+                Submission = new List<string> { "4-0", "6-0", "10-1" }
             };
 
             records.Add(p1);
             records.Add(p2);
             records.Add(p3);
             records.Add(p4);
-
-            var xxx = p4.GetFinalResult();
+            records.Add(p5);
 
             var currentChallengeRecords
                     = records.Where(x => x.ChallengeNumber
@@ -74,12 +79,12 @@ namespace HGPS_Robot
         /// Check those groups did not have correct last submission
         /// But had correct submission before???
         /// </summary>
-        private static void FindAnyCorrectAnswer()
+        private static void FindAnyCorrectAnswer(int remainingCnt)
         {
-            bool existCorrectAns = false;
+            int regretCnt = 0;
 
             List<int> mistakeGroups = new List<int>();
-            
+
             foreach (var group in record)
             {
                 bool finalRes = group.GetFinalSubResultInBool();
@@ -90,20 +95,24 @@ namespace HGPS_Robot
                 if (correctNum > 0)
                 {
                     mistakeGroups.Add(group.GroupNumber);
-                    existCorrectAns = true;
+                    regretCnt++;
                     int rdmNum = new Random().Next(2);
                     if (rdmNum == 0)
                     {
-                        Synthesizer.Speak($"Wow. Group {group.GroupNumber}. " +
-                            $"Unfortunately, your final answer is incorrect, " +
-                            $"But. your group also had {correctNum} times correct.");
+                        Synthesizer.Speak($"Wow. Believe it or not. " +
+                            $"Group {group.GroupNumber}. you guys had {correctNum} times correct. " +
+                            $"But. Unluckily, your last submission is not correct. ");
+
+                        AudioHelper.PlayInCorrectSound();
                     }
                     else
                     {
                         Synthesizer.Speak($"Group {group.GroupNumber}. " +
-                            $"I am very regretful... to " +
-                            $"You guys actually submitted correct answer " +
-                            $"{correctNum} times before. ");
+                            $"It is so regretful... " +
+                            $"You guys actually submitted a correct answer. " +
+                            $"But your final answer is not correct. ");
+                        AudioHelper.PlayInCorrectSound();
+
                     }
 
                     Wait(1500);
@@ -112,7 +121,7 @@ namespace HGPS_Robot
 
             }
 
-            if (existCorrectAns)
+            if (regretCnt > 0 && regretCnt < remainingCnt)
             {
                 string speech = "So. ";
 
@@ -122,14 +131,15 @@ namespace HGPS_Robot
                 }
 
                 speech += "You guys are also very good. " +
-                    "Just be careful, and do not make mistake " +
-                    "in your last submission. Try your best. Don't give up. ";
+                    "Just be careful one thing. That is check" +
+                    " your answer before submitting. ok?. Try your best. Don't give up. ";
 
                 Synthesizer.Speak(speech);
             }
             else
             {
-                Synthesizer.Speak("Well. Unfortunately, you guys did not " +
+                Synthesizer.Speak("Well. Unfortunately for " +
+                    "another groups, you guys did not " +
                     "have any correct submission ever. " +
                     "Let's try your best in the next challenge. " +
                     "All of you, please don't give up. ");
@@ -162,38 +172,59 @@ namespace HGPS_Robot
             Synthesizer.Speak(speech);
 
             Wait(2000);
-            FindAnyCorrectAnswer();
+
+            FindAnyCorrectAnswer(record.Count);
 
             return true;
         }
 
         private static void AnnouceGroupResults()
         {
-            Synthesizer.Speak("Well done every body, the time is over. Now, " +
-                "I am very excited to reveal your group results. ");
+
+            int rdmNum = new Random().Next(3);
+
+            switch (rdmNum)
+            {
+                case 0:
+                    Synthesizer.Speak("Well done every body, the time is over. Now, " +
+             "I am very excited to reveal your group results. "); break;
+                case 1:
+                    Synthesizer.Speak("Time is over. Now let's go to the " +
+                        "most interesting part. Where we can see which group " +
+                        "is the " +
+                        "champion of this challenge. ");
+                    break;
+                case 3:
+                    Synthesizer.Speak("Time's up everybody. Let's " +
+                        "see how good is your result. ");
+                    break;
+            }
+
+
 
             // All group answer are wrong
             bool isWorst = CheckFirstTopGroup();
 
             if (isWorst) return;
-            
-            
-            int rdmNum = new Random().Next(3);
+
+
             switch (rdmNum)
             {
                 case 0: Synthesizer.Speak("Are you confident to become the top 1? "); break;
                 case 1: Synthesizer.Speak("Are you ready? "); break;
-                case 2: Synthesizer.Speak("Where do you think your ranking are? "); break;
+                case 2: Synthesizer.Speak("Where do you think your ranking is? "); break;
             }
 
             Thread.Sleep(2000);
 
             Synthesizer.Speak("Here it is! ");
-            
+
+            Wait(1500);
+
             int rank = 1;
             int i = 0;
-            
-            while(i < record.Count)
+
+            while (i < record.Count)
             {
                 var curGroup = record[i];
 
@@ -211,9 +242,9 @@ namespace HGPS_Robot
                         case 1: speech = "Excellent, "; break;
                         case 2: speech = "Amazing, "; break;
                     }
-                    
-                    speech += $" group {groupNum}. "
-                        + $"You are the top 1! Within {subTime} seconds, you " +
+
+                    speech += $" group {groupNum}...... "
+                        + $"You are the top 1... Within only {subTime} seconds, you " +
                         $"are the fastest group, got the correct answer! ";
 
                     speech += "Everyone, please give a round of applause for" +
@@ -225,6 +256,7 @@ namespace HGPS_Robot
                 }
                 else if (isCorrect)
                 {
+                    // Same rank with the higher one
                     if (subTime == record[i - 1].GetFinalSubTime())
                     {
                         speech = $"Unbelievable! Group {groupNum} has " +
@@ -232,33 +264,44 @@ namespace HGPS_Robot
                             $"{record[i - 1].GroupNumber}. " +
                             $"Therefore, Group {groupNum} is also the top " +
                             $"{rank} of this challenge. ";
+
+                        AudioHelper.PlayApplauseSound();
                     }
                     else
                     {
                         rank++;
+
                         rdmNum = new Random().Next(3);
                         switch (rdmNum)
                         {
                             case 0:
-                                speech = $"Group {groupNum}. Congratulation, " +
-                         $"you are the top {rank} of this challenge. "; break;
+                                speech = "With the time of " + subTime + ", I wanna " +
+                                 "say that... ";
+                                speech += $"Group {groupNum}... Congratulation, " +
+                         $"you are the top {rank} of this challenge. ";
+                                break;
                             case 1:
-                                speech = $"Group {groupNum}. Well done, " +
+                                speech = "Next group is... ";
+                                speech += $"Group {groupNum}... Well done, " +
                             $"you are the top {rank} of this challenge. ";
                                 break;
-                                
+
                             case 2:
-                                speech = $"Group {groupNum}. Good job, " +
-                            $"you are the top {rank} of this challenge. ";
+                                speech = "The following group is... ";
+                                speech += $"Group {groupNum}. Good job, " +
+                                    $"your first correct answer, was recorded at " +
+                                    $"the second of {subTime}. And  " +
+                            $"you now, are the top {rank} of this challenge. ";
                                 break;
                         }
-                        
-                        
+
                     }
 
-                    speech += "Everyone, please, give another round of applause " +
+                    speech += "Everyone, please, give another round of applause, " +
                         "to group " + groupNum;
                     Synthesizer.Speak(speech);
+                    AudioHelper.PlayApplauseSound();
+                    Wait(1000);
                 }
                 else
                 {
@@ -270,9 +313,9 @@ namespace HGPS_Robot
             Wait(1000);
 
             Synthesizer.Speak("Great. Now I will try to check the remaining " +
-                "groups. Is there any time, you got any correct submission, or not? ");
+                "groups. Is there any time you submitted the correct answer. ");
             Wait(1500);
-            FindAnyCorrectAnswer();
+            FindAnyCorrectAnswer(record.Count - i + 1);
         }
     }
 }

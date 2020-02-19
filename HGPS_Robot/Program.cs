@@ -21,6 +21,7 @@ namespace HGPS_Robot
         {
 
             Synthesizer.Setup();
+            Synthesizer.SetSpeed(-1);
             Synthesizer.SelectVoiceByName(GlobalData.Voice2);
 
             GroupChallengeHelper.AssessGroupChallenge();

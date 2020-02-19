@@ -115,7 +115,7 @@ namespace HGPS_Robot
                 c1 = int.Parse(f1.Split('-')[0]);
                 c2 = int.Parse(f2.Split('-')[0]);
 
-                return c2 - c1;
+                return c1 - c2;
             }
             
             // Wow, both are correct and also same submitted time
