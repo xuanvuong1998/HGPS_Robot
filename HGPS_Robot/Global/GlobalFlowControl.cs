@@ -99,6 +99,7 @@ namespace HGPS_Robot
             {
                 Starting = true;
                 Synthesizer.SetSpeed(-1);
+                GroupRecords.Clear();
                 TablePositionHelper.LoadTablesInfo();
                 TablePositionHelper.DeleteChosenStudentList();
                 if (ChosenStudentList != null) ChosenStudentList.Clear();

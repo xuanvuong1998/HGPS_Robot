@@ -162,7 +162,7 @@ namespace HGPS_Robot
 
                             if (val.ToLower() == "group-challenge")
                             {
-                                AssessGroupChallenge();
+                                GroupChallengeHelper.AssessGroupChallenge();
                             }
                             
                             LessonStatusHelper.LessonStatus.CurQuiz = null;
@@ -229,13 +229,6 @@ namespace HGPS_Robot
             }
         }
 
-        private void AssessGroupChallenge()
-        {
-            Synthesizer.Speak("Time over everybody. Here is the result of this challenge. ");
-
-           
-            
-        }
 
         private void RandomAskStudentQuestion()
         {
@@ -391,8 +384,11 @@ namespace HGPS_Robot
             };
 
         }
+
+
         private void StopQuiz()
         {
+            
             var status = LessonStatusHelper.LessonStatus;
             status.CurQuiz = null;
             status.LessonState = "quiz completed";

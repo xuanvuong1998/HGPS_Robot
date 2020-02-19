@@ -18,7 +18,15 @@ namespace HGPS_Robot
         /// </summary>
         [STAThread]
         static void Main()
-        {            
+        {
+
+            Synthesizer.Setup();
+            Synthesizer.SelectVoiceByName(GlobalData.Voice2);
+
+            GroupChallengeHelper.AssessGroupChallenge();
+            
+
+            return;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainUI());

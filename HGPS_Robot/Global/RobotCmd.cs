@@ -29,7 +29,6 @@ namespace HGPS_Robot
 
         public void AskRandomStudent(List<StudentHistoryDTO> list)
         {
-
             var rdm = new Random();
             int rdmNum = rdm.Next(1, 11);
             if (GlobalFlowControl.Lesson.ChosenStudent != null 
@@ -360,7 +359,7 @@ namespace HGPS_Robot
             Debug.WriteLine("Group " + groupNum + " has submitted " + subCnt + " times. ");
             Synthesizer.Speak("Group " + groupNum + " has submitted " + subCnt + " times. ");
 
-            var lastRes = groupRecord.GetFinalSubmission();
+            var lastRes = groupRecord.GetLatestSubmission();
 
             Debug.WriteLine("Last submission " + lastRes);
         }
