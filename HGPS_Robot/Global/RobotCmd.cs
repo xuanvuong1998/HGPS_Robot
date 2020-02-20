@@ -23,7 +23,7 @@ namespace HGPS_Robot
         public string LessonStatus { get; set; }
         public string GroupChallenge { get; set; }
         public string Gesture { get; set; }
-              
+
         public List<StudentHistoryDTO> AssessPerformance { get; set; }
         #endregion
 
@@ -31,8 +31,8 @@ namespace HGPS_Robot
         {
             var rdm = new Random();
             int rdmNum = rdm.Next(1, 11);
-            if (GlobalFlowControl.Lesson.ChosenStudent != null 
-                || rdmNum <= 8)                
+            if (GlobalFlowControl.Lesson.ChosenStudent != null
+                || rdmNum <= 8)
             {
                 //ask
                 Debug.WriteLine("ASKING STUDENT");
@@ -41,7 +41,7 @@ namespace HGPS_Robot
 
                 if (GlobalFlowControl.Lesson.ChosenStudent != null)
                 {
-                    student = list.FirstOrDefault(x => 
+                    student = list.FirstOrDefault(x =>
                             x.Student_id == GlobalFlowControl.Lesson.ChosenStudent);
 
                     if (GlobalFlowControl.Lesson.IsStudentChosenBefore(student.Student_id) == false)
@@ -65,12 +65,12 @@ namespace HGPS_Robot
                         Debug.WriteLine("Random Student: " + randNum);
                     } while (GlobalFlowControl.Lesson.IsStudentChosenBefore(list[randNum].Student_id));
 
-                    
+
                     student = list[randNum];
 
-                    GlobalFlowControl.Lesson.ChosenStudentList.Add(student.Student_id); 
+                    GlobalFlowControl.Lesson.ChosenStudentList.Add(student.Student_id);
                 }
-                                     
+
                 string speech = student.UserAccountFullName + "! ";
                 int num = rdm.Next(0, 5);
                 switch (num)
@@ -110,10 +110,12 @@ namespace HGPS_Robot
                     {
                         switch (num)
                         {
-                            case 0: case 1:
+                            case 0:
+                            case 1:
                                 resultSpeech = "Excellent ";
                                 break;
-                            case 2: case 3:
+                            case 2:
+                            case 3:
                                 resultSpeech = "Not bad ";
                                 break;
                             case 4:
@@ -121,18 +123,18 @@ namespace HGPS_Robot
                                 break;
 
                         }
-                        resultSpeech += student.Student_id + "! Your answer is correct!";  
+                        resultSpeech += student.Student_id + "! Your answer is correct!";
                     }
                     else
-                    {                       
+                    {
                         resultSpeech = "Sorry " + student.Student_id + ". Your answer is not correct!";
                     }
-                    
+
                     LessonHelper.InsertCommand("speak", resultSpeech);
 
                 }
             }
-            
+
 
             AnalyzeStudentPerformance(AssessPerformance);
 
@@ -309,14 +311,13 @@ namespace HGPS_Robot
                 LessonHelper.ResumeSpeak();
 
                 Synthesizer.Speak("Wow, most of you understand the topic! Let us continue with the lesson. ");
-               
+
                 LessonHelper.ResumeLesson();
 
                 Debug.WriteLine("After resume");
             }
         }
         #endregion
-
 
         #region GroupChallenge
 
@@ -360,27 +361,70 @@ namespace HGPS_Robot
             var groupRecord = UpdateGroupSubmission();
             var subCnt = groupRecord.GetSubmissionCount();
             var groupNum = groupRecord.GroupNumber;
+
+            var members = TablePositionHelper.GetMembersByGroupNumber(groupNum);
+
+            int leftChances = members.Count - subCnt;
+
+            Synthesizer.Speak($"Group {groupNum} submitted. ");
+
+            int rdmNum = new Random().Next(3);
+
+            if (leftChances == 0)
+            {
+                switch (rdmNum)
+                {
+                    case 0:
+                        Synthesizer.Speak("No more chance for group " + groupNum); break;
+                    case 1:
+                        Synthesizer.Speak("This is the final submission of group " +
+                            groupNum + " as well.  "); break;
+                    case 2:
+                        Synthesizer.Speak("Group " + groupNum + " is done, please " +
+                            "wait for the result. "); break;
+                }
+               
+            }
+            else 
+            {
+                switch (rdmNum)
+                {
+                    case 0:
+                        Synthesizer.Speak("Group " + groupNum + " has " +
+                leftChances + " more chances. "); break;
+                    case 1:
+                        Synthesizer.Speak("Group " + groupNum + " can " +
+                            "submit " + leftChances + " more times. "); break;
+                    case 2:
+                        Synthesizer.Speak(leftChances + " more tries for " +
+                            "group " + groupNum + ". "); break;
+                }
+
+                if (leftChances == 1) // last try left
+                {
+                    switch (rdmNum)
+                    {
+                        case 0:
+                            Synthesizer.Speak("Remember to check carefully before " +
+                                "submitting your last submisson"); break;
+                        case 1:
+                            Synthesizer.Speak("Be careful with the final answer"); break;
+                        case 2:
+                            Synthesizer.Speak("Please think carefully for the " +
+                                "last chance. "); break;
+                    }
+                }
+            }
             
-            if (subCnt == 1)
-            {
-                Synthesizer.Speak("Group " + groupNum + " has just " +
-                    "submitted for the first time. ");
-            }
-            else if (subCnt == 2)
-            {
-                Synthesizer.Speak("Group " + groupNum + ". " +
-                    "you guys already used up 2 chances to submit the" +
-                    " answer. Please wait for the result in a few seconds. ");   
-            }
         }
 
         #endregion
         // From Teacher Panel
         public void ProcessCommand()
-        {         
+        {
             if (Navigation != null)
             {
-                GlobalFlowControl.Lesson.ChosenStudent = Navigation;                
+                GlobalFlowControl.Lesson.ChosenStudent = Navigation;
             }
 
             if (Movement != null)
@@ -395,7 +439,7 @@ namespace HGPS_Robot
 
             if (GroupChallenge != null)
             {
-                ProcessGroupChallenge();   
+                ProcessGroupChallenge();
             }
 
             if (LessonStatus != null)
@@ -422,12 +466,12 @@ namespace HGPS_Robot
                     double happyPc = double.Parse(info.Split(';')[2]);
 
                     AnalyzeEmotion(happyPc, sadPc, neutralPc);
-                    
+
                 }
-                
+
             }
 
-           
+
             if (AssessPerformance != null)
             {
                 AskRandomStudent(AssessPerformance);

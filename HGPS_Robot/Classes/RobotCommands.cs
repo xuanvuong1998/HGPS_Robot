@@ -157,7 +157,10 @@ namespace HGPS_Robot
                         {
                             LessonHelper.QuestionNumber += 1;
                             if (val.ToLower() == "group-challenge")
-                                LessonHelper.ChallengeNumber++;
+                            {
+                                GroupChallengeHelper.InitNewChallenge();
+                             
+                            }
                             quiz.QuestionNumber = LessonHelper.QuestionNumber;
                             StartQuiz(quiz);
 

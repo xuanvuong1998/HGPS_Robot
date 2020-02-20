@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using SpeechLibrary;
 
 namespace HGPS_Robot
@@ -12,6 +13,45 @@ namespace HGPS_Robot
     class GroupChallengeHelper
     {
         private static List<GroupChallengeRecord> record;
+        public static List<int> receivedHintStudentList = new List<int>();
+
+        public static void SuggestHint(int groupNum)
+        {
+            int receivedBefore = receivedHintStudentList.Count(
+                x => x == groupNum);
+
+            string hint = "";
+            if (receivedBefore == 0)
+            {
+                hint = GetChallengeHint(2);
+                receivedHintStudentList.Add(groupNum);
+                MessageBox.Show("GO TO Group " + groupNum);
+                Synthesizer.Speak("This is " + hint);
+            }
+            else if (receivedBefore == 1){
+                hint = GetChallengeHint(1);
+                receivedHintStudentList.Add(groupNum);
+                MessageBox.Show("GO TO Group " + groupNum);
+                Synthesizer.Speak("This is " + hint);
+            }
+            else
+            {
+                // Too enough, have to do yourself
+                // No hint
+            }
+                        
+        }
+
+        public static string GetChallengeHint(int hintNum)
+        {
+            return "Hint " + hintNum;
+        }
+
+        public static void InitNewChallenge()
+        {
+            LessonHelper.ChallengeNumber++;
+            receivedHintStudentList.Clear();
+        }
 
         public static void InitMockData()
         {
