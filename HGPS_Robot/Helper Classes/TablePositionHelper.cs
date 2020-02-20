@@ -22,6 +22,17 @@ namespace HGPS_Robot
             LatestChosenStudent = null;
         }
 
+        /// <summary>
+        /// Get all students member by group number
+        /// </summary>
+        /// <param name="gnum"></param>
+        /// <returns></returns>
+        public static List<string> GetMembersByGroupNumber(int gnum)
+        {
+            return TablePositions.Where(x => x.GroupNumber == gnum)
+                .Select(x => x.Student_Id).ToList();
+        }
+
         public static void DeleteAllPositions()
         {
             WebHelper.DeleteAllTablePositions();

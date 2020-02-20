@@ -1,25 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using SpeechLibrary;
 
 namespace HGPS_Robot
 {
     public partial class LessonUI : Form
     {
-        private string _prevState = null;
         public LessonUI()
         {
             InitializeComponent();
@@ -54,10 +41,6 @@ namespace HGPS_Robot
         {
             var status = e.Status;
             LessonStatusHelper.LessonStatus = status;
-
-            //if (_prevState != status.LessonState)
-            //    _prevState = status.LessonState;
-            //else return;
             
             if (status.LessonState != null)
             {                
@@ -83,8 +66,6 @@ namespace HGPS_Robot
 
                     //LessonHelper.SaveLessonHistory(status.LessonName, teacherId, className); will save internally in server
                     LessonHelper.LessonId = status.LessonId;
-
-                    //this.Invoke(new MethodInvoker(() => this.Hide()));
 
                     if (InvokeRequired)
                     {

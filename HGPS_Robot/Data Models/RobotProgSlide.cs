@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace HGPS_Robot
 {
@@ -65,6 +66,8 @@ namespace HGPS_Robot
                     }
                     else if (cmd.Value.ToLower() == "group-challenge")
                     {
+                        LessonHelper.ChallengeNumberTotal++;
+                        Debug.WriteLine(LessonHelper.ChallengeNumberTotal + "total");
                         _question.Type = 2;
                     }
                     break;

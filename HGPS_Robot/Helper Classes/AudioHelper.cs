@@ -18,7 +18,12 @@ namespace HGPS_Robot
 
         public static void PlayInCorrectSound()
         {
-            PlayAudio("incorrect.mp3");
+            PlayAudio("incorrect.wav");
+        }
+
+        public static void PlayChampionSound()
+        {
+            PlayAudio("champion.wav");
         }
 
         public static void PlayAudio(string fileLocation)

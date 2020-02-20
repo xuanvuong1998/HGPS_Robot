@@ -11,5 +11,7 @@ namespace HGPS_Robot
         public string TableName { get; set; }
 
         public string Student_Id { get; set; }
+
+        public int? GroupNumber { get; set; }
     }
 }

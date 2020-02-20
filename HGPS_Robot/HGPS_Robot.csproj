@@ -372,7 +372,10 @@
     <Content Include="media\applause.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="media\incorrect.mp3">
+    <Content Include="media\champion.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="media\incorrect.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />

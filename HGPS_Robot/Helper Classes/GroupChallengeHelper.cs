@@ -13,7 +13,7 @@ namespace HGPS_Robot
     {
         private static List<GroupChallengeRecord> record;
 
-        public static void AssessGroupChallenge()
+        public static void InitMockData()
         {
             var records = GlobalFlowControl.Lesson.GroupRecords;
 
@@ -41,22 +41,53 @@ namespace HGPS_Robot
                 GroupNumber = 4,
                 Submission = new List<string> { "5-1", "7-1", "50-1" }
             };
-            var p5 = new GroupChallengeRecord
+
+
+            //////////// c2
+            var p12 = new GroupChallengeRecord
             {
-                ChallengeNumber = 1,
-                GroupNumber = 5,
-                Submission = new List<string> { "4-0", "6-0", "10-1" }
+                ChallengeNumber = 2,
+                GroupNumber = 1,
+                Submission = new List<string> { "5-0", "8-0", "12-0", "20-1" }
+            };
+            var p22 = new GroupChallengeRecord
+            {
+                ChallengeNumber = 2,
+                GroupNumber = 2,
+                Submission = new List<string> { "1-1", "2-1", "3-1" }
+            };
+            var p32 = new GroupChallengeRecord
+            {
+                ChallengeNumber = 2,
+                GroupNumber = 3,
+                Submission = new List<string> { "4-1", "10-1", "30-0" }
+            };
+            var p42 = new GroupChallengeRecord
+            {
+                ChallengeNumber = 2,
+                GroupNumber = 4,
+                Submission = new List<string> { "5-0", "9-0", "20-1" }
             };
 
             records.Add(p1);
             records.Add(p2);
             records.Add(p3);
             records.Add(p4);
-            records.Add(p5);
+
+            records.Add(p12);
+            records.Add(p22);
+            records.Add(p32);
+            records.Add(p42);
+
+        }
+
+        public static void AssessGroupChallenge()
+        {
+            var records = GlobalFlowControl.Lesson.GroupRecords;
 
             var currentChallengeRecords
                     = records.Where(x => x.ChallengeNumber
-                            == 1).ToList();
+                            == LessonHelper.ChallengeNumber).ToList();
 
             currentChallengeRecords.Sort(); // Sort by Comparable in GroupChallengeRecord class
 
@@ -68,6 +99,129 @@ namespace HGPS_Robot
             }
 
             AnnouceGroupResults();
+
+            if (LessonHelper.ChallengeNumberTotal > 1
+                && LessonHelper.ChallengeNumber
+                == LessonHelper.ChallengeNumberTotal) // last challenge ended
+            {
+                // Summary all challenges
+
+                Synthesizer.Speak("So... We already finished " +
+                    LessonHelper.ChallengeNumberTotal + " challenges. " +
+                    "Lets summary the results of all challenges. ");
+
+                Wait(2000);
+                ConsolidateGroupChallenges();
+
+
+            }
+        }
+
+        public static void ConsolidateGroupChallenges()
+        {
+            var records = GlobalFlowControl.Lesson.GroupRecords;
+
+            // Key: groupnumber, value: passedCount-TotalSubmittedTime
+            Dictionary<int, string> totalRecords
+                = new Dictionary<int, string>();
+
+            // Set values for list by iterating the records list
+            foreach (var record in records)
+            {
+                var gnum = record.GroupNumber;
+                var subTime = record.GetFinalSubTime();
+                var result = record.GetFinalSubResultInBool();
+
+                if (totalRecords.ContainsKey(gnum) == false)
+                {
+                    totalRecords.Add(gnum, "0-0");
+                }
+
+                var cur = totalRecords[gnum];
+
+                // Current Number of passed challenges
+                var curTotalPoints = int.Parse(cur.Split('-')[0]);
+                // Current total submitted time
+                var curTotalTime = int.Parse(cur.Split('-')[1]);
+
+                if (result) // if it is a correct pass
+                {
+                    curTotalPoints += 1; // 1 more passed challenge
+                    curTotalTime += subTime;
+
+                    //Update again the dictionary
+                    totalRecords[gnum] = curTotalPoints + "-" + curTotalTime;
+                }
+
+
+            }
+            // Greedy rank groups by number of passed challenge and
+            // Total submitted time (only correct ones)
+
+            var sortedList = totalRecords.OrderByDescending(x =>
+                        int.Parse(x.Value.Split('-')[0]))
+                         .ThenBy(x => int.Parse(x.Value.Split('-')[1]))
+                         .ToList();
+
+            Synthesizer.Speak($"After {LessonHelper.ChallengeNumberTotal}" +
+                $" challenges, we have the result like this...");
+
+            int rank = 0;
+            foreach (var group in sortedList)
+            {
+                rank++;
+                int gnum = group.Key;
+
+                int correctQty = int.Parse(group.Value.Split('-')[0]);
+                int subTime = int.Parse(group.Value.Split('-')[1]);
+
+                var members = TablePositionHelper.GetMembersByGroupNumber(gnum);
+
+                string speech = "Group " + gnum + ". ";
+
+                foreach (var m in members)
+                {
+                    speech += m + ". ";
+                }
+
+                if (rank <= sortedList.Count / 2)
+                {
+                    int rdmNum = new Random().Next(2);
+
+                    if (rdmNum == 0)
+                    {
+                        speech += "you guys are the top " + rank + " in overall. " +
+                                                "Very good job. Congratulation!";
+                    }
+                    else
+                    {
+                        speech += "Your overall standing is number " + rank
+                            + ". Congratulation!";
+                    }
+
+                    Synthesizer.Speak(speech);
+                    AudioHelper.PlayChampionSound();
+                }
+                else
+                {
+                    speech += "you are the top " + rank + ". ";
+                    int rdmNum = new Random().Next(2);
+                    if (rdmNum == 0)
+                    {
+                        speech += "you guys are also very good. Good luck for the " +
+                            "next time. Be more careful and faster";
+                    }
+                    else
+                    {
+                        speech += "you all also did a good job. Do your best " +
+                            "in the next challenge to get the higher position. ";
+                    }
+                    Synthesizer.Speak(speech);
+                    AudioHelper.PlayApplauseSound();
+                }
+
+            }
+
         }
 
         private static void Wait(int miliSec)
@@ -109,16 +263,14 @@ namespace HGPS_Robot
                     {
                         Synthesizer.Speak($"Group {group.GroupNumber}. " +
                             $"It is so regretful... " +
-                            $"You guys actually submitted a correct answer. " +
+                            $"You guys actually submitted correct answer before. " +
                             $"But your final answer is not correct. ");
                         AudioHelper.PlayInCorrectSound();
 
                     }
-
                     Wait(1500);
 
                 }
-
             }
 
             if (regretCnt > 0 && regretCnt < remainingCnt)
@@ -130,17 +282,18 @@ namespace HGPS_Robot
                     speech += "Group " + g + ". ";
                 }
 
-                speech += "You guys are also very good. " +
-                    "Just be careful one thing. That is check" +
-                    " your answer before submitting. ok?. Try your best. Don't give up. ";
+                speech += "All of you are also very good. " +
+                    "Just be careful one thing. Remember to check" +
+                    " your answer before submitting the last one. ok?." +
+                    " Please Try your best. Don't give up. ";
 
                 Synthesizer.Speak(speech);
             }
             else
             {
                 Synthesizer.Speak("Well. Unfortunately for " +
-                    "another groups, you guys did not " +
-                    "have any correct submission ever. " +
+                    "another groups, your answer is very near to the " +
+                    "correct answer, but not fully correct. Don't worry. " +
                     "Let's try your best in the next challenge. " +
                     "All of you, please don't give up. ");
             }
@@ -194,13 +347,11 @@ namespace HGPS_Robot
                         "is the " +
                         "champion of this challenge. ");
                     break;
-                case 3:
+                case 2:
                     Synthesizer.Speak("Time's up everybody. Let's " +
                         "see how good is your result. ");
                     break;
             }
-
-
 
             // All group answer are wrong
             bool isWorst = CheckFirstTopGroup();
@@ -245,14 +396,14 @@ namespace HGPS_Robot
 
                     speech += $" group {groupNum}...... "
                         + $"You are the top 1... Within only {subTime} seconds, you " +
-                        $"are the fastest group, got the correct answer! ";
+                        $"become the fastest group, who got the correct answer! ";
 
                     speech += "Everyone, please give a round of applause for" +
                         $"group {groupNum}.";
 
                     Synthesizer.Speak(speech);
 
-                    AudioHelper.PlayApplauseSound();
+                    AudioHelper.PlayChampionSound();
                 }
                 else if (isCorrect)
                 {
@@ -290,15 +441,25 @@ namespace HGPS_Robot
                                 speech = "The following group is... ";
                                 speech += $"Group {groupNum}. Good job, " +
                                     $"your first correct answer, was recorded at " +
-                                    $"the second of {subTime}. And  " +
-                            $"you now, are the top {rank} of this challenge. ";
+                                    $"the second of {subTime}. And now, " +
+                            $"you are the top {rank} of this challenge. ";
                                 break;
                         }
 
                     }
 
-                    speech += "Everyone, please, give another round of applause, " +
-                        "to group " + groupNum;
+                    rdmNum = new Random().Next(2);
+                    if (rdmNum == 0)
+                    {
+                        speech += "Everyone, please, give another round of applause, " +
+                                                "to group " + groupNum;
+                    }
+                    else
+                    {
+                        speech += "Everybody, why don't you give another applause for" +
+                            " group " + groupNum;
+                    }
+
                     Synthesizer.Speak(speech);
                     AudioHelper.PlayApplauseSound();
                     Wait(1000);
@@ -310,10 +471,17 @@ namespace HGPS_Robot
                 i++;
             }
 
-            Wait(1000);
+            Wait(2000);
 
-            Synthesizer.Speak("Great. Now I will try to check the remaining " +
-                "groups. Is there any time you submitted the correct answer. ");
+            if (i == record.Count) return;
+
+            Synthesizer.Speak("What's about the remaining groups? ");
+            Wait(1500);
+            Synthesizer.Speak("I am so sorry to say that your final " +
+                "answer is not correct. But. Don't too worry. " +
+                "Now, I will check again, to see is there any time you had " +
+                "a correct answer. ");
+
             Wait(1500);
             FindAnyCorrectAnswer(record.Count - i + 1);
         }

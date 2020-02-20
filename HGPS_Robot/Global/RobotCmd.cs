@@ -346,22 +346,32 @@ namespace HGPS_Robot
                 groupRecord.Submission.Add(submittedTime + "-" + result);
             }
 
+            Debug.WriteLine("Submission Updated!");
+            foreach (var item in records)
+            {
+                Debug.WriteLine(item.ToStringFormat());
+            }
+
             return groupRecord;
         }
 
         public void ProcessGroupChallenge()
         {
             var groupRecord = UpdateGroupSubmission();
-
             var subCnt = groupRecord.GetSubmissionCount();
             var groupNum = groupRecord.GroupNumber;
             
-            Debug.WriteLine("Group " + groupNum + " has submitted " + subCnt + " times. ");
-            Synthesizer.Speak("Group " + groupNum + " has submitted " + subCnt + " times. ");
-
-            var lastRes = groupRecord.GetLatestSubmission();
-
-            Debug.WriteLine("Last submission " + lastRes);
+            if (subCnt == 1)
+            {
+                Synthesizer.Speak("Group " + groupNum + " has just " +
+                    "submitted for the first time. ");
+            }
+            else if (subCnt == 2)
+            {
+                Synthesizer.Speak("Group " + groupNum + ". " +
+                    "you guys already used up 2 chances to submit the" +
+                    " answer. Please wait for the result in a few seconds. ");   
+            }
         }
 
         #endregion
@@ -406,7 +416,6 @@ namespace HGPS_Robot
 
                 if (thing == "Emotion")
                 {
-
                     GlobalFlowControl.Lesson.StudentFeedbackReceived = true;
                     double sadPc = double.Parse(info.Split(';')[0]);
                     double neutralPc = double.Parse(info.Split(';')[1]);

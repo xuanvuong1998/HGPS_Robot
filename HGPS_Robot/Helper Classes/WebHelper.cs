@@ -60,13 +60,10 @@ namespace HGPS_Robot
                     {
                         req.Content = new StringContent(JsonConvert.SerializeObject(status), Encoding.UTF8, "application/json");
                         await client.SendAsync(req);
-                        
-                        
-                        
+                                                
                     }
                 }
             }
-
         }
 
         public static List<SavedLessons> GetSavedLessons()

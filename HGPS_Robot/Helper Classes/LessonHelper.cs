@@ -11,6 +11,7 @@ namespace HGPS_Robot
         public static event EventHandler LessonEnded;
         public static int QuestionNumber { get; set; } = 0;
         public static int ChallengeNumber { get; set; } = 0;
+        public static int ChallengeNumberTotal { get; set; } = 0;
         public static string LessonId { get; set; } = "";
         public static int CurrentSlideNumber { get; private set; } = 0;
 
