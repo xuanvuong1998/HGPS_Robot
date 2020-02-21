@@ -29,7 +29,11 @@ namespace HGPS_Robot
 
             SyncHelper.StatusChanged += SyncHelper_StatusChanged;
             SyncHelper.RobotCommandChanged += SyncHelper_RobotCommandChanged;
-          
+
+            GroupChallengeHelper.InitNewChallenge();
+            GroupChallengeHelper.SuggestHint(1);
+            GroupChallengeHelper.SuggestHint(2);
+
         }
 
         private void SyncHelper_RobotCommandChanged(object sender, RobotCommandEventArgs e)

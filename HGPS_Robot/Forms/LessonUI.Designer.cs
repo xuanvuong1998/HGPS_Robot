@@ -36,9 +36,10 @@
             // 
             // picClose
             // 
-            this.picClose.Location = new System.Drawing.Point(155, 12);
+            this.picClose.Location = new System.Drawing.Point(271, 21);
+            this.picClose.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.picClose.Name = "picClose";
-            this.picClose.Size = new System.Drawing.Size(100, 50);
+            this.picClose.Size = new System.Drawing.Size(175, 170);
             this.picClose.TabIndex = 1;
             this.picClose.TabStop = false;
             this.picClose.Click += new System.EventHandler(this.picClose_Click);
@@ -46,20 +47,22 @@
             // picBackground
             // 
             this.picBackground.Image = global::HGPS_Robot.Properties.Resources.CoddieLessonUI1;
-            this.picBackground.Location = new System.Drawing.Point(12, 12);
+            this.picBackground.Location = new System.Drawing.Point(21, 21);
+            this.picBackground.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.picBackground.Name = "picBackground";
-            this.picBackground.Size = new System.Drawing.Size(114, 146);
+            this.picBackground.Size = new System.Drawing.Size(200, 256);
             this.picBackground.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.picBackground.TabIndex = 0;
             this.picBackground.TabStop = false;
             // 
             // LessonUI
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(168F, 168F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(772, 337);
+            this.ClientSize = new System.Drawing.Size(1351, 590);
             this.Controls.Add(this.picClose);
             this.Controls.Add(this.picBackground);
+            this.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.Name = "LessonUI";
             this.Text = "LessonUI";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);

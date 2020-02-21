@@ -20,13 +20,6 @@ namespace HGPS_Robot
         [STAThread]
         static void Main()
         {
-            
-            //TablePositionHelper.LoadTablesInfo();
-            //Synthesizer.Setup();
-            //Synthesizer.SetSpeed(-1);
-            //Synthesizer.SelectVoiceByName(GlobalData.Voice2);
-            //GroupChallengeHelper.InitMockData();
-            //GroupChallengeHelper.ConsolidateGroupChallenges();
 
             //return;
             Application.EnableVisualStyles();

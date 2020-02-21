@@ -356,6 +356,9 @@ namespace HGPS_Robot
             return groupRecord;
         }
 
+        /// <summary>
+        /// Receive new submission
+        /// </summary>
         public void ProcessGroupChallenge()
         {
             var groupRecord = UpdateGroupSubmission();
@@ -366,8 +369,15 @@ namespace HGPS_Robot
 
             int leftChances = members.Count - subCnt;
 
+            var leftSeconds = LessonHelper.CurrentQuizTimeout -
+                GlobalFlowControl.Lesson.QuizElapsedTime;
+
+            if (leftSeconds <= 10) return;
+            
             Synthesizer.Speak($"Group {groupNum} submitted. ");
 
+            if (leftSeconds <= 20) return;
+            
             int rdmNum = new Random().Next(3);
 
             if (leftChances == 0)
@@ -414,6 +424,17 @@ namespace HGPS_Robot
                                 "last chance. "); break;
                     }
                 }
+
+                var subResult = GroupChallenge.Split('-')[1];
+
+                
+                if (subResult == "0") 
+                    // Suggest hint for group just Submit incorrect answer
+                    // (But at most 2 hints)
+                {
+                    var gnum = int.Parse(GroupChallenge.Split('-')[0]);
+                    GroupChallengeHelper.SuggestHint(groupNum);
+                }
             }
             
         }
@@ -447,7 +468,17 @@ namespace HGPS_Robot
                 Debug.WriteLine(LessonStatus + " Lesson Status");
                 if (LessonStatus == "StopQuestion")
                 {
-                    GlobalFlowControl.Lesson.StartingQuiz = false;
+                    var secondsLeft = LessonHelper.CurrentQuizTimeout
+                        - GlobalFlowControl.Lesson.QuizElapsedTime;
+                    
+                    if (secondsLeft > 11)
+                    {
+                        Synthesizer.SpeakAsync("Wow. Since all groups have done " +
+                            "already. I will terminate the quiz early, and " +
+                            "reveal the result now. Are you ready???");
+                        GlobalFlowControl.Lesson.StartingQuiz = false;
+                    }
+                    
                 }
             }
 

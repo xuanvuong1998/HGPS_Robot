@@ -15,9 +15,11 @@ namespace HGPS_Robot
             public static bool Moving { get; set; }
 
             private static bool reachedGoal;
-            public static bool ReachedGoal {
+            public static bool ReachedGoal
+            {
                 get { return reachedGoal; }
-                set {
+                set
+                {
                     reachedGoal = value;
 
                     if (value == true)
@@ -28,9 +30,11 @@ namespace HGPS_Robot
             }
 
             private static bool stucked;
-            public static bool Stucked {
+            public static bool Stucked
+            {
                 get { return stucked; }
-                set {
+                set
+                {
                     stucked = value;
                     if (value == true)
                     {
@@ -41,9 +45,11 @@ namespace HGPS_Robot
 
             private static bool canceled;
 
-            public static bool Canceled {
+            public static bool Canceled
+            {
                 get { return canceled; }
-                set {
+                set
+                {
                     canceled = value;
                     if (value == true)
                     {
@@ -69,13 +75,82 @@ namespace HGPS_Robot
             }
         }
 
+        public class GroupChallenge
+        {
+            private static Queue<string> ServeHintsQueue { get; set; } = new Queue<string>();
+            public static bool IsOfferingHint { get; set; } = false;
+            public static void AddToServingQueue(int groupNumber, string hint)
+            {
+                ServeHintsQueue.Enqueue(groupNumber + "-" + hint);
+            }
+
+
+            public static bool IsServingQueueEmpty()
+            {
+                return ServeHintsQueue.Count == 0;
+            }
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <returns>return Hint content </returns>
+            public static string OfferHint()
+            {
+                IsOfferingHint = true;
+                var top = ServeHintsQueue.Dequeue();
+
+                var groupNum = int.Parse(top.Split('-')[0]);
+
+                Synthesizer.SpeakAsync("Robot going to group " + groupNum);
+                
+                var hint = top.Split('-')[1];
+
+                return hint;
+                
+                
+            }
+        }
+
         public class Lesson
         {
+            private static int quizElapsedValue;
+
+            public static int QuizElapsedTime
+            {
+                get { return quizElapsedValue; }
+                set
+                {
+                    quizElapsedValue = value;
+                    var secondsLeft = LessonHelper.CurrentQuizTimeout
+                        - value;
+
+                    if (secondsLeft <= 0) return;
+                    
+                    if (secondsLeft <= 10)
+                    {
+                        Synthesizer.SpeakAsync(secondsLeft + "");
+                    }
+                    
+                    if (secondsLeft == 30 || secondsLeft == 20)
+                    {
+                        Synthesizer.SpeakAsync(secondsLeft + " more seconds " +
+                            "every one. ");
+                    }
+
+                    if (secondsLeft == 40)
+                    {
+                        Synthesizer.SpeakAsync("Pay attention please, you" +
+                        " guys have " + secondsLeft + " seconds left");
+
+                    }
+                }
+            }
+
             public static string Name { get; set; }
 
             public static bool Starting { get; set; }
-         
-            public static string ApproachStudent {
+
+            public static string ApproachStudent
+            {
                 get; set;
             }
 
@@ -90,11 +165,11 @@ namespace HGPS_Robot
 
             public static bool IsStudentChosenBefore(string std)
             {
-                return ChosenStudentList.Contains(std);                   
+                return ChosenStudentList.Contains(std);
             }
 
             public static bool StudentFeedbackReceived { get; set; }
-            
+
             public static void ResetAll()
             {
                 Starting = true;
@@ -106,7 +181,7 @@ namespace HGPS_Robot
                 else ChosenStudentList = new List<string>();
 
                 StudentFeedbackReceived = false;
-                
+
             }
 
         }
@@ -131,7 +206,7 @@ namespace HGPS_Robot
             public static void ResetBeforeNewConversation()
             {
                 ConversationEnable = true;
-                RecognizedQuestion = "";                
+                RecognizedQuestion = "";
             }
         }
     }

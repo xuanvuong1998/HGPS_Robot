@@ -28,9 +28,20 @@ namespace HGPS_Robot
         private const int QUIZ_BUFFER_SECONDS = 2;
 
         private Timer quizTimer = new Timer();
-        private int quizTimerTick, quizTime;
+        private int quizTime;
 
-        
+        private int quizElapsed;
+
+        public int QuizElapsedTime
+        {
+            get { return quizElapsed; }
+            set {
+                GlobalFlowControl.Lesson.QuizElapsedTime = value;
+                quizElapsed = value;
+            }
+        }
+
+
         public RobotCommands(List<RobotCommand> commands)
         {
             _commands = commands;
@@ -164,6 +175,7 @@ namespace HGPS_Robot
                             quiz.QuestionNumber = LessonHelper.QuestionNumber;
                             StartQuiz(quiz);
 
+                            GroupChallengeHelper.EndChallenge();
                             if (val.ToLower() == "group-challenge")
                             {
                                 GroupChallengeHelper.AssessGroupChallenge();
@@ -346,19 +358,18 @@ namespace HGPS_Robot
             quizTimer.Interval = 1000;
             quizTimer.AutoReset = true;
             quizTimer.Elapsed += Timer_Elapsed;
-            quizTimerTick = 0;
+            QuizElapsedTime = 1;
 
             quizTimer.Start();
         }
 
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            quizTimerTick++;
+            if (LessonHelper.PauseRequested == false) QuizElapsedTime++;
 
-            if (LessonHelper.PauseRequested) quizTimerTick--;
-            Debug.WriteLine("Timeout: " + quizTimerTick + " < " + quizTime);
+            Debug.WriteLine("Time Elapsed: " + (quizTime - QuizElapsedTime));
             
-            if (quizTimerTick >= quizTime || GlobalFlowControl.Lesson.StartingQuiz == false)
+            if (QuizElapsedTime >= quizTime || GlobalFlowControl.Lesson.StartingQuiz == false)
             {
                 GlobalFlowControl.Lesson.StartingQuiz = false;
                 quizTimer.Stop();             
@@ -379,6 +390,7 @@ namespace HGPS_Robot
             WebHelper.UpdateStatus(status);
 
             quizTime = q.TimeOut;
+            LessonHelper.CurrentQuizTimeout = q.TimeOut;
             
             StartQuizTimer();
 
