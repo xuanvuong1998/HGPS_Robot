@@ -33,6 +33,12 @@ namespace HGPS_Robot
                 .Select(x => x.Student_Id).ToList();
         }
 
+
+        public static int GetGroupQuantity()
+        {
+            return TablePositions.Select(x => x.GroupNumber).Distinct().Count();
+        }
+
         public static void DeleteAllPositions()
         {
             WebHelper.DeleteAllTablePositions();

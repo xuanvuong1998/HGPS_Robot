@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using SpeechLibrary;
+using System;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using SpeechLibrary;
+using Timer = System.Timers.Timer;
 
 namespace HGPS_Robot
 {
@@ -20,6 +15,7 @@ namespace HGPS_Robot
         {
             InitializeComponent();
         }
+
 
         private void Form3_Shown(object sender, EventArgs e)
         {

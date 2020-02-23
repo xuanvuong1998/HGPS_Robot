@@ -79,11 +79,31 @@ namespace HGPS_Robot
         {
             private static Queue<string> ServeHintsQueue { get; set; } = new Queue<string>();
             public static bool IsOfferingHint { get; set; } = false;
+            public static bool IsHappening { get; set; } = false;
+
             public static void AddToServingQueue(int groupNumber, string hint)
             {
                 ServeHintsQueue.Enqueue(groupNumber + "-" + hint);
             }
 
+            /// <summary>
+            /// GET the top of queue without removing it
+            /// </summary>
+            /// <returns></returns>
+            public static string GetNextOffer()
+            {
+                return ServeHintsQueue.Peek();
+            }
+
+            public static void RemoveCurrentOffer()
+            {
+                ServeHintsQueue.Dequeue();
+            }
+
+            public static void ResetQueue()
+            {
+                ServeHintsQueue.Clear();
+            }
 
             public static bool IsServingQueueEmpty()
             {
@@ -95,17 +115,16 @@ namespace HGPS_Robot
             /// <returns>return Hint content </returns>
             public static string OfferHint()
             {
-                IsOfferingHint = true;
                 var top = ServeHintsQueue.Dequeue();
 
                 var groupNum = int.Parse(top.Split('-')[0]);
 
-                Synthesizer.SpeakAsync("Robot going to group " + groupNum);
+                BaseHelper.GoUntilReachedGoalOrCanceled("A" + groupNum);
+                Synthesizer.SpeakAsync("Coddie is going to group " + groupNum);
                 
                 var hint = top.Split('-')[1];
 
                 return hint;
-                
                 
             }
         }
@@ -175,13 +194,12 @@ namespace HGPS_Robot
                 Starting = true;
                 Synthesizer.SetSpeed(-1);
                 GroupRecords.Clear();
+                GroupChallenge.ResetQueue();
                 TablePositionHelper.LoadTablesInfo();
                 TablePositionHelper.DeleteChosenStudentList();
                 if (ChosenStudentList != null) ChosenStudentList.Clear();
                 else ChosenStudentList = new List<string>();
-
                 StudentFeedbackReceived = false;
-
             }
 
         }

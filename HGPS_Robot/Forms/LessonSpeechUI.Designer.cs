@@ -35,32 +35,35 @@
             // 
             // lblMessage
             // 
-            this.lblMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMessage.Location = new System.Drawing.Point(195, 99);
-            this.lblMessage.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblMessage.Font = new System.Drawing.Font("Arial Rounded MT Bold", 48F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblMessage.Location = new System.Drawing.Point(358, 183);
+            this.lblMessage.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblMessage.Name = "lblMessage";
-            this.lblMessage.Size = new System.Drawing.Size(217, 92);
+            this.lblMessage.Size = new System.Drawing.Size(398, 170);
             this.lblMessage.TabIndex = 0;
             this.lblMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblMessage.Click += new System.EventHandler(this.lblMessage_Click);
             // 
             // picBackground
             // 
-            this.picBackground.Image = global::HGPS_Robot.Properties.Resources.CoddieLessonSpeechUI;
-            this.picBackground.Location = new System.Drawing.Point(28, 37);
+            this.picBackground.Image = global::HGPS_Robot.Properties.Resources.LessonInProgress;
+            this.picBackground.Location = new System.Drawing.Point(51, 68);
+            this.picBackground.Margin = new System.Windows.Forms.Padding(6);
             this.picBackground.Name = "picBackground";
-            this.picBackground.Size = new System.Drawing.Size(162, 181);
+            this.picBackground.Size = new System.Drawing.Size(297, 334);
             this.picBackground.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.picBackground.TabIndex = 1;
             this.picBackground.TabStop = false;
+            this.picBackground.Click += new System.EventHandler(this.picBackground_Click);
             // 
             // LessonSpeechUI
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(564, 301);
+            this.ClientSize = new System.Drawing.Size(1034, 556);
             this.Controls.Add(this.picBackground);
             this.Controls.Add(this.lblMessage);
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "LessonSpeechUI";
             this.Text = "LessonSpeech";
             this.Shown += new System.EventHandler(this.Form2_Shown);

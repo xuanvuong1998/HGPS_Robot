@@ -260,12 +260,6 @@
     <Compile Include="Forms\ChatbotUI.Designer.cs">
       <DependentUpon>ChatbotUI.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\FrmGroupHint.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FrmGroupHint.Designer.cs">
-      <DependentUpon>FrmGroupHint.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\InConversationUI.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -328,9 +322,6 @@
     <EmbeddedResource Include="Forms\ChatbotUI.resx">
       <DependentUpon>ChatbotUI.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FrmGroupHint.resx">
-      <DependentUpon>FrmGroupHint.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\InConversationUI.resx">
       <DependentUpon>InConversationUI.cs</DependentUpon>
     </EmbeddedResource>
@@ -387,6 +378,7 @@
     <Content Include="media\incorrect.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\LessonInProgress.jpg" />
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />

@@ -4,18 +4,26 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Timer = System.Timers.Timer;
 
 namespace HGPS_Robot
 {
     class GroupChallengeHelper
-    {   
+    {
         // records of current challenge sorted by performance (correct then time order)
-        private static List<GroupChallengeRecord> record;
-        private static FrmGroupHint frmHint = new FrmGroupHint();
-        private static Timer servingTimer = new Timer
-                                    { AutoReset = true, Interval = 1000 };
+        private static List<GroupChallengeRecord> currentChallengeRecord;
+        public static List<string> hints = new List<string>();
+        private const int CHECKING_INTERVAL = 20; // 20 seconds
+        private static int checkingTimerTick = 0;
+        private static Timer checkingTimer = new Timer
+        { AutoReset = true, Interval = 1000 };
+
+        static GroupChallengeHelper()
+        {
+            checkingTimer.Elapsed += CheckingTimer_Elapsed;
+        }
 
         private static void Wait(int miliSec)
         {
@@ -28,7 +36,7 @@ namespace HGPS_Robot
         {
             int receivedBefore = receivedHintStudentList.Count(
                 x => x == groupNum);
-            
+
             if (receivedBefore == 0)
             {
                 receivedHintStudentList.Add(groupNum);
@@ -39,48 +47,146 @@ namespace HGPS_Robot
             {
                 receivedHintStudentList.Add(groupNum);
                 GlobalFlowControl.GroupChallenge.AddToServingQueue(groupNum,
-                    GetChallengeHint(2));
+                    GetChallengeHint(2)); 
             }
             else
             {
                 // Too enough, have to do yourself
                 // No hint any more
             }
-                        
         }
 
         public static string GetChallengeHint(int hintNum)
         {
-            return "Hint " + hintNum;
+            if (hintNum > hints.Count) return "NO MORE HINT";
+            return hints[hintNum - 1];
+        }
+
+        private static void InitChallengeRecordList()
+        {
+            var groupQty = TablePositionHelper.GetGroupQuantity();
+
+            var globalRecord = GlobalFlowControl.Lesson.GroupRecords;
+
+            for(int i = 1; i <= groupQty; i++)
+            {
+                globalRecord.Add(new GroupChallengeRecord
+                {
+                    ChallengeNumber = LessonHelper.ChallengeNumber,
+                    GroupNumber = i
+                });
+            }
+            
         }
 
         public static void InitNewChallenge()
         {
-            LessonHelper.ChallengeNumber++;
+            LessonHelper.StartGroupChallenge();
             receivedHintStudentList.Clear();
-            servingTimer.Elapsed += ServingTimer_Elapsed;
-            servingTimer.Start();
+            InitChallengeRecordList();
+
+            GlobalFlowControl.GroupChallenge.IsHappening = true;
+            StartServing();
         }
 
         public static void EndChallenge()
         {
-            servingTimer.Stop();
+            GlobalFlowControl.GroupChallenge.IsHappening = false;
+            hints.Clear();
         }
 
-        private static void ServingTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        public static void StartServing()
         {
-            if (GlobalFlowControl.GroupChallenge.IsServingQueueEmpty() == false)
+            Debug.WriteLine("START SERVING");
+            checkingTimerTick = 0;
+            checkingTimer.Start();
+        }
+
+
+        // Check if some groups haven't submitted any answer
+        private static void FindGroupNeedHelp()
+        {
+            var currentChallengeRecord =
+                GlobalFlowControl.Lesson.GroupRecords
+                .Where(x => x.ChallengeNumber == LessonHelper.ChallengeNumber);
+            
+            foreach (var groupRecord in currentChallengeRecord)
             {
-                if (GlobalFlowControl.GroupChallenge.IsOfferingHint == false)
+                if (groupRecord.GetSubmissionCount() == 0) // Haven't submitted
                 {
-                    Debug.WriteLine("Offer new group");
-                    frmHint.Show(); 
-                    frmHint.Serve();
+                    Debug.WriteLine("Suggest group " + groupRecord.GroupNumber);
+                    SuggestHint(groupRecord.GroupNumber);
                 }
             }
         }
 
-        public static void InitMockData()
+        private static void CheckingTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            checkingTimerTick++;
+            
+            if (GlobalFlowControl.GroupChallenge.IsHappening == false)
+            {
+                checkingTimer.Stop();
+            }
+
+            if (checkingTimerTick % CHECKING_INTERVAL == 0) // Every each 20 seconds
+            {
+                Debug.WriteLine("Find group who haven't submitted");
+                FindGroupNeedHelp();
+            }
+
+            if (GlobalFlowControl.GroupChallenge.IsServingQueueEmpty() == false
+                && GlobalFlowControl.GroupChallenge.IsOfferingHint == false)
+            {
+                int timeLeft = LessonHelper.CurrentQuizTimeout
+                                - GlobalFlowControl.Lesson.QuizElapsedTime;
+                if (timeLeft >= 30)
+                {
+                    bool stt = CheckGroupStatusBeforeOfferHint();
+
+                    // true: can offer, false: no need offer, that group did well already
+
+                    if (stt)
+                    {
+                        LessonHelper.OfferHint();
+                    }
+                }
+            }
+            
+        }
+        
+        /// <summary>
+        /// At the time we added to the queue, haven't submitted or wrong ans
+        /// But at the time when robot try to offer, that group has submitted 
+        /// Correct answer => No need
+        /// </summary>
+        private static bool CheckGroupStatusBeforeOfferHint()
+        {
+            string nextOffer = GlobalFlowControl.GroupChallenge.GetNextOffer();
+
+            int groupNumber = int.Parse(nextOffer.Split('-')[0]);
+
+            var currentChallengeRecords
+                    = GlobalFlowControl.Lesson.GroupRecords
+                        .Where(x => x.ChallengeNumber
+                            == LessonHelper.ChallengeNumber).ToList();
+
+            var groupRecord = currentChallengeRecords.SingleOrDefault(x => 
+                            x.GroupNumber == groupNumber);
+
+            // Good job, this group has already had a correct submission
+            if ((groupRecord.GetSubmissionCount() > 0
+                && groupRecord.GetFinalSubResultInBool() == true)
+                || groupRecord.GetLeftChancesNumber() == 0) // No more chance => No need hint
+            {
+                GlobalFlowControl.GroupChallenge.RemoveCurrentOffer();
+                return false;
+            }
+
+            return true; 
+        }
+
+        public static void MockData()
         {
             var records = GlobalFlowControl.Lesson.GroupRecords;
 
@@ -158,7 +264,7 @@ namespace HGPS_Robot
 
             currentChallengeRecords.Sort(); // Sort by Comparable in GroupChallengeRecord class
 
-            record = currentChallengeRecords;
+            currentChallengeRecord = currentChallengeRecords;
 
             foreach (var rec in currentChallengeRecords)
             {
@@ -179,8 +285,6 @@ namespace HGPS_Robot
 
                 Wait(2000);
                 ConsolidateGroupChallenges();
-
-
             }
         }
 
@@ -193,11 +297,11 @@ namespace HGPS_Robot
                 = new Dictionary<int, string>();
 
             // Set values for list by iterating the records list
-            foreach (var record in records)
+            foreach (var currentChallengeRecord in records)
             {
-                var gnum = record.GroupNumber;
-                var subTime = record.GetFinalSubTime();
-                var result = record.GetFinalSubResultInBool();
+                var gnum = currentChallengeRecord.GroupNumber;
+                var subTime = currentChallengeRecord.GetFinalSubTime();
+                var result = currentChallengeRecord.GetFinalSubResultInBool();
 
                 if (totalRecords.ContainsKey(gnum) == false)
                 {
@@ -301,7 +405,7 @@ namespace HGPS_Robot
 
             List<int> mistakeGroups = new List<int>();
 
-            foreach (var group in record)
+            foreach (var group in currentChallengeRecord)
             {
                 bool finalRes = group.GetFinalSubResultInBool();
 
@@ -330,7 +434,7 @@ namespace HGPS_Robot
                             $"You guys actually submitted correct answer at the " +
                             $"second of {firstCorrect.Split('-')[0]}. " +
                             $"But sadly, your final answer is not correct. ");
-                        
+
                         AudioHelper.PlayInCorrectSound();
 
                     }
@@ -357,8 +461,8 @@ namespace HGPS_Robot
             }
             else
             {
-                Synthesizer.Speak("Well. Unfortunately for " +
-                    "another groups, your answer is very near to the " +
+                Synthesizer.Speak(
+                    "another groups, all your answers are also very near to the " +
                     "correct answer, but not fully correct. Don't worry. " +
                     "Let's try your best in the next challenge. " +
                     "All of you, please don't give up. ");
@@ -374,7 +478,7 @@ namespace HGPS_Robot
         /// <returns>true if all group have no correct answer</returns>
         private static bool CheckFirstTopGroup()
         {
-            bool firstG = record[0].GetFinalSubResultInBool();
+            bool firstG = currentChallengeRecord[0].GetFinalSubResultInBool();
 
             if (firstG == true) return false;
 
@@ -392,7 +496,7 @@ namespace HGPS_Robot
 
             Wait(2000);
 
-            FindAnyCorrectAnswer(record.Count);
+            FindAnyCorrectAnswer(currentChallengeRecord.Count);
 
             return true;
         }
@@ -424,7 +528,8 @@ namespace HGPS_Robot
                         break;
                 }
             }
-            
+
+            Thread.Sleep(1500);
             // All group answer are wrong
             bool isWorst = CheckFirstTopGroup();
 
@@ -446,9 +551,9 @@ namespace HGPS_Robot
             int rank = 1;
             int i = 0;
 
-            while (i < record.Count)
+            while (i < currentChallengeRecord.Count)
             {
-                var curGroup = record[i];
+                var curGroup = currentChallengeRecord[i];
 
                 int groupNum = curGroup.GroupNumber;
                 int subTime = curGroup.GetFinalSubTime();
@@ -479,11 +584,11 @@ namespace HGPS_Robot
                 else if (isCorrect)
                 {
                     // Same rank with the higher one
-                    if (subTime == record[i - 1].GetFinalSubTime())
+                    if (subTime == currentChallengeRecord[i - 1].GetFinalSubTime())
                     {
                         speech = $"Unbelievable! Group {groupNum} has " +
                             $"the same submisson time with group " +
-                            $"{record[i - 1].GroupNumber}. " +
+                            $"{currentChallengeRecord[i - 1].GroupNumber}. " +
                             $"Therefore, Group {groupNum} is also the top " +
                             $"{rank} of this challenge. ";
 
@@ -545,7 +650,7 @@ namespace HGPS_Robot
 
             Wait(2000);
 
-            if (i == record.Count) return;
+            if (i == currentChallengeRecord.Count) return;
 
             Synthesizer.Speak("What's about the remaining groups? ");
             Wait(1500);
@@ -555,7 +660,7 @@ namespace HGPS_Robot
                 "a correct answer. ");
 
             Wait(1500);
-            FindAnyCorrectAnswer(record.Count - i + 1);
+            FindAnyCorrectAnswer(currentChallengeRecord.Count - i + 1);
         }
     }
 }

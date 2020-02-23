@@ -32,7 +32,7 @@ namespace HGPS_Robot
             var rdm = new Random();
             int rdmNum = rdm.Next(1, 11);
             if (GlobalFlowControl.Lesson.ChosenStudent != null
-                || rdmNum <= 8)
+                || rdmNum <= 6)
             {
                 //ask
                 Debug.WriteLine("ASKING STUDENT");
@@ -365,20 +365,18 @@ namespace HGPS_Robot
             var subCnt = groupRecord.GetSubmissionCount();
             var groupNum = groupRecord.GroupNumber;
 
-            var members = TablePositionHelper.GetMembersByGroupNumber(groupNum);
-
-            int leftChances = members.Count - subCnt;
+            int leftChances = groupRecord.GetLeftChancesNumber();
 
             var leftSeconds = LessonHelper.CurrentQuizTimeout -
                 GlobalFlowControl.Lesson.QuizElapsedTime;
 
             if (leftSeconds <= 10) return;
-            
+
             Synthesizer.Speak($"Group {groupNum} submitted. ");
 
             if (leftSeconds <= 20) return;
-            
-            int rdmNum = new Random().Next(3);
+
+            int rdmNum = new Random().Next(6); //  3 4 5=> don't speak
 
             if (leftChances == 0)
             {
@@ -393,9 +391,8 @@ namespace HGPS_Robot
                         Synthesizer.Speak("Group " + groupNum + " is done, please " +
                             "wait for the result. "); break;
                 }
-               
             }
-            else 
+            else
             {
                 switch (rdmNum)
                 {
@@ -406,7 +403,7 @@ namespace HGPS_Robot
                         Synthesizer.Speak("Group " + groupNum + " can " +
                             "submit " + leftChances + " more times. "); break;
                     case 2:
-                        Synthesizer.Speak(leftChances + " more tries for " +
+                        Synthesizer.Speak(leftChances + " more try for " +
                             "group " + groupNum + ". "); break;
                 }
 
@@ -415,8 +412,8 @@ namespace HGPS_Robot
                     switch (rdmNum)
                     {
                         case 0:
-                            Synthesizer.Speak("Remember to check carefully before " +
-                                "submitting your last submisson"); break;
+                            Synthesizer.Speak("Remember to check carefully for " +
+                                "your last submisson"); break;
                         case 1:
                             Synthesizer.Speak("Be careful with the final answer"); break;
                         case 2:
@@ -427,16 +424,15 @@ namespace HGPS_Robot
 
                 var subResult = GroupChallenge.Split('-')[1];
 
-                
-                if (subResult == "0") 
-                    // Suggest hint for group just Submit incorrect answer
-                    // (But at most 2 hints)
+                if (subResult == "0")
+                // Suggest hint for group just Submit incorrect answer
+                // (But at most 2 hints)
                 {
                     var gnum = int.Parse(GroupChallenge.Split('-')[0]);
                     GroupChallengeHelper.SuggestHint(groupNum);
                 }
             }
-            
+
         }
 
         #endregion
@@ -470,15 +466,19 @@ namespace HGPS_Robot
                 {
                     var secondsLeft = LessonHelper.CurrentQuizTimeout
                         - GlobalFlowControl.Lesson.QuizElapsedTime;
-                    
+
+
                     if (secondsLeft > 11)
                     {
-                        Synthesizer.SpeakAsync("Wow. Since all groups have done " +
-                            "already. I will terminate the quiz early, and " +
-                            "reveal the result now. Are you ready???");
+                        if (GlobalFlowControl.GroupChallenge.IsHappening)
+                        {
+                            Synthesizer.SpeakAsync("Wow. Since all groups have done " +
+                                                        "already. I will terminate the quiz early, and " +
+                                                        "reveal the result now. Are you ready???");
+                        }
+                        
                         GlobalFlowControl.Lesson.StartingQuiz = false;
                     }
-                    
                 }
             }
 

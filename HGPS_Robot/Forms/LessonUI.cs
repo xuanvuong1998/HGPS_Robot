@@ -30,10 +30,6 @@ namespace HGPS_Robot
             SyncHelper.StatusChanged += SyncHelper_StatusChanged;
             SyncHelper.RobotCommandChanged += SyncHelper_RobotCommandChanged;
 
-            GroupChallengeHelper.InitNewChallenge();
-            GroupChallengeHelper.SuggestHint(1);
-            GroupChallengeHelper.SuggestHint(2);
-
         }
 
         private void SyncHelper_RobotCommandChanged(object sender, RobotCommandEventArgs e)
@@ -77,7 +73,7 @@ namespace HGPS_Robot
                         LessonHelper.Start(status.LessonName, Convert.ToInt32(status.LessonSlide), voiceName)));
                         return;
                     }
-
+                    
                 }
                 else if (status.LessonState == "pause" || status.LessonState == "asking")
                 {
@@ -132,7 +128,6 @@ namespace HGPS_Robot
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            
         }
 
         private void picClose_Click(object sender, EventArgs e)

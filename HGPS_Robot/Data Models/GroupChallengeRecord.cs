@@ -13,10 +13,20 @@ namespace HGPS_Robot
         public List<string> Submission { get; set; } = new List<string>(); // time-result
 
         public int GetSubmissionCount() => Submission.Count();
+        
+        public int GetLeftChancesNumber()
+        {
+            var members = TablePositionHelper.GetMembersByGroupNumber(GroupNumber);
 
+            int leftChances = members.Count - Submission.Count;
+
+            return leftChances;
+        }
+        
         public string GetLatestSubmission()
         {
             var subs = Submission.OrderByDescending(x => int.Parse(x.Split('-')[0])).ToList();
+            if (subs == null || subs.Count == 0) return null;
             return subs[0];
         }
 
@@ -38,6 +48,7 @@ namespace HGPS_Robot
         public string GetFinalResult()
         {
             var latestSub = GetLatestSubmission();
+            if (latestSub == null) return null;
             var isCorrect = latestSub.Split('-')[1] == "1";
 
             if (isCorrect) return GetFirstCorrectSubmission();
@@ -47,11 +58,15 @@ namespace HGPS_Robot
 
         public int GetFinalSubTime()
         {
-            return int.Parse(GetFinalResult().Split('-')[0]);
+            var finalRes = GetFinalResult();
+            if (finalRes == null) return -1;
+            return int.Parse(finalRes.Split('-')[0]);
         }
 
         public bool GetFinalSubResultInBool()
         {
+            var finalRes = GetFinalResult();
+            if (finalRes == null) return false;
             return GetFinalResult().Split('-')[1] == "1";
         }
 

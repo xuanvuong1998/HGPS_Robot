@@ -2,20 +2,54 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Timer = System.Timers.Timer;
+
 
 namespace HGPS_Robot
 {
     public partial class LessonSpeechUI : Form
     {
+        private string _offerHint;
+        private int timerTick = 0;
+        private Timer timer = new Timer();
+        private bool hintShown = false;
+        private const int HINT_TIMEOUT = 8;
         public LessonSpeechUI()
         {
             InitializeComponent();
+            timer.Interval = 1000;
+            timer.AutoReset = true;
+            timer.Elapsed += Timer_Elapsed;
         }
+        
+        private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            Debug.WriteLine("Help? " + timerTick);
+            timerTick++;
+            if (timerTick == HINT_TIMEOUT)
+            {
+                GlobalFlowControl.GroupChallenge.IsOfferingHint = false;
+                ShowMessage("GROUP CHALLENGE"); // Reset label
+                timer.Stop();
+            }
+        }
+
+        public void OfferHint()
+        {
+            ShowMessage("TOUCH ME TO SEE THE HINT");
+            hintShown = false;
+            GlobalFlowControl.GroupChallenge.IsOfferingHint = true;
+            timerTick = 0;
+            timer.Start();
+            _offerHint = GlobalFlowControl.GroupChallenge.OfferHint();
+        }
+
         private void Form2_Shown(object sender, EventArgs e)
         {
             //this.TopMost = true;
@@ -92,25 +126,28 @@ namespace HGPS_Robot
             }
         }
 
-        //private void PicRoboTA_Click(object sender, EventArgs e)
-        //{
-        //    if (_paused == false)
-        //    {
-        //        LessonHelper.Pause();
-        //        _paused = true;
+        private void picBackground_Click(object sender, EventArgs e)
+        {
+            if (hintShown == false && 
+                GlobalFlowControl.GroupChallenge.IsOfferingHint == true)
+            {
+                hintShown = true;
+                timerTick = 0;
+                ShowMessage(_offerHint);
+            }
+        }
 
-        //    }
-        //    else if (_paused == true)
-        //    {
-        //        LessonHelper.Resume();
-        //        _paused = false;
-                
-        //    }
-        //}
+        private void lblMessage_Click(object sender, EventArgs e)
+        {
+            if (hintShown == false &&
+                GlobalFlowControl.GroupChallenge.IsOfferingHint == true)
+            {
+                hintShown = true;
+                timerTick = 0;
+                ShowMessage(_offerHint);
+            }
+           
+        }
 
-        //private void picLogo_Click(object sender, EventArgs e)
-        //{
-        //    LessonHelper.ForceStop();
-        //}
     }
 }

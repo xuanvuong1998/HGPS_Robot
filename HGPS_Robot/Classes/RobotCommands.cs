@@ -163,6 +163,9 @@ namespace HGPS_Robot
                         UpperBodyHelper.DoGestures(val);
                         break;
 
+                    case "hint":
+                        GroupChallengeHelper.hints.Add(val);
+                        break;
                     case "start":
                         if (val.ToLower() == "quiz" || val.ToLower() == "group-challenge")
                         {
@@ -170,7 +173,6 @@ namespace HGPS_Robot
                             if (val.ToLower() == "group-challenge")
                             {
                                 GroupChallengeHelper.InitNewChallenge();
-                             
                             }
                             quiz.QuestionNumber = LessonHelper.QuestionNumber;
                             StartQuiz(quiz);
@@ -359,7 +361,6 @@ namespace HGPS_Robot
             quizTimer.AutoReset = true;
             quizTimer.Elapsed += Timer_Elapsed;
             QuizElapsedTime = 1;
-
             quizTimer.Start();
         }
 
@@ -367,7 +368,7 @@ namespace HGPS_Robot
         {
             if (LessonHelper.PauseRequested == false) QuizElapsedTime++;
 
-            Debug.WriteLine("Time Elapsed: " + (quizTime - QuizElapsedTime));
+            Debug.WriteLine("Time Left: " + (quizTime - QuizElapsedTime));
             
             if (QuizElapsedTime >= quizTime || GlobalFlowControl.Lesson.StartingQuiz == false)
             {

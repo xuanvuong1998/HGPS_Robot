@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace HGPS_Robot
 {
@@ -19,21 +20,32 @@ namespace HGPS_Robot
         private static Thread _thread = null;
         public static bool PauseRequested { get; set; } = false;
         private static RobotCommands _robotCommands = null;
-        private static LessonSpeechUI form2;
+        private static LessonSpeechUI frmInLesson;
         private static string _lessonName = null;
         private static List<RobotProgSlide> progData = null;
 
         static LessonHelper() { }
 
+        public static void StartGroupChallenge()
+        {
+            ChallengeNumber++;
+            frmInLesson.ShowMessage("GROUP CHALLENGE"); 
+        }
+
+        public static void OfferHint()
+        {
+            frmInLesson.OfferHint();
+        }
+
         public static void Start(string lessonName, int startSlideNum, string voiceName)
         {
+
             GlobalFlowControl.Lesson.ResetAll();
             Synthesizer.SelectVoiceByName(GlobalData.GetVoiceNameFromVoiceNumber(voiceName));
-            //UpperBodyHelper.MoveRandomlyAllMotors();
             RobotActionHelper.MoveDuringLesson();
-            form2 = new LessonSpeechUI();
+            frmInLesson = new LessonSpeechUI();
 
-            form2.ShowForm();
+            frmInLesson.ShowForm();
 
             _lessonName = lessonName;
             QuestionNumber = 0;
@@ -58,14 +70,14 @@ namespace HGPS_Robot
                             if (cmd.Type.ToLower() == "start")
                                 if (cmd.Value.ToLower() == "quiz" || cmd.Value.ToLower() == "group-challenge")
                                 {
-                                    QuestionNumber++;
+                                    QuestionNumber++; // Synchronize question number flow
                                 }
                         }
 
                     }
                     else
                     {
-                        while (LessonHelper.PauseRequested)
+                        while (PauseRequested)
                         {
                             Thread.Sleep(1000); // Remove busy waiting overloading
                         }
@@ -192,7 +204,7 @@ namespace HGPS_Robot
                 LessonStatusHelper.Update("", null, "ended", null, null, null);
                 if (_thread != null && _thread.IsAlive)
                 {
-                    form2.CloseForm();
+                    frmInLesson.CloseForm();
                     if (_robotCommands != null)
                         _robotCommands.StopSpeak();
                     if (_thread != null && _thread.IsAlive)
@@ -212,7 +224,7 @@ namespace HGPS_Robot
                 LessonStatusHelper.Update(null, null, null, null, null, null);
                 if (_thread != null && _thread.IsAlive)
                 {
-                    form2.CloseForm();
+                    frmInLesson.CloseForm();
                     if (_robotCommands != null)
                         _robotCommands.StopSpeak();
                     _thread.Abort();
@@ -232,7 +244,7 @@ namespace HGPS_Robot
 
             if (type == "speak" || type == "speakasync")
             {
-                form2.ShowMessage(e.CommandValue);
+                frmInLesson.ShowMessage(e.CommandValue);
             }
         }
         private static void OnLessonEnded()
