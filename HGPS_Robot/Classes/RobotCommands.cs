@@ -367,7 +367,11 @@ namespace HGPS_Robot
 
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if (LessonHelper.PauseRequested == false) QuizElapsedTime++;
+            if (LessonHelper.PauseRequested == false)
+            {
+                Debug.WriteLine("Pausing");
+                QuizElapsedTime++;
+            }
 
             Debug.WriteLine("Time Left: " + (quizTime - QuizElapsedTime));
             

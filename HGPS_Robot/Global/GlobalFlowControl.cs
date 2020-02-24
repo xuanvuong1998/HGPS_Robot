@@ -120,7 +120,8 @@ namespace HGPS_Robot
                 var groupNum = int.Parse(top.Split('-')[0]);
 
                 BaseHelper.GoUntilReachedGoalOrCanceled("A" + groupNum);
-                Synthesizer.SpeakAsync("Coddie is going to group " + groupNum);
+                Synthesizer.SpeakAsync("Group " + groupNum + ". Do you " +
+                    "want to a hint?");
                 
                 var hint = top.Split('-')[1];
 
