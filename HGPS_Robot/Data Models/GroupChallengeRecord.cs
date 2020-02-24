@@ -72,6 +72,7 @@ namespace HGPS_Robot
 
         private int IsCorrectAnswer(string sub)
         {
+            if (sub == null || sub == "") return 0;
             return sub.Split('-')[1] == "1" ? 1 : 0;
         }
               

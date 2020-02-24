@@ -15,7 +15,8 @@ namespace HGPS_Robot
         // records of current challenge sorted by performance (correct then time order)
         private static List<GroupChallengeRecord> currentChallengeRecord;
         public static List<string> hints = new List<string>();
-        private const int CHECKING_INTERVAL = 20; // 20 seconds
+        private const int CHECKING_INTERVAL = 20; // 30 seconds
+        private const int OFFER_HINT_INTERVAL = 5; // 30 seconds
         private static int checkingTimerTick = 0;
         private static Timer checkingTimer = new Timer
         { AutoReset = true, Interval = 1000 };
@@ -135,14 +136,14 @@ namespace HGPS_Robot
                 FindGroupNeedHelp();
             }
             
-            if (checkingTimerTick % 4 == 0 // Offer hint every each 4 seconds
+            if (checkingTimerTick % OFFER_HINT_INTERVAL == 0 // Offer hint every each 4 seconds
                 && GlobalFlowControl.GroupChallenge.IsOfferingHint == false
                 && GlobalFlowControl.GroupChallenge.IsServingQueueEmpty() == false
                )
             {
                 int timeLeft = LessonHelper.CurrentQuizTimeout
                                 - GlobalFlowControl.Lesson.QuizElapsedTime;
-                if (timeLeft >= 30)
+                if (timeLeft >= 25)
                 {
                     bool stt = CheckGroupStatusBeforeOfferHint();
 
@@ -150,8 +151,13 @@ namespace HGPS_Robot
 
                     if (stt)
                     {
+                        Debug.WriteLine("Checked! Some group need help now. ");
                         GlobalFlowControl.GroupChallenge.IsOfferingHint = true;
                         LessonHelper.OfferHint();
+                    }
+                    else
+                    {
+                        Debug.WriteLine("No need hint any more");
                     }
                 }
             }
@@ -364,7 +370,7 @@ namespace HGPS_Robot
 
                     if (rdmNum == 0)
                     {
-                        speech += "you guys are the top " + rank + " in overall. " +
+                        speech += "you guys are the number " + rank + " in overall. " +
                                                 "Very good job. Congratulation!";
                     }
                     else
@@ -424,7 +430,7 @@ namespace HGPS_Robot
                     int rdmNum = new Random().Next(2);
                     if (rdmNum == 0)
                     {
-                        Synthesizer.Speak($"Wow. Believe it or not. " +
+                        Synthesizer.Speak($"Oh...dear..." +
                             $"Group {group.GroupNumber}. you guys had {correctNum} times correct. " +
                             $"But. Unluckily, your last submission is not correct. ");
 
@@ -432,7 +438,7 @@ namespace HGPS_Robot
                     }
                     else
                     {
-                        Synthesizer.Speak($"Group {group.GroupNumber}. " +
+                        Synthesizer.Speak($"Oh...No...Group {group.GroupNumber}. " +
                             $"It is so regretful... " +
                             $"You guys actually submitted correct answer at the " +
                             $"second of {firstCorrect.Split('-')[0]}. " +
@@ -465,8 +471,8 @@ namespace HGPS_Robot
             else
             {
                 Synthesizer.Speak(
-                    "another groups, all your answers are also very near to the " +
-                    "correct answer, but not fully correct. Don't worry. " +
+                    "another groups, all your answers are not correct. " +
+                    "Don't worry. " +
                     "Let's try your best in the next challenge. " +
                     "All of you, please don't give up. ");
             }
@@ -491,8 +497,8 @@ namespace HGPS_Robot
 
             AudioHelper.PlayInCorrectSound();
 
-            speech = "Ok. Don't too worry about it. " +
-                "Let's me check again, is there any time that you " +
+            speech = "Ok. Don't worry about it. " +
+                "Let me check again, is there any time that you " +
                 "have submitted any correct answer. ";
 
             Synthesizer.Speak(speech);
@@ -521,7 +527,7 @@ namespace HGPS_Robot
                  "I am very excited to reveal your group results. "); break;
                     case 1:
                         Synthesizer.Speak("Time is over. Now let's go to the " +
-                            "most interesting part. Where we can see which group " +
+                            "most interesting part, to see which group, " +
                             "is the " +
                             "champion of this challenge. ");
                         break;
@@ -540,7 +546,7 @@ namespace HGPS_Robot
 
             switch (rdmNum)
             {
-                case 0: Synthesizer.Speak("Are you confident to become the top 1? "); break;
+                case 0: Synthesizer.Speak("Are you confident to become the number 1? "); break;
                 case 1: Synthesizer.Speak("Are you ready? "); break;
                 case 2: Synthesizer.Speak("Where do you think your ranking is? "); break;
             }
@@ -574,7 +580,7 @@ namespace HGPS_Robot
                     }
 
                     speech += $" group {groupNum}...... "
-                        + $"You are the top 1... Within only {subTime} seconds, you " +
+                        + $"You are the number 1... Within only {subTime} seconds, you " +
                         $"become the fastest group, who got the correct answer! ";
 
                     speech += "Everyone, please give a round of applause for" +
@@ -655,12 +661,11 @@ namespace HGPS_Robot
 
             if (i == currentChallengeRecord.Count) return;
 
-            Synthesizer.Speak("What's about the remaining groups? ");
-            Wait(1500);
-            Synthesizer.Speak("I am so sorry to say that your final " +
-                "answer is not correct. But. Don't too worry. " +
-                "Now, I will check again, to see is there any time you had " +
-                "a correct answer. ");
+            Synthesizer.Speak("What about the remaining groups? ");
+            //Synthesizer.Speak("I am so sorry to say that your final " +
+            //    "answer is not correct. But. Don't worry. " +
+            //    "Now, I will check again, to see is there any time you had " +
+            //    "a correct answer. ");
 
             Wait(1500);
             FindAnyCorrectAnswer(currentChallengeRecord.Count - i + 1);

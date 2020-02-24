@@ -9,6 +9,7 @@ using Robot;
 using Robot.Data;
 using ROS = Robot.Data.ROS;
 using Timer = System.Timers.Timer;
+using SpeechLibrary;
 
 namespace HGPS_Robot
 {
@@ -212,6 +213,7 @@ namespace HGPS_Robot
         }
         static public void Go(string location)
         {
+            
             try
             {
                 GlobalFlowControl.Navigation.ResetBeforeNavigation();

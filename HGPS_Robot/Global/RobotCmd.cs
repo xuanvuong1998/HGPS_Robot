@@ -32,7 +32,7 @@ namespace HGPS_Robot
             var rdm = new Random();
             int rdmNum = rdm.Next(1, 11);
             if (GlobalFlowControl.Lesson.ChosenStudent != null
-                || rdmNum <= 6)
+                || rdmNum <= 5)
             {
                 //ask
                 Debug.WriteLine("ASKING STUDENT");
@@ -121,7 +121,7 @@ namespace HGPS_Robot
                             case 4:
                                 resultSpeech = "Very good ";
                                 break;
-
+                                
                         }
                         resultSpeech += student.Student_id + "! Your answer is correct!";
                     }
@@ -134,7 +134,6 @@ namespace HGPS_Robot
 
                 }
             }
-
 
             AnalyzeStudentPerformance(AssessPerformance);
 
@@ -168,8 +167,7 @@ namespace HGPS_Robot
                 speech += "Come on guys, don't give up. ";
 
                 LessonHelper.InsertPraise(speech);
-
-
+                
                 return;
             }
             else
@@ -372,9 +370,21 @@ namespace HGPS_Robot
 
             if (leftSeconds <= 10) return;
 
-            Synthesizer.Speak($"Group {groupNum} submitted. ");
+            Synthesizer.SpeakAsync($"Group {groupNum} submitted. ");
+
+            var subResult = GroupChallenge.Split('-')[1];
 
             if (leftSeconds <= 20) return;
+
+            if (subResult == "0")
+            // Suggest hint for group just Submit incorrect answer
+            // (But at most 2 hints)
+            {
+                var gnum = int.Parse(GroupChallenge.Split('-')[0]);
+                GroupChallengeHelper.SuggestHint(groupNum);
+            }
+
+            return;
 
             int rdmNum = new Random().Next(6); //  3 4 5=> don't speak
 
@@ -383,12 +393,12 @@ namespace HGPS_Robot
                 switch (rdmNum)
                 {
                     case 0:
-                        Synthesizer.Speak("No more chance for group " + groupNum); break;
+                        Synthesizer.SpeakAsync("No more chance for group " + groupNum); break;
                     case 1:
-                        Synthesizer.Speak("This is the final submission of group " +
+                        Synthesizer.SpeakAsync("This is the final submission of group " +
                             groupNum + " as well.  "); break;
                     case 2:
-                        Synthesizer.Speak("Group " + groupNum + " is done, please " +
+                        Synthesizer.SpeakAsync("Group " + groupNum + " is done, please " +
                             "wait for the result. "); break;
                 }
             }
@@ -397,13 +407,13 @@ namespace HGPS_Robot
                 switch (rdmNum)
                 {
                     case 0:
-                        Synthesizer.Speak("Group " + groupNum + " has " +
+                        Synthesizer.SpeakAsync("Group " + groupNum + " has " +
                 leftChances + " more chances. "); break;
                     case 1:
-                        Synthesizer.Speak("Group " + groupNum + " can " +
+                        Synthesizer.SpeakAsync("Group " + groupNum + " can " +
                             "submit " + leftChances + " more times. "); break;
                     case 2:
-                        Synthesizer.Speak(leftChances + " more try for " +
+                        Synthesizer.SpeakAsync(leftChances + " more try for " +
                             "group " + groupNum + ". "); break;
                 }
 
@@ -412,25 +422,16 @@ namespace HGPS_Robot
                     switch (rdmNum)
                     {
                         case 0:
-                            Synthesizer.Speak("Remember to check carefully for " +
+                            Synthesizer.SpeakAsync("Remember to check carefully for " +
                                 "your last submisson"); break;
                         case 1:
-                            Synthesizer.Speak("Be careful with the final answer"); break;
+                            Synthesizer.SpeakAsync("Be careful with the final answer"); break;
                         case 2:
-                            Synthesizer.Speak("Please think carefully for the " +
+                            Synthesizer.SpeakAsync("Please think carefully for the " +
                                 "last chance. "); break;
                     }
                 }
 
-                var subResult = GroupChallenge.Split('-')[1];
-
-                if (subResult == "0")
-                // Suggest hint for group just Submit incorrect answer
-                // (But at most 2 hints)
-                {
-                    var gnum = int.Parse(GroupChallenge.Split('-')[0]);
-                    GroupChallengeHelper.SuggestHint(groupNum);
-                }
             }
 
         }
@@ -467,7 +468,6 @@ namespace HGPS_Robot
                     var secondsLeft = LessonHelper.CurrentQuizTimeout
                         - GlobalFlowControl.Lesson.QuizElapsedTime;
 
-
                     if (secondsLeft > 11)
                     {
                         if (GlobalFlowControl.GroupChallenge.IsHappening)
@@ -475,6 +475,10 @@ namespace HGPS_Robot
                             Synthesizer.SpeakAsync("Wow. Since all groups have done " +
                                                         "already. I will terminate the quiz early, and " +
                                                         "reveal the result now. Are you ready???");
+                        }
+                        else
+                        {
+                            Synthesizer.SpeakAsync("Time is over!");
                         }
                         
                         GlobalFlowControl.Lesson.StartingQuiz = false;
@@ -499,9 +503,7 @@ namespace HGPS_Robot
                     AnalyzeEmotion(happyPc, sadPc, neutralPc);
 
                 }
-
             }
-
 
             if (AssessPerformance != null)
             {

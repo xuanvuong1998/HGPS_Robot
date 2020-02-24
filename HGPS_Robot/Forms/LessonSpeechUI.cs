@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SpeechLibrary;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -19,7 +20,7 @@ namespace HGPS_Robot
         private int timerTick = 0;
         private Timer timer = new Timer();
         private bool hintShown = false;
-        private const int HINT_TIMEOUT = 8;
+        private const int HINT_TIMEOUT = 10;
         public LessonSpeechUI()
         {
             InitializeComponent();
@@ -42,11 +43,36 @@ namespace HGPS_Robot
 
         public void OfferHint()
         {
+            timerTick = 0;
+            
+            var top = GlobalFlowControl.GroupChallenge.RemoveCurrentOffer();
+
+            var groupNum = int.Parse(top.Split('-')[0]);
+
+            BaseHelper.GoUntilReachedGoalOrCanceled("A" + groupNum);
+            Synthesizer.SetVolume(50);
+            int rdmNum = new Random().Next(3);
+
+            switch (rdmNum)
+            {
+                case 0:
+                    Synthesizer.SpeakAsync("Group " + groupNum + ". Do you " +
+             "need a hint?"); break;
+                case 1:
+                    Synthesizer.SpeakAsync("Group " + groupNum + ". Touch me if " +
+                        "you need help. "); break;
+                case 2:
+                    Synthesizer.SpeakAsync("Group " + groupNum + ". Do you need " +
+                        "any help? "); break;
+            }
+            
+            Synthesizer.SetVolume(100);
+            _offerHint = top.Split('-')[1];
+
             ShowMessage("TOUCH ME TO SEE THE HINT");
             hintShown = false;
-            timerTick = 0;
             timer.Start();
-            _offerHint = GlobalFlowControl.GroupChallenge.OfferHint();
+            
         }
 
         private void Form2_Shown(object sender, EventArgs e)

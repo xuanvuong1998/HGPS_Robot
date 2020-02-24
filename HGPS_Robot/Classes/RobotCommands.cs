@@ -183,7 +183,7 @@ namespace HGPS_Robot
                             }
                             
                             LessonStatusHelper.LessonStatus.CurQuiz = null;
-
+                            
                             Wait(QUIZ_BUFFER_SECONDS * 1000);
                             // This QUIZ BUFFER TO give extra time for all student submit the answer
 
@@ -191,11 +191,6 @@ namespace HGPS_Robot
                             StopQuiz();
                            
                             Wait(QUIZ_BUFFER_SECONDS * 1000);
-
-                            var now = DateTime.Now;
-                            
-                            Debug.WriteLine(now + " : QUIZ COMPLETED");
-
                             // This QUIZ BUFFER TO give extra time for teacher send student result to robot
                         }
                         else if (val.ToLower() == "emotion-survey")
@@ -236,9 +231,7 @@ namespace HGPS_Robot
                     case "robot":
                         if (val == "pickup-std")
                         {
-
                             RandomAskStudentQuestion();
-                            
                         }
                         break;
                     default:
@@ -284,7 +277,7 @@ namespace HGPS_Robot
             
             Synthesizer.Speak(speech);
 
-            Wait(3000);
+            Wait(2000);
                     
         }
 
@@ -335,9 +328,9 @@ namespace HGPS_Robot
             WebHelper.UpdateStatus(status);
 
             while (!GlobalFlowControl.Lesson.StudentFeedbackReceived) ;
-
+            
             LessonStatusHelper.LessonStatus.LessonState = previousLessonStatus;
-            Wait(7500); // Remove thread conflict
+            Wait(7000); // Remove thread conflict
             
             Debug.WriteLine("Received student feedback");
 
@@ -369,15 +362,18 @@ namespace HGPS_Robot
         {
             if (LessonHelper.PauseRequested == false)
             {
-                Debug.WriteLine("Pausing");
                 QuizElapsedTime++;
+            }
+            else
+            {
+                Debug.WriteLine("Lesson is pausing");
             }
 
             Debug.WriteLine("Time Left: " + (quizTime - QuizElapsedTime));
             
             if (QuizElapsedTime >= quizTime || GlobalFlowControl.Lesson.StartingQuiz == false)
-            {
-                GlobalFlowControl.Lesson.StartingQuiz = false;
+            { 
+                GlobalFlowControl.Lesson.StartingQuiz = false; 
                 quizTimer.Stop();             
             }
         }
@@ -406,7 +402,6 @@ namespace HGPS_Robot
             };
 
         }
-
 
         private void StopQuiz()
         {

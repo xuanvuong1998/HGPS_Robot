@@ -39,7 +39,6 @@ namespace HGPS_Robot
 
         public static void Start(string lessonName, int startSlideNum, string voiceName)
         {
-
             GlobalFlowControl.Lesson.ResetAll();
             Synthesizer.SelectVoiceByName(GlobalData.GetVoiceNameFromVoiceNumber(voiceName));
             RobotActionHelper.MoveDuringLesson();
@@ -171,8 +170,6 @@ namespace HGPS_Robot
             PauseSpeak();
             PauseRequested = true;
         }
-
-
 
         public static void ResumeLesson()
         {

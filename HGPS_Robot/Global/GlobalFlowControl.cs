@@ -95,9 +95,9 @@ namespace HGPS_Robot
                 return ServeHintsQueue.Peek();
             }
 
-            public static void RemoveCurrentOffer()
+            public static string RemoveCurrentOffer()
             {
-                ServeHintsQueue.Dequeue();
+                return ServeHintsQueue.Dequeue();
             }
 
             public static void ResetQueue()
@@ -109,25 +109,7 @@ namespace HGPS_Robot
             {
                 return ServeHintsQueue.Count == 0;
             }
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <returns>return Hint content </returns>
-            public static string OfferHint()
-            {
-                var top = ServeHintsQueue.Dequeue();
-
-                var groupNum = int.Parse(top.Split('-')[0]);
-
-                BaseHelper.GoUntilReachedGoalOrCanceled("A" + groupNum);
-                Synthesizer.SpeakAsync("Group " + groupNum + ". Do you " +
-                    "want to a hint?");
-                
-                var hint = top.Split('-')[1];
-
-                return hint;
-                
-            }
+           
         }
 
         public class Lesson
