@@ -97,19 +97,18 @@ namespace HGPS_Robot
             _thread.Start();
         }
 
-        public static void SaveLessonHistory(string lessonName, string teacherId, string className)
-        {
-            var lessonHistory = new LessonHistory
-            {
-                Lesson_name = lessonName,
-                DateTime = DateTime.Now,
-                Teacher_id = teacherId,
-                Class_name = className
-            };
+        //public static void SaveLessonHistory(string lessonName, string teacherId, string className)
+        //{
+        //    var lessonHistory = new LessonHistory
+        //    {
+        //        Lesson_name = lessonName,
+        //        DateTime = DateTime.Now,
+        //        Teacher_id = teacherId,
+        //        Class_name = className
+        //    };
 
-            WebHelper.AddLessonHistory(lessonHistory);
-
-        }
+        //    WebHelper.AddLessonHistory(lessonHistory);
+        //}
 
         public static void InsertCommand(string cmdType, string cmdValue)
         {
@@ -178,7 +177,6 @@ namespace HGPS_Robot
             {
                 PauseRequested = false;
                 _robotCommands.ResumeSpeak();
-                //manualResetEvent.Set(); 
 
             }
             catch (Exception ex)
@@ -249,7 +247,6 @@ namespace HGPS_Robot
             EndLesson();
             LessonEnded?.Invoke(null, EventArgs.Empty);
         }
-
 
     }
 }

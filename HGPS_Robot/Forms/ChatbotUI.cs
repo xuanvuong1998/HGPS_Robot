@@ -18,6 +18,7 @@ namespace HGPS_Robot
         private int waitingActivateCount;
         private Timer checkingTimer = new Timer();
         InConversationUI conversationUI = new InConversationUI();
+        private bool _formClosed = false;
         
         private void InitTimers()
         {
@@ -68,7 +69,8 @@ namespace HGPS_Robot
             {
                 await Recognizer.RecognizeKeywordWithTimeout(GlobalData.ActivationKeywords, 10)
                                     .ConfigureAwait(false);
-                
+
+                if (_formClosed) break;
                 if (Recognizer.KeywordRecognized)
                 {                    
                     checkingTimer.Start();
@@ -83,6 +85,7 @@ namespace HGPS_Robot
 
         private void picClose_Click(object sender, EventArgs e)
         {
+            _formClosed = true;
             this.Close();
         }
 

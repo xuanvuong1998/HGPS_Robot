@@ -16,6 +16,30 @@ namespace HGPS_Robot
             Thread.Sleep(miliSec);
         }
 
+        public static void MoveDuringChatbot()
+        {
+            var rdm = new Random();
+            Task.Factory.StartNew(() =>
+            {
+                do
+                {
+                    int headMovementRdm = rdm.Next(2);
+
+                    if (headMovementRdm == 0)
+                    {
+                        UpperBodyHelper.Head.Left();
+                    }
+                    else
+                    {
+                        UpperBodyHelper.Head.Right();
+                    }
+
+                } while (GlobalFlowControl.ChatBot.ConversationEnable);
+
+                UpperBodyHelper.ResetAll();
+            });
+        }
+
         public static void MoveDuringLesson()
         {
             var rdm = new Random();
@@ -41,12 +65,13 @@ namespace HGPS_Robot
                         {
                             UpperBodyHelper.Head.Left();
                         }
-                        else{
+                        else
+                        {
                             UpperBodyHelper.Head.Right();
                         }
 
                         if (GlobalFlowControl.Lesson.Starting == false) break;
-                        
+
                         if (GlobalFlowControl.Navigation.Moving)
                         {
                             UpperBodyHelper.ResetAll();
@@ -56,7 +81,7 @@ namespace HGPS_Robot
                             Wait(4000);
                         }
                     }
-                    
+
 
                 } while (GlobalFlowControl.Lesson.Starting);
 

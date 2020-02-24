@@ -15,7 +15,8 @@ namespace HGPS_Robot
         private static string[] startNewConversationKeyword =
             { "Hi! I am Cody. How can I help you with?",
             "Yes, I am here, nice to talking with you",
-            "Hi, Cody here, a teaching assitant robot. Feel free to ask me any question" };
+            "Hi, Cody here, a teaching assitant robot. Feel free to ask me any question " +
+                "about the mathematics" };
 
         private static string[] confirmToContinueKeyword =
         {
@@ -46,7 +47,7 @@ namespace HGPS_Robot
             var subKey = GlobalData.SpeechKey;
             var region = GlobalData.SpeechRegion;
             Recognizer.Setup(subKey, region);
-            Recognizer.SilenceTimeOut = 1500;
+            Recognizer.SilenceTimeOut = 2000;
 
             var botId = GlobalData.BotId;
             var directLi = GlobalData.DirectLine;
@@ -136,7 +137,8 @@ namespace HGPS_Robot
             }
             else
             {
-                reply = await ChatBot.GetResponse(question);
+                //reply = await ChatBot.GetResponse(question);
+                reply = "don't understand";
             }
 
             if (reply.ToLower().Contains("don't understand"))
@@ -150,11 +152,12 @@ namespace HGPS_Robot
 
         public static void Start()
         {
-            GlobalFlowControl.ChatBot.ResetBeforeNewConversation();            
+            GlobalFlowControl.ChatBot.ResetBeforeNewConversation();
+
+            Synthesizer.SelectVoiceByName(GlobalData.Voice1);
 
             Task.Factory.StartNew(async () =>
             {
-                
                 Synthesizer.Speak(PickOne(startNewConversationKeyword));
                 do
                 {
@@ -171,7 +174,6 @@ namespace HGPS_Robot
                         IsEndConversationKeyword(ques))
                     {
                         Synthesizer.Speak("Ok, Bye");
-
                         GlobalFlowControl.ChatBot.ConversationEnable = false;
                     }
                     else
@@ -180,7 +182,8 @@ namespace HGPS_Robot
                         Synthesizer.Speak(reply);                                                
                                                 
                         if (unableToReplyCount >= 2) break;
-                        Wait(1000);
+                        
+                        //Wait(1000);
                         
                         Synthesizer.Speak(PickOne(confirmToContinueKeyword));
                     }

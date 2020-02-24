@@ -128,6 +128,10 @@ namespace HGPS_Robot
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.KeyCode == Keys.Escape)
+            {
+                this.Close();
+            }
         }
 
         private void picClose_Click(object sender, EventArgs e)

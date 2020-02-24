@@ -80,8 +80,6 @@ namespace HGPS_Robot
             _commands.Add(robotCommand);
         }
 
-    
-
         int commandIteration = 0;
         private void CommandHandler()
         {
