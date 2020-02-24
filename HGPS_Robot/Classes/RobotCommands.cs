@@ -253,7 +253,7 @@ namespace HGPS_Robot
 
             Synthesizer.Speak(rdmStd + ". " + "Can you stand up?");
 
-            Wait(3000);
+            Wait(2000);
 
             int rdmIndex = new Random().Next(3);
 
@@ -270,7 +270,7 @@ namespace HGPS_Robot
                         "and give me the answer. ";
                     break;
 
-                case 3:
+                case 2:
                     speech = "Ok. I want to challenge you by asking a question. " +
                         "Please listen carefully and answer. ";
                     break;
