@@ -16,7 +16,9 @@ namespace HGPS_Robot.Utils
         /// <returns></returns>
         public static string ChangeWords(string sentence)
         {
-            return sentence.Replace("Coddie", "Cody");
+            sentence =  sentence.Replace("Coddie", "Cody");
+            sentence = sentence.Replace("Nizam", "Neezam");
+            return sentence;
         }
     }
 }

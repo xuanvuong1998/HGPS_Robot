@@ -212,11 +212,9 @@ namespace HGPS_Robot
         }
         static public void Go(string location)
         {
-            
             try
             {
                 GlobalFlowControl.Navigation.ResetBeforeNavigation();
-
                 rBase.Go(location);
             }
             catch { }

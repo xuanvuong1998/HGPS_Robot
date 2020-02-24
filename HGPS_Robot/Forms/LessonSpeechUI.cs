@@ -44,7 +44,6 @@ namespace HGPS_Robot
         {
             ShowMessage("TOUCH ME TO SEE THE HINT");
             hintShown = false;
-            GlobalFlowControl.GroupChallenge.IsOfferingHint = true;
             timerTick = 0;
             timer.Start();
             _offerHint = GlobalFlowControl.GroupChallenge.OfferHint();

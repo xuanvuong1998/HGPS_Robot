@@ -102,7 +102,6 @@ namespace HGPS_Robot
                 
                 Debug.WriteLine(cmd + "/" + val); 
                 
-                
                 switch (cmd.ToLower())
                 {
                     case "speak":
@@ -207,7 +206,9 @@ namespace HGPS_Robot
                     case "gountil":
                         BaseHelper.GoUntilReachedGoalOrCanceled(val);
                         break;
-
+                    case "go":
+                        BaseHelper.Go(val);
+                        break;
                     case "asking":
                         var status = LessonStatusHelper.LessonStatus;
                         if (Convert.ToInt32(val) == 1)

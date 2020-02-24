@@ -134,9 +134,11 @@ namespace HGPS_Robot
                 Debug.WriteLine("Find group who haven't submitted");
                 FindGroupNeedHelp();
             }
-
-            if (GlobalFlowControl.GroupChallenge.IsServingQueueEmpty() == false
-                && GlobalFlowControl.GroupChallenge.IsOfferingHint == false)
+            
+            if (checkingTimerTick % 4 == 0 // Offer hint every each 4 seconds
+                && GlobalFlowControl.GroupChallenge.IsOfferingHint == false
+                && GlobalFlowControl.GroupChallenge.IsServingQueueEmpty() == false
+               )
             {
                 int timeLeft = LessonHelper.CurrentQuizTimeout
                                 - GlobalFlowControl.Lesson.QuizElapsedTime;
@@ -148,6 +150,7 @@ namespace HGPS_Robot
 
                     if (stt)
                     {
+                        GlobalFlowControl.GroupChallenge.IsOfferingHint = true;
                         LessonHelper.OfferHint();
                     }
                 }
