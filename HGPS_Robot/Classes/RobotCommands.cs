@@ -248,7 +248,8 @@ namespace HGPS_Robot
 
             string rdmStd = TablePositionHelper.LatestChosenStudent;
 
-            BaseHelper.Go(TablePositionHelper.FindTablePosByStdId(rdmStd));
+            BaseHelper.GoUntilReachedGoalOrCanceled
+                (TablePositionHelper.FindTablePosByStdId(rdmStd));
 
             Synthesizer.Speak(rdmStd + ". " + "Can you stand up?");
 
