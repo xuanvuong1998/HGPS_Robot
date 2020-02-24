@@ -158,6 +158,7 @@ namespace HGPS_Robot
 
             Task.Factory.StartNew(async () =>
             {
+                RobotActionHelper.MoveDuringChatbot();
                 Synthesizer.Speak(PickOne(startNewConversationKeyword));
                 do
                 {
