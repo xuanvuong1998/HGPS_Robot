@@ -102,6 +102,9 @@ namespace HGPS_Robot
                 
                 switch (cmd.ToLower())
                 {
+                    case "subject":
+                        LessonHelper.LessonSubject = val;
+                        break;
                     case "speak":
                         Speak(val);
                         break;
@@ -202,7 +205,8 @@ namespace HGPS_Robot
                     case "go":
                         BaseHelper.Go(val);
                         break;
-                    case "asking":
+
+                    case "asking": // Asking student answer after the quiz ended
                         var status = LessonStatusHelper.LessonStatus;
                         if (Convert.ToInt32(val) == 1)
                         {
@@ -216,11 +220,11 @@ namespace HGPS_Robot
                         Wait(1500);
                         break;
                     case "lesson":
-                        if (val == "pause")
+                        if (val.ToLower() == "pause")
                         {
                             LessonHelper.SendPausedStatusToServer("paused");
                             LessonHelper.PauseLesson();
-                        }else if (val == "continue")
+                        }else if (val.ToLower() == "continue")
                         {
                             LessonHelper.SendPausedStatusToServer("resumed");
                             LessonHelper.ResumeLesson();

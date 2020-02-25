@@ -29,7 +29,10 @@ namespace HGPS_Robot
         {
             "thank you",
             "no thanks",
-            "bye. bye"
+            "bye. bye",
+            "no more question",
+            "don't have question",
+            "do not have question"
         };
 
         private static string[] dontUnderstandWords = {
@@ -137,8 +140,8 @@ namespace HGPS_Robot
             }
             else
             {
-                //reply = await ChatBot.GetResponse(question);
-                reply = "don't understand";
+                reply = await ChatBot.GetResponse(question);
+                //reply = "don't understand";
             }
 
             if (reply.ToLower().Contains("don't understand"))

@@ -15,6 +15,7 @@ namespace HGPS_Robot
         public static int ChallengeNumberTotal { get; set; } = 0;
         public static int CurrentQuizTimeout { get; set; }
         public static string LessonId { get; set; } = "";
+        public static string LessonSubject { get; set; } = "";
         public static int CurrentSlideNumber { get; private set; } = 0;
 
         private static Thread _thread = null;
@@ -86,7 +87,6 @@ namespace HGPS_Robot
 
                         RobotProgSlide _currentProgSlide = progData[CurrentSlideNumber - 1];
                         _robotCommands = new RobotCommands(_currentProgSlide.Commands);
-
 
                         _robotCommands.OnCommandUpdate += _robotCommands_OnCommandUpdate;
                         _robotCommands.Execute();

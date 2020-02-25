@@ -29,9 +29,12 @@ namespace HGPS_Robot
 
         public void AskRandomStudent(List<StudentHistoryDTO> list)
         {
+            
+
             var rdm = new Random();
             int rdmNum = rdm.Next(1, 11);
-            if (GlobalFlowControl.Lesson.ChosenStudent != null
+            if (LessonHelper.LessonSubject.ToLower() != "story"
+                && GlobalFlowControl.Lesson.ChosenStudent != null
                 || rdmNum <= 5)
             {
                 //ask
@@ -135,7 +138,14 @@ namespace HGPS_Robot
                 }
             }
 
-            AnalyzeStudentPerformance(AssessPerformance);
+            if (LessonHelper.LessonSubject.ToLower() == "story")
+            {
+                LessonHelper.InsertNextSlideCommand("asking", "0");
+            }
+            else
+            {
+                AnalyzeStudentPerformance(AssessPerformance);
+            }
 
         }
 
@@ -478,6 +488,13 @@ namespace HGPS_Robot
                         
                         GlobalFlowControl.Lesson.StartingQuiz = false;
                     }
+                }else if (LessonStatus == "Next")
+                {
+                    LessonStatusHelper.Update(null, LessonHelper.CurrentSlideNumber, "started", null, null, null);
+                }
+                else if (LessonStatus == "Previous")
+                {
+                    LessonStatusHelper.Update(null, LessonHelper.CurrentSlideNumber, "started", null, null, null);
                 }
             }
 
@@ -503,7 +520,6 @@ namespace HGPS_Robot
             if (AssessPerformance != null)
             {
                 AskRandomStudent(AssessPerformance);
-
             }
         }
     }
