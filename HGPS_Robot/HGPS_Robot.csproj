@@ -57,6 +57,12 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AudioSwitcher.AudioApi, Version=3.0.0.209, Culture=neutral, PublicKeyToken=fda5729e2db3a64f, processorArchitecture=MSIL">
+      <HintPath>..\packages\AudioSwitcher.AudioApi.3.0.0\lib\net40\AudioSwitcher.AudioApi.dll</HintPath>
+    </Reference>
+    <Reference Include="AudioSwitcher.AudioApi.CoreAudio, Version=3.0.0.209, Culture=neutral, PublicKeyToken=fda5729e2db3a64f, processorArchitecture=MSIL">
+      <HintPath>..\packages\AudioSwitcher.AudioApi.CoreAudio.3.0.0.1\lib\net40\AudioSwitcher.AudioApi.CoreAudio.dll</HintPath>
+    </Reference>
     <Reference Include="CsvHelper, Version=12.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
       <HintPath>..\packages\CsvHelper.12.1.2\lib\net45\CsvHelper.dll</HintPath>
     </Reference>
@@ -114,6 +120,7 @@
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="Robot">
       <HintPath>..\..\..\..\..\Desktop\CODDIE\Robotx64\Robot\bin\Debug\Robot.dll</HintPath>
     </Reference>
@@ -246,6 +253,7 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Chatbot\Conversation.cs" />
@@ -369,16 +377,18 @@
     <None Include="Resources\CoddieLessonUI1.PNG" />
     <None Include="Resources\CoddieLessonSpeechUI.PNG" />
     <None Include="Resources\listening.gif" />
-    <Content Include="media\applause.wav">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="media\champion.wav">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="media\incorrect.wav">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <None Include="Resources\LessonInProgress.jpg" />
+    <Content Include="media\champion1.wav" />
+    <Content Include="media\champion2.wav" />
+    <Content Include="media\cheering1.wav" />
+    <Content Include="media\cheering2.wav" />
+    <Content Include="media\cheering3.wav" />
+    <Content Include="media\cheering4.wav" />
+    <Content Include="media\cheering5.wav" />
+    <Content Include="media\sad1.wav" />
+    <Content Include="media\sad2.wav" />
+    <Content Include="media\sad3.wav" />
+    <Content Include="media\sad4.wav" />
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />

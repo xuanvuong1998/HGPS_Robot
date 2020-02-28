@@ -8,51 +8,39 @@ namespace HGPS_Robot
 {
     public static class StudentsPerformanceHelper
     {
-        private static string GetTopStreakPraise(List<StudentHistoryDTO> list)
+        public static List<StudentHistoryDTO> studentPerformanceOverall;
+
+        public static int GetCorrectSubNum(string sub)
         {
-            if (list != null)
-            {
-                var speech = new StringBuilder();
-                var studentsStreak = StudentsPerformanceHelper.GetCorrectStreak(list);
-                var numOfQuestions = StudentsPerformanceHelper.GetNumberOfQuestions(list);
-
-                var maxStreak = studentsStreak.Values.Max();
-                var studentsFullStreak = new List<string>();
-                foreach (var stud in studentsStreak)
-                {
-                    if (stud.Value == maxStreak)
-                        studentsFullStreak.Add(stud.Key);
-                }
-
-                if (studentsFullStreak.Count == 1)
-                {
-                    speech.Append($"Only {studentsFullStreak[0]} has gotten every question correct! ");
-                    speech.Append($"A round of applause for {studentsFullStreak[0]}. ");
-                }
-                else if (studentsFullStreak.Count > 1)
-                {
-                    if (studentsFullStreak.Count > 1 && studentsFullStreak.Count <= 5)
-                    {
-                        foreach (var stud in studentsFullStreak)
-                        {
-                            speech.Append($"{stud}, ");
-                        }
-                        speech.Append("have gotten every question correct! ");
-                    }
-                    else if (studentsFullStreak.Count > 5)
-                    {
-                        speech.Append("I am very happy that many of you gotten all questions correct! ");
-                    }
-                    speech.Append("Keep up the good work! ");
-                }
-                else
-                {
-                    return null;
-                }
-                return speech.ToString();
-            }
-            return null;
+            return sub.Count(x => x == '1');
         }
+
+        public static Dictionary<string, int> GetStudentsRanking()
+        {
+            var orderedList = studentPerformanceOverall.OrderByDescending(
+                        x => x.ResultInBinaryString.Count(y => y == '1')).ToList();
+
+            int rank = 0;
+            int preLevel = -1;
+
+            Dictionary<string, int> ranks = new Dictionary<string, int>();
+
+            foreach (var std in orderedList)
+            {
+                var p = GetCorrectSubNum(std.ResultInBinaryString);
+
+                if (p < preLevel)
+                {
+                    rank++;
+                }
+
+                ranks.Add(std.Student_id, rank);
+            }
+
+            return ranks;
+        }
+
+      
         public static int GetNumberOfCorrectStudent(List<StudentHistoryDTO> stdHis)
         {
             int cnt = 0;
@@ -131,28 +119,6 @@ namespace HGPS_Robot
             return 0;
         }
 
-        public static Dictionary<string,int> GetCorrectStreak(List<StudentHistoryDTO> studHistories)
-        {
-            if (studHistories != null)
-            {
-                var studentsStreak = new Dictionary<string, int>();
-
-                foreach (var stud in studHistories)
-                {
-                    var streak = 0;
-                    var scores = stud.ResultInBinaryString.Select(digit => int.Parse(digit.ToString())).ToList();
-                    foreach (var score in scores)
-                    {
-                        if (score != 0) streak++;
-                        else streak = 0;
-                    }
-                    studentsStreak.Add(stud.UserAccountFullName, streak);
-                }
-                return studentsStreak;
-            }
-            return null;
-        }
-
         public static int GetNumberOfQuestions(List<StudentHistoryDTO> studHistories)
         {
             if (studHistories != null)
@@ -163,9 +129,6 @@ namespace HGPS_Robot
             }
             return 0;
         }
-
-
-        
 
         public static StudentsPerformance GetSummary(List<StudentHistoryDTO> studHistories)
         {

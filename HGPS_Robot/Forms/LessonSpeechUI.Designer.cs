@@ -36,11 +36,12 @@
             // lblMessage
             // 
             this.lblMessage.Font = new System.Drawing.Font("Arial Rounded MT Bold", 52F, System.Drawing.FontStyle.Italic);
-            this.lblMessage.Location = new System.Drawing.Point(358, 183);
+            this.lblMessage.Location = new System.Drawing.Point(358, 68);
             this.lblMessage.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblMessage.Name = "lblMessage";
             this.lblMessage.Size = new System.Drawing.Size(398, 170);
             this.lblMessage.TabIndex = 0;
+            this.lblMessage.Text = "message";
             this.lblMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lblMessage.Click += new System.EventHandler(this.lblMessage_Click);
             // 
@@ -60,7 +61,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1034, 556);
+            this.ClientSize = new System.Drawing.Size(1637, 905);
             this.Controls.Add(this.picBackground);
             this.Controls.Add(this.lblMessage);
             this.Margin = new System.Windows.Forms.Padding(4);

@@ -178,6 +178,7 @@ namespace HGPS_Robot
                 Synthesizer.SetSpeed(-1);
                 GroupRecords.Clear();
                 GroupChallenge.ResetQueue();
+                GroupChallengeHelper.LoadHints();// load list of hints image names from dropbox hint folder
                 TablePositionHelper.LoadTablesInfo();
                 TablePositionHelper.DeleteChosenStudentList();
                 if (ChosenStudentList != null) ChosenStudentList.Clear();

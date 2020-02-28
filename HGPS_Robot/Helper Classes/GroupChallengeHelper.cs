@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,8 +15,9 @@ namespace HGPS_Robot
     {
         // records of current challenge sorted by performance (correct then time order)
         private static List<GroupChallengeRecord> currentChallengeRecord;
-        public static List<string> hints = new List<string>();
-        private const int CHECKING_INTERVAL = 20; // 30 seconds
+        private static List<int> responsibleGroups;
+        public static List<string> hints = new List<string>(); // List of hints image path
+        private static int CHECKING_INTERVAL = 30; // 30 seconds
         private const int OFFER_HINT_INTERVAL = 5; // 30 seconds
         private static int checkingTimerTick = 0;
         private static Timer checkingTimer = new Timer
@@ -40,15 +42,26 @@ namespace HGPS_Robot
 
             if (receivedBefore == 0)
             {
-                receivedHintStudentList.Add(groupNum);
-                GlobalFlowControl.GroupChallenge.AddToServingQueue(groupNum,
-                    GetChallengeHint(1));
+                var hint = GetChallengeHint(1);
+                Debug.WriteLine(hint);
+                if (hint != null)
+                {
+                    receivedHintStudentList.Add(groupNum);
+                    GlobalFlowControl.GroupChallenge.AddToServingQueue(groupNum,
+                       hint);
+                }
+                
             }
             else if (receivedBefore == 1)
             {
-                receivedHintStudentList.Add(groupNum);
-                GlobalFlowControl.GroupChallenge.AddToServingQueue(groupNum,
-                    GetChallengeHint(2)); 
+                var hint = GetChallengeHint(2);
+                Debug.WriteLine(hint);
+                if (hint != null)
+                {
+                    receivedHintStudentList.Add(groupNum);
+                    GlobalFlowControl.GroupChallenge.AddToServingQueue(groupNum,
+                        GetChallengeHint(2));
+                }
             }
             else
             {
@@ -59,8 +72,31 @@ namespace HGPS_Robot
 
         public static string GetChallengeHint(int hintNum)
         {
-            if (hintNum > hints.Count) return "NO MORE HINT";
-            return hints[hintNum - 1];
+            var avlHints = hints.Where(x => 
+                            x.Contains("C" + LessonHelper.ChallengeNumber)).ToList();
+            
+            if (hintNum > avlHints.Count) return null;
+
+            var hintName = "C" + LessonHelper.ChallengeNumber
+                      + "H" + hintNum + ".png";
+            
+            return hintName;
+        }
+
+        public static void LoadHints()
+        {
+            var hintFolder = FileHelper.GetHintFolderPath();
+
+            if (Directory.Exists(hintFolder))
+            {
+                string[] files = Directory.GetFiles(hintFolder);
+
+                foreach (var file in files)
+                {
+                    hints.Add(file);
+                }
+            }
+
         }
 
         private static void InitChallengeRecordList()
@@ -82,12 +118,53 @@ namespace HGPS_Robot
 
         public static void InitNewChallenge()
         {
+            BaseHelper.Go("HOME");
             LessonHelper.StartGroupChallenge();
             receivedHintStudentList.Clear();
+            InitRobotResponsibility();
             InitChallengeRecordList();
 
             GlobalFlowControl.GroupChallenge.IsHappening = true;
             StartServing();
+        }
+
+        /// <summary>
+        /// Assign middle-class groups for robot take care(offer hints during group challenge)
+        /// </summary>
+        private static void InitRobotResponsibility()
+        {
+            var ranks = StudentsPerformanceHelper.GetStudentsRanking();
+
+            var tables = TablePositionHelper.TablePositions;
+
+            Dictionary<int, int> groupLevel = new Dictionary<int, int>();
+
+            foreach (var table in tables)
+            {
+                int gNum = (int) table.GroupNumber;
+
+                string std = table.Student_Id;
+
+                if (groupLevel.ContainsKey(gNum) == false)
+                {
+                    groupLevel.Add(gNum, 0);
+                }
+
+                groupLevel[gNum] += ranks[std];
+            }
+
+            var list = groupLevel.OrderBy(x => x.Value).ToList();
+
+            int parts = (list.Count + 2) / 3; // 3 divided level (smart - normal - weak)
+
+            List<int> chosenGroups = new List<int>();
+            for(int i = parts; i + parts < parts * 2; i++)
+            {
+                chosenGroups.Add(list[i].Key);   
+            }
+
+            responsibleGroups = chosenGroups;
+            
         }
 
         public static void EndChallenge()
@@ -143,7 +220,7 @@ namespace HGPS_Robot
             {
                 int timeLeft = LessonHelper.CurrentQuizTimeout
                                 - GlobalFlowControl.Lesson.QuizElapsedTime;
-                if (timeLeft >= 25)
+                if (timeLeft >= 30)
                 {
                     bool stt = CheckGroupStatusBeforeOfferHint();
 
@@ -380,7 +457,14 @@ namespace HGPS_Robot
                     }
 
                     Synthesizer.Speak(speech);
-                    AudioHelper.PlayChampionSound();
+                    
+                    if (rank == 1)
+                    {
+                        AudioHelper.PlayChampionSound();
+                    }
+                    else{
+                        AudioHelper.PlayApplauseSound();
+                    }
                 }
                 else
                 {
@@ -434,7 +518,7 @@ namespace HGPS_Robot
                             $"Group {group.GroupNumber}. you guys had {correctNum} times correct. " +
                             $"But. Unluckily, your last submission is not correct. ");
 
-                        AudioHelper.PlayInCorrectSound();
+                        AudioHelper.PlaySadSound();
                     }
                     else
                     {
@@ -444,7 +528,7 @@ namespace HGPS_Robot
                             $"second of {firstCorrect.Split('-')[0]}. " +
                             $"But sadly, your final answer is not correct. ");
 
-                        AudioHelper.PlayInCorrectSound();
+                        AudioHelper.PlaySadSound();
 
                     }
                     Wait(1500);
@@ -495,7 +579,7 @@ namespace HGPS_Robot
                 "with this challenge, no group got any correct answer. ";
             Synthesizer.Speak(speech);
 
-            AudioHelper.PlayInCorrectSound();
+            AudioHelper.PlaySadSound();
 
             speech = "Ok. Don't worry about it. " +
                 "Let me check again, is there any time that you " +

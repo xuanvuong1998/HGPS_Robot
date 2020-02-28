@@ -43,6 +43,12 @@ namespace HGPS_Robot
 
             return fileNames;
         }
+
+        public static string GetHintFolderPath()
+        {
+            return BasePath + @"\" + LessonHelper.LessonName + @"\Hints\";
+        }
+        
         public static int GetLessonSlidesNumber(string lessonName)
         {
             string folderPath = BasePath + @"\" + lessonName + @"\Images\";

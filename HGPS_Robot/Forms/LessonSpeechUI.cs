@@ -16,35 +16,35 @@ namespace HGPS_Robot
 {
     public partial class LessonSpeechUI : Form
     {
-        private string _offerHint;
-        private int timerTick = 0;
+        private string hintImagePath;
         private Timer timer = new Timer();
         private bool hintShown = false;
-        private const int HINT_TIMEOUT = 10;
+        private const int HINT_TIMEOUT = 20 * 1000;
+        private Image defaultBackgroundImage;
         public LessonSpeechUI()
         {
             InitializeComponent();
-            timer.Interval = 1000;
-            timer.AutoReset = true;
+            defaultBackgroundImage = picBackground.Image;
+            timer.Interval = HINT_TIMEOUT;
+            timer.AutoReset = false;
             timer.Elapsed += Timer_Elapsed;
         }
-        
+
+        private void ResetLabel()
+        {
+            ShowMessage("GROUP CHALLENGE"); // Reset label
+            picBackground.Image = defaultBackgroundImage;
+
+            picBackground.SizeMode = PictureBoxSizeMode.StretchImage;
+        }
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            Debug.WriteLine("Help? " + timerTick);
-            timerTick++;
-            if (timerTick == HINT_TIMEOUT)
-            {
-                GlobalFlowControl.GroupChallenge.IsOfferingHint = false;
-                ShowMessage("GROUP CHALLENGE"); // Reset label
-                timer.Stop();
-            }
+            GlobalFlowControl.GroupChallenge.IsOfferingHint = false;
+            ResetLabel();
         }
 
         public void OfferHint()
         {
-            timerTick = 0;
-            
             var top = GlobalFlowControl.GroupChallenge.RemoveCurrentOffer();
 
             var groupNum = int.Parse(top.Split('-')[0]);
@@ -65,14 +65,15 @@ namespace HGPS_Robot
                     Synthesizer.SpeakAsync("Group " + groupNum + ". Do you need " +
                         "any help? "); break;
             }
-            
+
             Synthesizer.SetVolume(100);
-            _offerHint = top.Split('-')[1];
+            hintImagePath = FileHelper.GetHintFolderPath() + top.Split('-')[1];
 
             ShowMessage("TOUCH ME TO SEE THE HINT");
+            picBackground.SizeMode = PictureBoxSizeMode.CenterImage;
             hintShown = false;
             timer.Start();
-            
+
         }
 
         private void Form2_Shown(object sender, EventArgs e)
@@ -87,7 +88,7 @@ namespace HGPS_Robot
             picBackground.Controls.Add(lblMessage);
             lblMessage.Location = new Point(0, 300);
             lblMessage.AutoSize = false;
-            lblMessage.Size = new Size(area.Width-100, area.Height - (lblMessage.Location.Y + 150));
+            lblMessage.Size = new Size(area.Width - 100, area.Height - (lblMessage.Location.Y + 150));
             lblMessage.BackColor = Color.Transparent;
             lblMessage.TextAlign = ContentAlignment.MiddleCenter;
             lblMessage.Text = "Lesson starting...";
@@ -151,14 +152,23 @@ namespace HGPS_Robot
             }
         }
 
+        private void ShowHintImage()
+        {
+            lblMessage.Text = "";
+
+            //MessageBox.Show(hintImagePath);
+
+            picBackground.Image = Image.FromFile(hintImagePath); 
+        }
+        
         private void picBackground_Click(object sender, EventArgs e)
         {
-            if (hintShown == false && 
+            if (hintShown == false &&
                 GlobalFlowControl.GroupChallenge.IsOfferingHint == true)
             {
                 hintShown = true;
-                timerTick = 0;
-                ShowMessage(_offerHint);
+
+                ShowHintImage();
             }
         }
 
@@ -168,10 +178,9 @@ namespace HGPS_Robot
                 GlobalFlowControl.GroupChallenge.IsOfferingHint == true)
             {
                 hintShown = true;
-                timerTick = 0;
-                ShowMessage(_offerHint);
+                ShowHintImage();
             }
-           
+
         }
 
     }

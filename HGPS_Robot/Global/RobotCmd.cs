@@ -29,8 +29,6 @@ namespace HGPS_Robot
 
         public void AskRandomStudent(List<StudentHistoryDTO> list)
         {
-            
-
             var rdm = new Random();
             int rdmNum = rdm.Next(1, 11);
             if (LessonHelper.LessonSubject.ToLower() != "story"
@@ -124,7 +122,7 @@ namespace HGPS_Robot
                             case 4:
                                 resultSpeech = "Very good ";
                                 break;
-                                
+
                         }
                         resultSpeech += student.Student_id + "! Your answer is correct!";
                     }
@@ -152,6 +150,8 @@ namespace HGPS_Robot
         #region Student Performance
         private void AnalyzeStudentPerformance(List<StudentHistoryDTO> list)
         {
+            StudentsPerformanceHelper.studentPerformanceOverall = list;
+
             var rdm = new Random();
             var rdmNum = rdm.Next(1, 4); // generate random number 1-3
 
@@ -177,7 +177,7 @@ namespace HGPS_Robot
                 speech += "Come on guys, don't give up. ";
 
                 LessonHelper.InsertPraise(speech);
-                
+
                 return;
             }
             else
@@ -296,8 +296,6 @@ namespace HGPS_Robot
             return null;
         }
 
-
-
         #endregion
 
         #region Emotion Survey
@@ -375,70 +373,24 @@ namespace HGPS_Robot
 
             if (leftSeconds <= 10) return;
 
-            Synthesizer.SpeakAsync($"Group {groupNum} submitted. ");
+            if (leftChances == 0)
+            {
+                Synthesizer.SpeakAsync("Group " + groupNum + " is done");
+            }
+            else
+            {
+                Synthesizer.SpeakAsync($"Group {groupNum} submitted. ");
+            }
 
             var subResult = GroupChallenge.Split('-')[1];
 
-            if (leftSeconds <= 20) return;
-
-            if (subResult == "0")
+            if (subResult == "0" && leftSeconds > 20)
             // Suggest hint for group just Submit incorrect answer
             // (But at most 2 hints)
             {
                 var gnum = int.Parse(GroupChallenge.Split('-')[0]);
                 GroupChallengeHelper.SuggestHint(groupNum);
             }
-
-            return;
-
-            int rdmNum = new Random().Next(6); //  3 4 5=> don't speak
-
-            if (leftChances == 0)
-            {
-                switch (rdmNum)
-                {
-                    case 0:
-                        Synthesizer.SpeakAsync("No more chance for group " + groupNum); break;
-                    case 1:
-                        Synthesizer.SpeakAsync("This is the final submission of group " +
-                            groupNum + " as well.  "); break;
-                    case 2:
-                        Synthesizer.SpeakAsync("Group " + groupNum + " is done, please " +
-                            "wait for the result. "); break;
-                }
-            }
-            else
-            {
-                switch (rdmNum)
-                {
-                    case 0:
-                        Synthesizer.SpeakAsync("Group " + groupNum + " has " +
-                leftChances + " more chances. "); break;
-                    case 1:
-                        Synthesizer.SpeakAsync("Group " + groupNum + " can " +
-                            "submit " + leftChances + " more times. "); break;
-                    case 2:
-                        Synthesizer.SpeakAsync(leftChances + " more try for " +
-                            "group " + groupNum + ". "); break;
-                }
-
-                if (leftChances == 1) // last try left
-                {
-                    switch (rdmNum)
-                    {
-                        case 0:
-                            Synthesizer.SpeakAsync("Remember to check carefully for " +
-                                "your last submisson"); break;
-                        case 1:
-                            Synthesizer.SpeakAsync("Be careful with the final answer"); break;
-                        case 2:
-                            Synthesizer.SpeakAsync("Please think carefully for the " +
-                                "last chance. "); break;
-                    }
-                }
-
-            }
-
         }
 
         #endregion
@@ -475,26 +427,29 @@ namespace HGPS_Robot
 
                     if (secondsLeft > 11)
                     {
-                        if (GlobalFlowControl.GroupChallenge.IsHappening)
-                        {
-                            Synthesizer.SpeakAsync("Wow. Since all groups have done " +
-                                                        "already. I will terminate the quiz early, and " +
-                                                        "reveal the result now. Are you ready???");
-                        }
-                        else
-                        {
-                            Synthesizer.SpeakAsync("Time is over!");
-                        }
-                        
+
+                        Synthesizer.SpeakAsync("Wow. Since all of you have done " +
+                                                    "already. I will terminate the quiz early, and " +
+                                                    "reveal the result now. Are you ready???");
+
                         GlobalFlowControl.Lesson.StartingQuiz = false;
                     }
-                }else if (LessonStatus == "Next")
+                }
+                else if (LessonStatus == "Next")
                 {
-                    LessonStatusHelper.Update(null, LessonHelper.CurrentSlideNumber, "started", null, null, null);
+                    if (LessonHelper.CurrentDisplaySlideNumber < LessonHelper.TotalSlidesNumber)
+                    {
+                        LessonHelper.CurrentDisplaySlideNumber++;
+                        LessonStatusHelper.Update(LessonHelper.LessonName, LessonHelper.CurrentDisplaySlideNumber, "started", null, null, null);
+                    }
                 }
                 else if (LessonStatus == "Previous")
                 {
-                    LessonStatusHelper.Update(null, LessonHelper.CurrentSlideNumber, "started", null, null, null);
+                    if (LessonHelper.CurrentDisplaySlideNumber > 1)
+                    {
+                        LessonHelper.CurrentDisplaySlideNumber--;
+                        LessonStatusHelper.Update(LessonHelper.LessonName, LessonHelper.CurrentDisplaySlideNumber, "started", null, null, null);
+                    }
                 }
             }
 

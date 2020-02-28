@@ -16,10 +16,22 @@ namespace HGPS_Robot
         public static int CurrentQuizTimeout { get; set; }
         public static string LessonId { get; set; } = "";
         public static string LessonSubject { get; set; } = "";
+
+        // Current slide according to srcipt flow
         public static int CurrentSlideNumber { get; private set; } = 0;
+
+        // Current slide according to the thing display on the projector
+
+        public static int CurrentDisplaySlideNumber { get; set; } = 0;
+
+        public static int TotalSlidesNumber { get; set; } = 0;
+       
 
         private static Thread _thread = null;
         public static bool PauseRequested { get; set; } = false;
+
+        public static string LessonName { get; set; }
+
         private static RobotCommands _robotCommands = null;
         private static LessonSpeechUI frmInLesson;
         private static string _lessonName = null;
@@ -40,6 +52,7 @@ namespace HGPS_Robot
 
         public static void Start(string lessonName, int startSlideNum, string voiceName)
         {
+            LessonName = lessonName;
             GlobalFlowControl.Lesson.ResetAll();
             Synthesizer.SelectVoiceByName(GlobalData.GetVoiceNameFromVoiceNumber(voiceName));
             RobotActionHelper.MoveDuringLesson();
@@ -54,11 +67,13 @@ namespace HGPS_Robot
             {
 
                 int endSlideNum = FileHelper.GetLessonSlidesNumber(lessonName);
+                TotalSlidesNumber = endSlideNum;
                 string codePath = FileHelper.BasePath + @"\" + lessonName + @"\code.pptx";
                 progData = PowerpointHelper.GetSlidesData(codePath);
 
                 for (CurrentSlideNumber = 1; CurrentSlideNumber <= endSlideNum; CurrentSlideNumber++)
                 {
+                    
                     if (CurrentSlideNumber < startSlideNum)
                     {
                         RobotProgSlide _currentProgSlide = progData[CurrentSlideNumber - 1];
@@ -82,6 +97,7 @@ namespace HGPS_Robot
                             Thread.Sleep(1000); // Remove busy waiting overloading
                         }
 
+                        CurrentDisplaySlideNumber = CurrentSlideNumber;
                         Debug.WriteLine("Current Slide -----------" + CurrentSlideNumber);
                         LessonStatusHelper.Update(lessonName, CurrentSlideNumber, "started", null, null, null);
 
@@ -96,19 +112,6 @@ namespace HGPS_Robot
             }));
             _thread.Start();
         }
-
-        //public static void SaveLessonHistory(string lessonName, string teacherId, string className)
-        //{
-        //    var lessonHistory = new LessonHistory
-        //    {
-        //        Lesson_name = lessonName,
-        //        DateTime = DateTime.Now,
-        //        Teacher_id = teacherId,
-        //        Class_name = className
-        //    };
-
-        //    WebHelper.AddLessonHistory(lessonHistory);
-        //}
 
         public static void InsertCommand(string cmdType, string cmdValue)
         {

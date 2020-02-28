@@ -163,9 +163,6 @@ namespace HGPS_Robot
                         UpperBodyHelper.DoGestures(val);
                         break;
 
-                    case "hint":
-                        GroupChallengeHelper.hints.Add(val);
-                        break;
                     case "start":
                         if (val.ToLower() == "quiz" || val.ToLower() == "group-challenge")
                         {
@@ -246,6 +243,8 @@ namespace HGPS_Robot
 
         private void RandomAskStudentQuestion()
         {
+            //Synthesizer.Speak("")
+
             TablePositionHelper.RandomStudentForAsking();
 
             string rdmStd = TablePositionHelper.LatestChosenStudent;
@@ -255,7 +254,7 @@ namespace HGPS_Robot
 
             Synthesizer.Speak(rdmStd + ". " + "Can you stand up?");
 
-            Wait(2000);
+            Wait(2500);
 
             int rdmIndex = new Random().Next(3);
 
