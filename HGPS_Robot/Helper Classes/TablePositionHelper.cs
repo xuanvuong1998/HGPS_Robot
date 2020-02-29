@@ -50,13 +50,6 @@ namespace HGPS_Robot
                 .Select(x => x.TableName).FirstOrDefault();
         }
         
-        
-        public static List<string> GetAllGroups()
-        {
-            
-        }
-
-
         public static void RandomStudentForAsking()
         {
             string rdmStd = null;

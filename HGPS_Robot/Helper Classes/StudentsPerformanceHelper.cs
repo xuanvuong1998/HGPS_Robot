@@ -8,7 +8,8 @@ namespace HGPS_Robot
 {
     public static class StudentsPerformanceHelper
     {
-        public static List<StudentHistoryDTO> studentPerformanceOverall;
+        public static List<StudentHistoryDTO> studentPerformanceOverall
+             = new List<StudentHistoryDTO>();
 
         public static int GetCorrectSubNum(string sub)
         {

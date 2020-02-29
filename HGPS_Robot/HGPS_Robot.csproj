@@ -378,17 +378,39 @@
     <None Include="Resources\CoddieLessonSpeechUI.PNG" />
     <None Include="Resources\listening.gif" />
     <None Include="Resources\LessonInProgress.jpg" />
-    <Content Include="media\champion1.wav" />
-    <Content Include="media\champion2.wav" />
-    <Content Include="media\cheering1.wav" />
-    <Content Include="media\cheering2.wav" />
-    <Content Include="media\cheering3.wav" />
-    <Content Include="media\cheering4.wav" />
-    <Content Include="media\cheering5.wav" />
-    <Content Include="media\sad1.wav" />
-    <Content Include="media\sad2.wav" />
-    <Content Include="media\sad3.wav" />
-    <Content Include="media\sad4.wav" />
+    <Content Include="media\champion1.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="media\champion2.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="media\cheering1.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="media\cheering2.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="media\cheering3.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="media\cheering4.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="media\cheering5.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="media\sad1.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="media\sad2.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="media\sad3.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="media\sad4.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />

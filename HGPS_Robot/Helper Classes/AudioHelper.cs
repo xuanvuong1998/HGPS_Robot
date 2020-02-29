@@ -18,11 +18,6 @@ namespace HGPS_Robot
         public static void PlayApplauseSound()
         {
             int rdNum = new Random().Next(5);
-        }
-
-        public static void PlayCheeringSound()
-        {
-            int rdNum = new Random().Next(5);
             PlayAudio("cheering" + (rdNum + 1) + ".wav");
         }
 

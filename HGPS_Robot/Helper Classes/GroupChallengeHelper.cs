@@ -145,12 +145,18 @@ namespace HGPS_Robot
 
                 string std = table.Student_Id;
 
-                if (groupLevel.ContainsKey(gNum) == false)
+                
+                if (ranks.ContainsKey(std))
                 {
-                    groupLevel.Add(gNum, 0);
+                    if (groupLevel.ContainsKey(gNum) == false)
+                    {
+                        groupLevel.Add(gNum, ranks[std]);
+                    }
+                    else
+                    {
+                        groupLevel[gNum] = (groupLevel[gNum] + ranks[std]) / 2;
+                    }
                 }
-
-                groupLevel[gNum] += ranks[std];
             }
 
             var list = groupLevel.OrderBy(x => x.Value).ToList();
@@ -158,13 +164,29 @@ namespace HGPS_Robot
             int parts = (list.Count + 2) / 3; // 3 divided level (smart - normal - weak)
 
             List<int> chosenGroups = new List<int>();
-            for(int i = parts; i + parts < parts * 2; i++)
+            // Choose 'middle-class'
+            for(int i = parts; i < parts * 2; i++)
             {
                 chosenGroups.Add(list[i].Key);   
             }
-
-            responsibleGroups = chosenGroups;
             
+            if (parts == 0)
+            {
+                for(int i = 1; i <= TablePositionHelper.GetGroupQuantity(); i++)
+                {
+                    chosenGroups.Add(i);
+                }
+            }
+
+
+            Debug.WriteLine("Group responsibility");
+
+            foreach (var item in chosenGroups)
+            {
+                Debug.WriteLine("Group " + item);
+            }
+             
+            responsibleGroups = chosenGroups;
         }
 
         public static void EndChallenge()
@@ -180,6 +202,10 @@ namespace HGPS_Robot
             checkingTimer.Start();
         }
 
+        private static bool IsRobotResponsible(int groupNum)
+        {
+            return responsibleGroups.Contains(groupNum);
+        }
 
         // Check if some groups haven't submitted any answer
         private static void FindGroupNeedHelp()
@@ -190,7 +216,9 @@ namespace HGPS_Robot
             
             foreach (var groupRecord in currentChallengeRecord)
             {
-                if (groupRecord.GetSubmissionCount() == 0) // Haven't submitted
+                if (groupRecord.GetSubmissionCount() == 0
+                    && IsRobotResponsible(groupRecord.GroupNumber)) // Haven't submitted
+                    // and is robot responsibility
                 {
                     Debug.WriteLine("Suggest group " + groupRecord.GroupNumber);
                     SuggestHint(groupRecord.GroupNumber);
