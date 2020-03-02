@@ -27,6 +27,7 @@ namespace HGPS_Robot
         public List<StudentHistoryDTO> AssessPerformance { get; set; }
         #endregion
 
+        #region Student Asking
         public void AskRandomStudent(List<StudentHistoryDTO> list)
         {
             var rdm = new Random();
@@ -146,6 +147,7 @@ namespace HGPS_Robot
             }
 
         }
+        #endregion
 
         #region Student Performance
         private void AnalyzeStudentPerformance(List<StudentHistoryDTO> list)
@@ -468,7 +470,21 @@ namespace HGPS_Robot
                     double happyPc = double.Parse(info.Split(';')[2]);
 
                     AnalyzeEmotion(happyPc, sadPc, neutralPc);
+                }
+                else
+                {
+                    string who = thing;
+                    string message = info;
 
+                    Synthesizer.Resume();
+                    if (who == "class")
+                    {
+                        Synthesizer.SpeakAsync(message);
+                    }
+                    else
+                    {
+                        Synthesizer.SpeakAsync(who + ". " + message);
+                    }
                 }
             }
 

@@ -114,7 +114,14 @@ namespace HGPS_Robot
                         break;
 
                     case "playaudio":
-                        AudioHelper.PlayAudio(val);
+                        
+                        if (val.Contains("applause"))
+                        {
+                            AudioHelper.PlayApplauseSound();
+                        }else if (val.Contains("sad"))
+                        {
+                            AudioHelper.PlaySadSound();
+                        }
                         break;
                     case "myspeech":
                         MySpeech(val);
@@ -172,7 +179,7 @@ namespace HGPS_Robot
                                 GroupChallengeHelper.InitNewChallenge();
                             }
                             quiz.QuestionNumber = LessonHelper.QuestionNumber;
-                            StartQuiz(quiz);
+                            StartQuiz(quiz); 
 
                             GroupChallengeHelper.EndChallenge();
                             if (val.ToLower() == "group-challenge")
@@ -231,6 +238,7 @@ namespace HGPS_Robot
                         if (val == "pickup-std")
                         {
                             RandomAskStudentQuestion();
+                            LessonHelper.SendPausedStatusToServer("asking-std");
                         }
                         break;
                     default:
@@ -239,6 +247,7 @@ namespace HGPS_Robot
                 }
             }
         }
+
 
 
         private void RandomAskStudentQuestion()
@@ -279,8 +288,7 @@ namespace HGPS_Robot
             
             Synthesizer.Speak(speech);
 
-            Wait(2000);
-                    
+            
         }
 
         private void Speak(string text)

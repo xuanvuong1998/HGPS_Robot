@@ -1,7 +1,9 @@
-﻿using System;
+﻿using SpeechLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HGPS_Robot
@@ -10,6 +12,89 @@ namespace HGPS_Robot
     {
         public static List<StudentHistoryDTO> studentPerformanceOverall
              = new List<StudentHistoryDTO>();
+
+        public static void AssessStudentAnswer(string res)
+        {
+            Synthesizer.Resume();
+            var rdmStd = TablePositionHelper.LatestChosenStudent;
+
+            int rdmNum = new Random().Next(5);
+            if (res == "correct")
+            {
+                switch (rdmNum)
+                {
+                    case 0: Synthesizer.Speak("I think...Yes exactly ! Well done " + rdmNum); break;
+                    case 1:
+                        Synthesizer.Speak("It is absolutely correct! Good job "
+                    + rdmStd); break;
+                    case 2: Synthesizer.Speak("I couldn't agree more. Very good " + rdmStd); break;
+                    case 3: Synthesizer.Speak(rdmStd + ". You hit the nail on the head"); break;
+                    case 4:
+                        Synthesizer.Speak(rdmStd + ". that's very correct. There is " +
+                    "nothing to add on that."); break;
+                }
+
+                AudioHelper.PlayApplauseSound();
+            }
+            else if (res == "incorrect")
+            {
+                switch (rdmNum)
+                {
+                    case 0:
+                        Synthesizer.Speak("Oh no, that's not correct "); break;
+                    case 1:
+                        Synthesizer.Speak("Sorry, you're mistaken here"); break;
+                    case 2:
+                    case 3:
+                    case 4:
+                        Synthesizer.Speak("No, You've got it wrong"); break;
+                }
+
+                AudioHelper.PlaySadSound();
+            }
+
+            Thread.Sleep(1500);
+        }
+
+        public static void InitMockData()
+        {
+            var tablePosition = TablePositionHelper.TablePositions;
+
+            var x1 = new TablePosition { GroupNumber = 1, Student_Id = "andi", TableName = "A1" };
+            var x2 = new TablePosition { GroupNumber = 2, Student_Id = "farhan", TableName = "A2" };
+            var x3 = new TablePosition { GroupNumber = 3, Student_Id = "einstein", TableName = "A3" };
+            var x4 = new TablePosition { GroupNumber = 4, Student_Id = "ariq", TableName = "A4" };
+            var x5 = new TablePosition { GroupNumber = 5, Student_Id = "danni", TableName = "A5" };
+            var x6 = new TablePosition { GroupNumber = 6, Student_Id = "nathalie", TableName = "A6" };
+            var x7 = new TablePosition { GroupNumber = 7, Student_Id = "fiona", TableName = "A7" };
+
+            tablePosition.Add(x1);
+            tablePosition.Add(x2);
+            tablePosition.Add(x3);
+            tablePosition.Add(x4);
+            tablePosition.Add(x5);
+            tablePosition.Add(x6);
+            tablePosition.Add(x7);
+
+
+            var s1 = new StudentHistoryDTO { Student_id = "andi", ResultInBinaryString = "100000" };
+            var s2 = new StudentHistoryDTO { Student_id = "farhan", ResultInBinaryString = "111110" };
+            var s3 = new StudentHistoryDTO { Student_id = "einstein", ResultInBinaryString = "100110" };
+            var s4 = new StudentHistoryDTO { Student_id = "ariq", ResultInBinaryString = "101110" };
+            var s5 = new StudentHistoryDTO { Student_id = "danni", ResultInBinaryString = "101000" };
+            var s6 = new StudentHistoryDTO { Student_id = "nathalie", ResultInBinaryString = "111111" };
+            var s7 = new StudentHistoryDTO { Student_id = "fiona", ResultInBinaryString = "111100" };
+
+            // nathalie(6), farhan(5), fiona(4), ariq(4), einstein(3), danni(2), andi(1)
+
+            studentPerformanceOverall.Add(s1);
+            studentPerformanceOverall.Add(s2);
+            studentPerformanceOverall.Add(s3);
+            studentPerformanceOverall.Add(s4);
+            studentPerformanceOverall.Add(s5);
+            studentPerformanceOverall.Add(s6);
+            studentPerformanceOverall.Add(s7);
+        }
 
         public static int GetCorrectSubNum(string sub)
         {
@@ -22,7 +107,7 @@ namespace HGPS_Robot
                         x => x.ResultInBinaryString.Count(y => y == '1')).ToList();
 
             int rank = 0;
-            int preLevel = -1;
+            int preLevel = 10000;
 
             Dictionary<string, int> ranks = new Dictionary<string, int>();
 
@@ -34,6 +119,8 @@ namespace HGPS_Robot
                 {
                     rank++;
                 }
+
+                preLevel = p;
 
                 ranks.Add(std.Student_id, rank);
             }

@@ -80,9 +80,20 @@ namespace HGPS_Robot
                     Debug.WriteLine("PAUSING");
                     LessonHelper.PauseLesson();
                 }
-                else if (status.LessonState == "continue")
+                else if (status.LessonState.Contains("continue"))
                 {
                     Debug.WriteLine("Continue from server");
+                    
+                    var stdRes = status.LessonState == "continue"
+                                ? null : status.LessonState.Split('-')[1];
+
+                    if (stdRes != null)
+                    {
+                        StudentsPerformanceHelper.AssessStudentAnswer(stdRes);
+                    }
+
+                    // Assess student answer first before continuing the lesson
+                    // Because the lesson progress in another thread
                     LessonHelper.ResumeLesson();
                 }
                 else if (status.LessonState == "end")

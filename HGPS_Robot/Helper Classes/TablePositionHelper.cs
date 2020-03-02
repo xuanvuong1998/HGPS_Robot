@@ -8,7 +8,7 @@ namespace HGPS_Robot
 {
     public class TablePositionHelper
     {
-        public static List<TablePosition> TablePositions { get; set; }
+        public static List<TablePosition> TablePositions { get; set; } = new List<TablePosition>();
         public static List<string> ChosenStudentList { get; set; } = new List<string>(); //  List of chosen students for asking a question
         public static string LatestChosenStudent {get; set;} // Latest PICKED UP student for asking
         public static void LoadTablesInfo()

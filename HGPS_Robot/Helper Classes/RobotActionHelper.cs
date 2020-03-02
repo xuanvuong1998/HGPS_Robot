@@ -43,13 +43,19 @@ namespace HGPS_Robot
         public static void MoveDuringLesson()
         {
             var rdm = new Random();
+            bool resetArd = false;
             Task.Factory.StartNew(() =>
             {
                 do
                 {
-                    if (GlobalFlowControl.Navigation.Moving)
+                    if (GlobalFlowControl.Navigation.Moving 
+                       || GlobalFlowControl.GroupChallenge.IsHappening)
                     {
-                        UpperBodyHelper.ResetAll();
+                        if (resetArd == false)
+                        {
+                            UpperBodyHelper.ResetAll(); 
+                            resetArd = true;
+                        }
                         Thread.Sleep(1000); // Reduce too-busy-waiting                      
                     }
                     else

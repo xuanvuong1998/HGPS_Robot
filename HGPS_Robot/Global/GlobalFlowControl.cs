@@ -151,6 +151,7 @@ namespace HGPS_Robot
 
             public static bool Starting { get; set; }
 
+            //Student positon when robot approach for asking 
             public static string ApproachStudent
             {
                 get; set;

@@ -131,7 +131,7 @@ namespace HGPS_Robot
         /// <summary>
         /// Assign middle-class groups for robot take care(offer hints during group challenge)
         /// </summary>
-        private static void InitRobotResponsibility()
+        public static void InitRobotResponsibility()
         {
             var ranks = StudentsPerformanceHelper.GetStudentsRanking();
 
@@ -178,7 +178,6 @@ namespace HGPS_Robot
                 }
             }
 
-
             Debug.WriteLine("Group responsibility");
 
             foreach (var item in chosenGroups)
@@ -191,6 +190,7 @@ namespace HGPS_Robot
 
         public static void EndChallenge()
         {
+            BaseHelper.Go("HOME");
             GlobalFlowControl.GroupChallenge.IsHappening = false;
             hints.Clear();
         }
@@ -393,12 +393,12 @@ namespace HGPS_Robot
             {
                 // Summary all challenges
 
-                Synthesizer.Speak("So... We already finished " +
-                    LessonHelper.ChallengeNumberTotal + " challenges. " +
-                    "Lets summary the results of all challenges. ");
+                //Synthesizer.Speak("So... We already finished " +
+                //    LessonHelper.ChallengeNumberTotal + " challenges. " +
+                //    "Lets summary the results of all challenges. ");
 
-                Wait(2000);
-                ConsolidateGroupChallenges();
+                //Wait(2000);
+                //ConsolidateGroupChallenges();
             }
         }
 

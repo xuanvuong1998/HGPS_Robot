@@ -73,7 +73,7 @@ namespace HGPS_Robot
 
                 for (CurrentSlideNumber = 1; CurrentSlideNumber <= endSlideNum; CurrentSlideNumber++)
                 {
-                    
+                    Wait(1000);
                     if (CurrentSlideNumber < startSlideNum)
                     {
                         RobotProgSlide _currentProgSlide = progData[CurrentSlideNumber - 1];
@@ -135,7 +135,7 @@ namespace HGPS_Robot
             var _nextProgSlide = progData[slideNum]; //next slide since slide 1 starts from index 0
             _nextProgSlide.Commands.Add(new RobotCommand("asking", "0"));
             _nextProgSlide.Commands.Add(new RobotCommand("speak", speech));
-            _nextProgSlide.Commands.Add(new RobotCommand("playaudio", "applause.wav"));
+            _nextProgSlide.Commands.Add(new RobotCommand("playaudio", "applause"));
 
             if (GlobalFlowControl.Lesson.ApproachStudent != null)
             {

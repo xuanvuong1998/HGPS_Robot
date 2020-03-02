@@ -1,14 +1,6 @@
-﻿using AudioSwitcher.AudioApi.CoreAudio;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
+﻿using System;
 using System.Media;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Media;
 
 namespace HGPS_Robot
 {
@@ -38,7 +30,7 @@ namespace HGPS_Robot
             string startupPath = Application.StartupPath + @"\media\";
             SoundPlayer player = new SoundPlayer(startupPath + fileLocation);
 
-            player.Play();
+            player.PlaySync();
 
             //CoreAudioDevice defaultPlaybackDevice = new CoreAudioController().DefaultPlaybackDevice;
             //Debug.WriteLine("Current Volume:" + defaultPlaybackDevice.Volume);
