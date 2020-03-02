@@ -19,7 +19,7 @@ namespace HGPS_Robot
         private string hintImagePath;
         private Timer timer = new Timer();
         private bool hintShown = false;
-        private const int HINT_TIMEOUT = 20 * 1000;
+        private const int HINT_TIMEOUT = 30 * 1000; // 30 seconds, hints will hided
         private Image defaultBackgroundImage;
         public LessonSpeechUI()
         {
@@ -57,13 +57,13 @@ namespace HGPS_Robot
             {
                 case 0:
                     Synthesizer.SpeakAsync("Group " + groupNum + ". Do you " +
-             "need a hint?"); break;
+             "need a hint for this challenge? You can touch the screen to show it. "); break;
                 case 1:
-                    Synthesizer.SpeakAsync("Group " + groupNum + ". Touch me if " +
-                        "you need help. "); break;
+                    Synthesizer.SpeakAsync("Group " + groupNum + ". Please touch me if " +
+                        "you need help about this challenge "); break;
                 case 2:
                     Synthesizer.SpeakAsync("Group " + groupNum + ". Do you need " +
-                        "any help? "); break;
+                        "any help? Why don't try to touch me to receive a hint"); break;
             }
 
             Synthesizer.SetVolume(100);

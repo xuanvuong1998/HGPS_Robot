@@ -17,7 +17,7 @@ namespace HGPS_Robot
         private static List<GroupChallengeRecord> currentChallengeRecord;
         private static List<int> responsibleGroups;
         public static List<string> hints = new List<string>(); // List of hints image path
-        private static int CHECKING_INTERVAL = 30; // 30 seconds
+        private static int CHECKING_INTERVAL = 60; // 30 seconds
         private const int OFFER_HINT_INTERVAL = 5; // 30 seconds
         private static int checkingTimerTick = 0;
         private static Timer checkingTimer = new Timer
@@ -192,7 +192,7 @@ namespace HGPS_Robot
         {
             BaseHelper.Go("HOME");
             GlobalFlowControl.GroupChallenge.IsHappening = false;
-            hints.Clear();
+            //hints.Clear();
         }
 
         public static void StartServing()

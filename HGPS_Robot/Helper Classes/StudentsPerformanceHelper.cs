@@ -28,11 +28,14 @@ namespace HGPS_Robot
                         Synthesizer.Speak("It is absolutely correct! Good job "
                     + rdmStd); break;
                     case 2: Synthesizer.Speak("I couldn't agree more. Very good " + rdmStd); break;
-                    case 3: Synthesizer.Speak(rdmStd + ". You hit the nail on the head"); break;
+                    case 3: Synthesizer.Speak(rdmStd + ". Your answer is definitely accurate. " +
+                        "Good job. "); break;
                     case 4:
                         Synthesizer.Speak(rdmStd + ". that's very correct. There is " +
-                    "nothing to add on that."); break;
+                    "nothing to add on that. Well done"); break;
                 }
+
+                BaseHelper.Go("C2");
 
                 AudioHelper.PlayApplauseSound();
             }
@@ -43,17 +46,18 @@ namespace HGPS_Robot
                     case 0:
                         Synthesizer.Speak("Oh no, that's not correct "); break;
                     case 1:
-                        Synthesizer.Speak("Sorry, you're mistaken here"); break;
+                        Synthesizer.Speak("Oh sorry, you just made a mistake"); break;
                     case 2:
                     case 3:
                     case 4:
-                        Synthesizer.Speak("No, You've got it wrong"); break;
+                        Synthesizer.Speak("Oh no, You've got it wrong"); break;
                 }
+
+                BaseHelper.Go("C2");
 
                 AudioHelper.PlaySadSound();
             }
 
-            Thread.Sleep(1500);
         }
 
         public static void InitMockData()

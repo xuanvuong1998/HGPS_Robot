@@ -176,7 +176,7 @@ namespace HGPS_Robot
             public static void ResetAll()
             {
                 Starting = true;
-                Synthesizer.SetSpeed(-1);
+                Synthesizer.SetSpeed(-2);
                 GroupRecords.Clear();
                 GroupChallenge.ResetQueue();
                 GroupChallengeHelper.LoadHints();// load list of hints image names from dropbox hint folder

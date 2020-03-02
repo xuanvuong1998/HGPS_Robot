@@ -65,7 +65,6 @@ namespace HGPS_Robot
 
             _thread = new Thread(new ThreadStart(() =>
             {
-
                 int endSlideNum = FileHelper.GetLessonSlidesNumber(lessonName);
                 TotalSlidesNumber = endSlideNum;
                 string codePath = FileHelper.BasePath + @"\" + lessonName + @"\code.pptx";
@@ -73,7 +72,7 @@ namespace HGPS_Robot
 
                 for (CurrentSlideNumber = 1; CurrentSlideNumber <= endSlideNum; CurrentSlideNumber++)
                 {
-                    Wait(1000);
+                   
                     if (CurrentSlideNumber < startSlideNum)
                     {
                         RobotProgSlide _currentProgSlide = progData[CurrentSlideNumber - 1];
@@ -92,9 +91,10 @@ namespace HGPS_Robot
                     }
                     else
                     {
+                        Wait(1000);
                         while (PauseRequested)
                         {
-                            Thread.Sleep(1000); // Remove busy waiting overloading
+                            Wait(1000); // Remove busy waiting overloading
                         }
 
                         CurrentDisplaySlideNumber = CurrentSlideNumber;
