@@ -14,9 +14,8 @@ namespace HGPS_Robot
     {
         private static string[] startNewConversationKeyword =
             { "Hi! I am Cody. How can I help you with?",
-            "Yes, I am here, nice to talking with you",
-            "Hi, Cody here, a teaching assitant robot. Feel free to ask me any question " +
-                "about the mathematics" };
+            "Yes, I am here, please ask me a question",
+            "Hi, Cody here, what is your question?" };
 
         private static string[] confirmToContinueKeyword =
         {
@@ -33,16 +32,17 @@ namespace HGPS_Robot
             "no more question",
             "don't have question",
             "do not have question"
+
         };
 
         private static string[] dontUnderstandWords = {
-            "sorry, this question is out of my knowledge",
-            "I am still thinking about it",
-            "sorry, I am not sure I can understand what you meant"
+            "Sorry, can you speak louder and clearly?",
+            "Can you ask again? Please speak louder",
+            "Can you try to ask this question 1 more time. Please speak louder"
         };
 
 
-        private static int minQueryLength = 7;
+        private static int minQueryLength = 5;
         private static int maxRecogTime = 12;
         private static int unableToReplyCount;
         public static void Init()
@@ -60,31 +60,7 @@ namespace HGPS_Robot
 
         private static string PickOne(string[] list)
         {
-            var x = Recognizer.RecognizedWords;
-            var speech = list[new Random().Next(list.Length)]; 
-            if (x.Contains("google") || x.Contains("siri")
-                || x.Contains("cortana") || x.Contains("alexa"))
-            {
-                if (x.Contains("google"))
-                {
-                    speech = "I am not google. I am Cody, Codding buddy in education";
-                }
-                if (x.Contains("siri"))
-                {
-                    speech = "I am not siri. I am Cody, Codding buddy in education";
-                }
-                if (x.Contains("cortana"))
-                {
-                    speech = "I am not cortana. I am Cody, Codding buddy in education";
-                }
-                if (x.Contains("alexa"))
-                {
-                    speech = "I am not alexa. I am Cody, Codding buddy in education";
-                }
-                speech += ". How can help you today?";
-            }
-
-
+            var speech = list[new Random().Next(list.Length)];
             return speech;
         }
 
@@ -113,11 +89,11 @@ namespace HGPS_Robot
 
         private static string Filter(string question)
         {
-            
+
             while (!char.IsLetterOrDigit(question[question.Length - 1]))
             {
                 question = question.Remove(question.Length - 1);
-            }            
+            }
 
             return question;
         }
@@ -131,7 +107,7 @@ namespace HGPS_Robot
                 var res = MathIntepreter.ProcessOperation(question);
                 if (res == "invalid")
                 {
-                    reply = await ChatBot.GetResponse(question);
+                    reply = "don't understand";
                 }
                 else
                 {
@@ -140,15 +116,10 @@ namespace HGPS_Robot
             }
             else
             {
-                reply = await ChatBot.GetResponse(question);
-                //reply = "don't understand";
+                reply = "don't understand";
+
             }
 
-            if (reply.ToLower().Contains("don't understand"))
-            {
-                unableToReplyCount++;
-                reply = PickOne(dontUnderstandWords);
-            }
 
             return reply;
         }
@@ -158,6 +129,8 @@ namespace HGPS_Robot
             GlobalFlowControl.ChatBot.ResetBeforeNewConversation();
 
             Synthesizer.SelectVoiceByName(GlobalData.Voice1);
+
+            int tryCnt = 0;
 
             Task.Factory.StartNew(async () =>
             {
@@ -169,30 +142,24 @@ namespace HGPS_Robot
                     var ques = await Recognizer.RecognizeQueryWithTimeOut(minQueryLength, maxRecogTime)
                                     .ConfigureAwait(false);
 
-                    if (ques.Length < minQueryLength)
-                    {
-                        GlobalFlowControl.ChatBot.ConversationEnable = false;
-                    }
-                    else
-                    if (ques.ToLower() == "no." || ques.ToLower() == "no" ||
-                        IsEndConversationKeyword(ques))
-                    {
-                        Synthesizer.Speak("Ok, Bye");
-                        GlobalFlowControl.ChatBot.ConversationEnable = false;
-                    }
-                    else
-                    {
-                        string reply = await ProcessResponse(ques);
-                        Synthesizer.Speak(reply);                                                
-                                                
-                        if (unableToReplyCount >= 2) break;
-                        
-                        //Wait(1000);
-                        
-                        Synthesizer.Speak(PickOne(confirmToContinueKeyword));
-                    }
+                    string reply = await ProcessResponse(ques);
 
-                } while (GlobalFlowControl.ChatBot.ConversationEnable);
+                    if (reply.Contains("don't understand"))
+                    {
+                        tryCnt++;
+                        if (tryCnt == 2) break;
+                        reply = PickOne(dontUnderstandWords);
+                        Synthesizer.Speak(reply);
+
+                    }
+                    else
+                    {
+                        Synthesizer.Speak(reply);
+                        break;
+                    }
+                } while (true);
+
+                GlobalFlowControl.ChatBot.ConversationEnable = false;
 
             });
 

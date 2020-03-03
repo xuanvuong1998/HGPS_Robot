@@ -67,7 +67,7 @@ namespace HGPS_Robot
             waitingActivateCount = 0;
             do
             {
-                await Recognizer.RecognizeKeywordWithTimeout(GlobalData.ActivationKeywords, 10)
+                await Recognizer.RecognizeKeywordWithTimeout(GlobalData.ActivationKeywords, 15)
                                     .ConfigureAwait(false);
 
                 if (_formClosed) break;
