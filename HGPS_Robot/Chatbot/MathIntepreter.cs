@@ -105,9 +105,20 @@ namespace HGPS_Robot
                 }
             }
 
-            if (que == "") return "invalid";    
+            if (que == "") return "invalid";
 
-            var res = new DataTable().Compute(que, null).ToString();
+            string res;
+
+            try
+            {
+                res = new DataTable().Compute(que, null).ToString();
+            }
+            catch (Exception)
+            {
+
+                return "invalid";
+            }
+
 
             if (res.Contains(".")) 
             {

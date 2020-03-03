@@ -98,7 +98,7 @@ namespace HGPS_Robot
             return question;
         }
 
-        public static async Task<string> ProcessResponse(string question)
+        public static string ProcessResponse(string question)
         {
             question = Filter(question);
             string reply = "";
@@ -142,7 +142,7 @@ namespace HGPS_Robot
                     var ques = await Recognizer.RecognizeQueryWithTimeOut(minQueryLength, maxRecogTime)
                                     .ConfigureAwait(false);
 
-                    string reply = await ProcessResponse(ques);
+                    string reply = ProcessResponse(ques);
 
                     if (reply.Contains("don't understand"))
                     {
