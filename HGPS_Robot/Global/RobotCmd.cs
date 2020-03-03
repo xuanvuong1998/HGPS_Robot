@@ -427,13 +427,16 @@ namespace HGPS_Robot
                     var secondsLeft = LessonHelper.CurrentQuizTimeout
                         - GlobalFlowControl.Lesson.QuizElapsedTime;
                             
-                    Thread.Sleep(2000);
-                    if (secondsLeft > 11)
+                    //Thread.Sleep(2000);
+                    if (secondsLeft > 15)
                     {
-                        Synthesizer.Speak("Wow. Since all of you have done " +
-                                                    "already. I will terminate the quiz early, and " +
-                                                    "reveal the result now. Are you ready???");
-
+                        //if (GlobalFlowControl.GroupChallenge.IsHappening == true)
+                        //{
+                        //    Synthesizer.Speak("Wow. Since all of you have done " +
+                        //                            "already. I will terminate the quiz early, and " +
+                        //                            "reveal the result now. Are you ready???");
+                        //}
+                        
                         GlobalFlowControl.Lesson.StartingQuiz = false;
                     }
                 }

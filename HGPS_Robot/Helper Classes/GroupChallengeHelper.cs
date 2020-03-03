@@ -50,7 +50,7 @@ namespace HGPS_Robot
                     GlobalFlowControl.GroupChallenge.AddToServingQueue(groupNum,
                        hint);
                 }
-                
+
             }
             else if (receivedBefore == 1)
             {
@@ -72,14 +72,14 @@ namespace HGPS_Robot
 
         public static string GetChallengeHint(int hintNum)
         {
-            var avlHints = hints.Where(x => 
+            var avlHints = hints.Where(x =>
                             x.Contains("C" + LessonHelper.ChallengeNumber)).ToList();
-            
+
             if (hintNum > avlHints.Count) return null;
 
             var hintName = "C" + LessonHelper.ChallengeNumber
                       + "H" + hintNum + ".png";
-            
+
             return hintName;
         }
 
@@ -105,7 +105,7 @@ namespace HGPS_Robot
 
             var globalRecord = GlobalFlowControl.Lesson.GroupRecords;
 
-            for(int i = 1; i <= groupQty; i++)
+            for (int i = 1; i <= groupQty; i++)
             {
                 globalRecord.Add(new GroupChallengeRecord
                 {
@@ -113,7 +113,7 @@ namespace HGPS_Robot
                     GroupNumber = i
                 });
             }
-            
+
         }
 
         public static void InitNewChallenge()
@@ -141,11 +141,11 @@ namespace HGPS_Robot
 
             foreach (var table in tables)
             {
-                int gNum = (int) table.GroupNumber;
+                int gNum = (int)table.GroupNumber;
 
                 string std = table.Student_Id;
 
-                
+
                 if (ranks.ContainsKey(std))
                 {
                     if (groupLevel.ContainsKey(gNum) == false)
@@ -165,14 +165,14 @@ namespace HGPS_Robot
 
             List<int> chosenGroups = new List<int>();
             // Choose 'middle-class'
-            for(int i = parts; i < parts * 2; i++)
+            for (int i = parts; i < parts * 2; i++)
             {
-                chosenGroups.Add(list[i].Key);   
+                chosenGroups.Add(list[i].Key);
             }
-            
+
             if (parts == 0)
             {
-                for(int i = 1; i <= TablePositionHelper.GetGroupQuantity(); i++)
+                for (int i = 1; i <= TablePositionHelper.GetGroupQuantity(); i++)
                 {
                     chosenGroups.Add(i);
                 }
@@ -184,7 +184,7 @@ namespace HGPS_Robot
             {
                 Debug.WriteLine("Group " + item);
             }
-             
+
             responsibleGroups = chosenGroups;
         }
 
@@ -213,12 +213,12 @@ namespace HGPS_Robot
             var currentChallengeRecord =
                 GlobalFlowControl.Lesson.GroupRecords
                 .Where(x => x.ChallengeNumber == LessonHelper.ChallengeNumber);
-            
+
             foreach (var groupRecord in currentChallengeRecord)
             {
                 if (groupRecord.GetSubmissionCount() == 0
                     && IsRobotResponsible(groupRecord.GroupNumber)) // Haven't submitted
-                    // and is robot responsibility
+                                                                    // and is robot responsibility
                 {
                     Debug.WriteLine("Suggest group " + groupRecord.GroupNumber);
                     SuggestHint(groupRecord.GroupNumber);
@@ -229,7 +229,7 @@ namespace HGPS_Robot
         private static void CheckingTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             checkingTimerTick++;
-            
+
             if (GlobalFlowControl.GroupChallenge.IsHappening == false)
             {
                 checkingTimer.Stop();
@@ -240,7 +240,7 @@ namespace HGPS_Robot
                 Debug.WriteLine("Find group who haven't submitted");
                 FindGroupNeedHelp();
             }
-            
+
             if (checkingTimerTick % OFFER_HINT_INTERVAL == 0 // Offer hint every each 4 seconds
                 && GlobalFlowControl.GroupChallenge.IsOfferingHint == false
                 && GlobalFlowControl.GroupChallenge.IsServingQueueEmpty() == false
@@ -266,9 +266,9 @@ namespace HGPS_Robot
                     }
                 }
             }
-            
+
         }
-        
+
         /// <summary>
         /// At the time we added to the queue, haven't submitted or wrong ans
         /// But at the time when robot try to offer, that group has submitted 
@@ -285,7 +285,7 @@ namespace HGPS_Robot
                         .Where(x => x.ChallengeNumber
                             == LessonHelper.ChallengeNumber).ToList();
 
-            var groupRecord = currentChallengeRecords.SingleOrDefault(x => 
+            var groupRecord = currentChallengeRecords.SingleOrDefault(x =>
                             x.GroupNumber == groupNumber);
 
             // Good job, this group has already had a correct submission
@@ -297,7 +297,7 @@ namespace HGPS_Robot
                 return false;
             }
 
-            return true; 
+            return true;
         }
 
         public static void MockData()
@@ -485,12 +485,13 @@ namespace HGPS_Robot
                     }
 
                     Synthesizer.Speak(speech);
-                    
+
                     if (rank == 1)
                     {
                         AudioHelper.PlayChampionSound();
                     }
-                    else{
+                    else
+                    {
                         AudioHelper.PlayApplauseSound();
                     }
                 }
@@ -624,30 +625,26 @@ namespace HGPS_Robot
 
         private static void AnnouceGroupResults()
         {
-
             int rdmNum = new Random().Next(3);
 
             var secondsLeft = LessonHelper.CurrentQuizTimeout
                         - GlobalFlowControl.Lesson.QuizElapsedTime;
 
-            if (secondsLeft < 10)
+            switch (rdmNum)
             {
-                switch (rdmNum)
-                {
-                    case 0:
-                        Synthesizer.Speak("Well done every body, the time is over. Now, " +
-                 "I am very excited to reveal your group results. "); break;
-                    case 1:
-                        Synthesizer.Speak("Time is over. Now let's go to the " +
-                            "most interesting part, to see which group, " +
-                            "is the " +
-                            "champion of this challenge. ");
-                        break;
-                    case 2:
-                        Synthesizer.Speak("Time's up everybody. Let's " +
-                            "see how good is your result. ");
-                        break;
-                }
+                case 0:
+                    Synthesizer.Speak("Well done every body, the time is over. Now, " +
+             "I am very excited to reveal your group results. "); break;
+                case 1:
+                    Synthesizer.Speak("Time is over. Now let's go to the " +
+                        "most interesting part, to see which group, " +
+                        "is the " +
+                        "champion of this challenge. ");
+                    break;
+                case 2:
+                    Synthesizer.Speak("Time's up everybody. Let's " +
+                        "see how good is your result. ");
+                    break;
             }
 
             Thread.Sleep(1500);
