@@ -48,10 +48,14 @@ namespace HGPS_Robot
             {
                 do
                 {
+                    // RObot stop doing gestures when
+                    //:moving, group challenge, teaching taking over (lesson is pausing)
+
                     if (GlobalFlowControl.Navigation.Moving 
-                       || GlobalFlowControl.GroupChallenge.IsHappening)
+                       || GlobalFlowControl.GroupChallenge.IsHappening
+                       || LessonHelper.PauseRequested)
                     {
-                        if (resetArd == false)
+                        if (resetArd == false) // Prevent calling motors func to much
                         {
                             UpperBodyHelper.ResetAll(); 
                             resetArd = true;
@@ -60,6 +64,10 @@ namespace HGPS_Robot
                     }
                     else
                     {
+                        if (resetArd == true)
+                        {
+                            resetArd = false;
+                        }
                         for (int i = 1; i <= 6; i++)
                         {
                             UpperBodyHelper.MoveRandomly(i, 0.7);
@@ -78,7 +86,9 @@ namespace HGPS_Robot
 
                         if (GlobalFlowControl.Lesson.Starting == false) break;
 
-                        if (GlobalFlowControl.Navigation.Moving)
+                        if (GlobalFlowControl.Navigation.Moving
+                        || GlobalFlowControl.GroupChallenge.IsHappening
+                        || LessonHelper.PauseRequested)
                         {
                             UpperBodyHelper.ResetAll();
                         }
@@ -87,7 +97,6 @@ namespace HGPS_Robot
                             Wait(4000);
                         }
                     }
-
 
                 } while (GlobalFlowControl.Lesson.Starting);
 

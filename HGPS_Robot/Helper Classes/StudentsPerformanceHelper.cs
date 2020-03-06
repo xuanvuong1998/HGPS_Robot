@@ -1,6 +1,7 @@
 ﻿using SpeechLibrary;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -12,6 +13,106 @@ namespace HGPS_Robot
     {
         public static List<StudentHistoryDTO> studentPerformanceOverall
              = new List<StudentHistoryDTO>();
+
+        // Indicate whether robot received student performance results from web server ot not yet
+        public static bool ResultReceived { get; set; }
+        
+        // Incicate whether robot is annoucing top students of the lesson
+
+        public static bool PraisingBestStudents { get; set; }
+
+        public static void AnnouceBestStudentsOfLesson(string top)
+        {
+
+            Debug.WriteLine("Top students " + top);
+
+            if (top == "")
+            {
+                PraisingBestStudents = false; // Finish praising
+
+                return;
+            }
+
+            
+            string[] top1 = top.Split('-')[0].Split(',');
+            string point1 = top.Split('-')[3];
+            string[] top2, top3;
+
+            string point2 = "-1", point3 = "-1";
+            if (top.Split('-').Count() < 3)
+            {
+                top2 = new string[] { };
+            }
+            else
+            {
+                top2 = top.Split('-')[1].Split(',');
+                point2 = top.Split('-')[4];
+
+            }
+
+            if (top.Split('-').Count() < 5)
+            {
+                top3 = new string[] { };
+            }
+            else
+            {
+                top3 = top.Split('-')[2].Split(',');
+                point3 = top.Split('-')[5];
+            }
+
+            string speech = "";
+
+            if (top3.Count() > 0)
+            {
+                foreach (var std in top3)
+                {
+                    speech += std + ". ";
+                }
+
+                speech += $"With the point of {point3}. You are " +
+                    "the top 3 of this lesson. You received a bronze. ";
+
+                Synthesizer.Speak(speech);
+                AudioHelper.PlayApplauseSound();
+                speech = "";
+            }
+            
+            if (top2.Count() > 0)
+            {
+                foreach (var std in top2)
+                {
+                    speech += std + ". ";
+                }
+
+                speech += $"With the point of {point2}. You are "
+                        + "the top 2 of this lesson. You received a silver";
+
+                Synthesizer.Speak(speech);
+                AudioHelper.PlayApplauseSound();
+
+                speech = "";
+            }
+            
+
+            foreach (var std in top1)
+            {
+                speech += std + ". ";
+            }
+
+            speech += speech += $"With the point of {point1}. You are "
+                   + "the best student today. Very good job. You got a gold";
+            
+            Synthesizer.Speak(speech);
+
+            AudioHelper.PlayChampionSound();
+
+            PraisingBestStudents = false; // Finish praising
+        }
+
+        public static void AnnouceBestImprovements(string bestImprove)
+        {
+            Debug.WriteLine("Annoucing best effort students"); 
+        }
 
         public static void AssessStudentAnswer(string res)
         {
@@ -132,7 +233,6 @@ namespace HGPS_Robot
             return ranks;
         }
 
-      
         public static int GetNumberOfCorrectStudent(List<StudentHistoryDTO> stdHis)
         {
             int cnt = 0;

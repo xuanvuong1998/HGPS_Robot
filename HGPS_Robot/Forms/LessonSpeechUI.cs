@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Timer = System.Timers.Timer;
 
-
 namespace HGPS_Robot
 {
     public partial class LessonSpeechUI : Form
@@ -21,6 +20,7 @@ namespace HGPS_Robot
         private bool hintShown = false;
         private const int HINT_TIMEOUT = 30 * 1000; // 30 seconds, hints will hided
         private Image defaultBackgroundImage;
+
         public LessonSpeechUI()
         {
             InitializeComponent();
@@ -33,10 +33,11 @@ namespace HGPS_Robot
         private void ResetLabel()
         {
             ShowMessage("GROUP CHALLENGE"); // Reset label
-            picBackground.Image = defaultBackgroundImage;
-
             picBackground.SizeMode = PictureBoxSizeMode.StretchImage;
+            picBackground.Image = defaultBackgroundImage;
         }
+
+        
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             GlobalFlowControl.GroupChallenge.IsOfferingHint = false;
@@ -70,7 +71,6 @@ namespace HGPS_Robot
             hintImagePath = FileHelper.GetHintFolderPath() + top.Split('-')[1];
 
             ShowMessage("TOUCH ME TO SEE THE HINT");
-            picBackground.SizeMode = PictureBoxSizeMode.CenterImage;
             hintShown = false;
             timer.Start();
 
@@ -78,7 +78,6 @@ namespace HGPS_Robot
 
         private void Form2_Shown(object sender, EventArgs e)
         {
-            //this.TopMost = true;
             this.FormBorderStyle = FormBorderStyle.None;
             this.WindowState = FormWindowState.Maximized;
 
@@ -97,6 +96,8 @@ namespace HGPS_Robot
             lblMessage.Location = new Point(50, 150);
             lblMessage.BackColor = Color.Transparent;
 
+
+           
         }
 
         public void ShowForm()
@@ -155,6 +156,8 @@ namespace HGPS_Robot
         private void ShowHintImage()
         {
             lblMessage.Text = "";
+
+            picBackground.SizeMode = PictureBoxSizeMode.Zoom;
 
             //MessageBox.Show(hintImagePath);
 

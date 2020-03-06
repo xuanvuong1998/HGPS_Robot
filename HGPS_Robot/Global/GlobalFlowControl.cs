@@ -140,7 +140,7 @@ namespace HGPS_Robot
 
                     if (secondsLeft == 40)
                     {
-                        Synthesizer.SpeakAsync("Pay attention please, you" +
+                        Synthesizer.SpeakAsync("Attention please, you" +
                         " guys have " + secondsLeft + " seconds left");
 
                     }
@@ -160,6 +160,7 @@ namespace HGPS_Robot
             public static bool StartingQuiz { get; set; }
 
             // StudentID who be chosen to ask robot go there for asking after a quiz finished
+            // Chosen by teacher from teacher panel control
             public static string ChosenStudent { get; set; }
 
             public static List<string> ChosenStudentList { get; set; }
@@ -172,6 +173,11 @@ namespace HGPS_Robot
             }
 
             public static bool StudentFeedbackReceived { get; set; }
+
+            // Devide class into 2 groups (left and right)
+            // Student for each group submit and accumulate results
+
+            public static bool GroupCompetitionIsHappening { get; set; } = false;
 
             public static void ResetAll()
             {

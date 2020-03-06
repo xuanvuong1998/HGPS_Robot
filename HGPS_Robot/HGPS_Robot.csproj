@@ -309,6 +309,7 @@
       <DependentUpon>LessonUI.cs</DependentUpon>
     </Compile>
     <Compile Include="Helper Classes\GroupChallengeHelper.cs" />
+    <Compile Include="Helper Classes\GroupCompetitionHelper.cs" />
     <Compile Include="Helper Classes\LessonStatusHelper.cs" />
     <Compile Include="Helper Classes\PowerpointHelper.cs" />
     <Compile Include="Helper Classes\LessonHelper.cs" />

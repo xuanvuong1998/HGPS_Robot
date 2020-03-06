@@ -28,13 +28,13 @@ namespace HGPS_Robot
         #endregion
 
         #region Student Asking
-        public void AskRandomStudent(List<StudentHistoryDTO> list)
+        public void AfterQuizFinish(List<StudentHistoryDTO> list)
         {
             var rdm = new Random();
             int rdmNum = rdm.Next(1, 11);
             if (LessonHelper.LessonSubject.ToLower() != "story"
-                && GlobalFlowControl.Lesson.ChosenStudent != null
-                || rdmNum <= 5)
+                && GlobalFlowControl.Lesson.ChosenStudent != null)
+                //|| rdmNum <= 5, robot will approach when teacher choose it
             {
                 //ask
                 Debug.WriteLine("ASKING STUDENT");
@@ -103,7 +103,7 @@ namespace HGPS_Robot
                     //Go to student
                     LessonHelper.InsertCommand("gountil", position);
                     LessonHelper.InsertCommand("speak", speech);
-                    LessonHelper.InsertCommand("asking", "1");
+                    LessonHelper.InsertCommand("asking", "1"); // pause a lesson and ask a student
 
                     bool studentResult = student.ResultInBinaryString.Last() == '1';
                     string resultSpeech = "";
@@ -139,13 +139,27 @@ namespace HGPS_Robot
 
             if (LessonHelper.LessonSubject.ToLower() == "story")
             {
-                LessonHelper.InsertNextSlideCommand("asking", "0");
+                
             }
             else
             {
                 AnalyzeStudentPerformance(AssessPerformance);
-            }
 
+                // Make sure all praise speech added to the next slide before
+                // marking the received signal to RobotCommands
+
+                StudentsPerformanceHelper.ResultReceived = true;
+
+                
+                if (GlobalFlowControl.Lesson.GroupCompetitionIsHappening)
+                {
+                    GroupCompetitionHelper.ResultReceived = false;
+                    
+                    // Invoke method from myhub to retrieve left and right percentage
+                    SyncHelper.InvokeRankingsResult("group-competition");
+                }
+            }
+            
         }
         #endregion
 
@@ -428,7 +442,8 @@ namespace HGPS_Robot
                         - GlobalFlowControl.Lesson.QuizElapsedTime;
                             
                     //Thread.Sleep(2000);
-                    if (secondsLeft > 15)
+                    if (secondsLeft > 13) // If just have only few seconds
+                        // let the robot count down from 10 to 1
                     {
                         //if (GlobalFlowControl.GroupChallenge.IsHappening == true)
                         //{
@@ -442,7 +457,7 @@ namespace HGPS_Robot
                 }
                 else if (LessonStatus == "Next")
                 {
-                    if (LessonHelper.CurrentDisplaySlideNumber < LessonHelper.TotalSlidesNumber)
+                    if (LessonHelper.CurrentDisplaySlideNumber < LessonHelper.LastSlideNumber)
                     {
                         LessonHelper.CurrentDisplaySlideNumber++;
                         LessonStatusHelper.Update(LessonHelper.LessonName, LessonHelper.CurrentDisplaySlideNumber, "started", null, null, null);
@@ -493,7 +508,7 @@ namespace HGPS_Robot
 
             if (AssessPerformance != null)
             {
-                AskRandomStudent(AssessPerformance);
+                AfterQuizFinish(AssessPerformance);
             }
         }
     }
