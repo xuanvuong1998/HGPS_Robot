@@ -33,6 +33,39 @@ namespace HGPS_Robot
                 .Select(x => x.Student_Id).ToList();
         }
 
+        private static bool IsLeftGroup(string tableNum)
+        {
+            return int.Parse(tableNum.Substring(1)) % 2 == 1;
+        }
+
+
+        public static List<string> GetLeftGroupMembers()
+        {
+            List<string> list = new List<string>();
+
+            foreach (var table in TablePositions)
+            {
+                if (IsLeftGroup(table.TableName))
+                {
+                    list.Add(table.Student_Id);
+                }
+            }
+            return list;
+        }
+
+        public static List<string> GetRightGroupMembers()
+        {
+            List<string> list = new List<string>();
+
+            foreach (var table in TablePositions)
+            {
+                if (IsLeftGroup(table.TableName) == false)
+                {
+                    list.Add(table.Student_Id);
+                }
+            }
+            return list;
+        }
 
         public static int GetGroupQuantity()
         {

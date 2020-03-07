@@ -52,7 +52,6 @@ namespace HGPS_Robot
                     StudentsPerformanceHelper
                     .AnnouceBestStudentsOfLesson(message.Split(';')[1]);
                 }
-                
             }
         }
 
