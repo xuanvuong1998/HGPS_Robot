@@ -120,6 +120,7 @@ namespace HGPS_Robot
 
             AudioHelper.PlayChampionSound();
 
+            SyncHelper.RequestOpeningURL("hide-results");
             PraisingBestStudents = false; // Finish praising
         }
 
@@ -200,8 +201,9 @@ namespace HGPS_Robot
                 speech += std + ". ";
             }
 
+            if (point1.Contains("-")) point1 = "3"; // Fake
             speech += speech += $"With the increment of {point1}. You deserved to " +
-                $"get 1 gold medal for the best improvement student. Well done. ";
+                $"get the gold medal for the best improvement student. Well done. ";
 
             Synthesizer.Speak(speech);
 

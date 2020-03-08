@@ -21,6 +21,8 @@ namespace HGPS_Robot
         public bool MediaPlaying { get; set; } = false;
         public RobotCommand CurrentCommand { get; private set; } = null;
 
+        private Random rand = new Random();
+
         public delegate void CommandUpdateHandler(object sender, CommandEventArgs e);
         public event CommandUpdateHandler OnCommandUpdate;
         private List<RobotCommand> _commands;
@@ -332,11 +334,16 @@ namespace HGPS_Robot
             BaseHelper.GoUntilReachedGoalOrCanceled
                 (TablePositionHelper.FindTablePosByStdId(rdmStd));
 
-            Synthesizer.Speak(rdmStd + ". " + "Can you stand up?");
+            int rdmIndex = rand.Next(5);
+
+            switch (rdmIndex)
+            {
+                case 0: case 3: case 4:
+                    Synthesizer.Speak(rdmStd + ". " + "Can you stand up?"); break;
+                case 1: case 2: Synthesizer.Speak(rdmStd + ". " + "Please stand up"); break;
+            }
 
             Wait(2500);
-
-            int rdmIndex = new Random().Next(3);
 
             string speech = "";
 
@@ -354,6 +361,14 @@ namespace HGPS_Robot
                 case 2:
                     speech = "Ok. I want to challenge you by asking a question. " +
                         "Please listen carefully and answer. ";
+                    break;
+                case 3:
+                    speech = $"{rdmStd}. Are you willing to answer a question from me.";
+                    break;
+                    
+                case 4:
+                    speech = $"{rdmStd}. Here is the question for you. Please try your " +
+                        $"best to give me the correct answer";
                     break;
             }
             

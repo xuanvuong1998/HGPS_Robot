@@ -58,7 +58,7 @@ namespace HGPS_Robot
             {
                 switch (rdmNum)
                 {
-                    case 0: speech += "Unbelievable boys and girls. It is a draw"; break;
+                    case 0: speech += "Absolutely unbelievable boys and girls. It is a draw"; break;
                     case 1: speech += "Amazing boys and girls. It is a draw"; break;
                     case 2: speech += "Fantastic boys and girls. It is a draw"; break;
                 }
@@ -78,6 +78,9 @@ namespace HGPS_Robot
 
             LessonHelper.InsertPraise(speech);
 
+            LessonHelper.InsertNextSlideCommand("myhub", "RequestOpenResultURL,"
+                        + "hide-results");
+            
             // Make sure praise added to next slide before toggle signal to continue the slide
             ResultReceived = true;
         }
@@ -87,38 +90,57 @@ namespace HGPS_Robot
             int rdmNum = rand.Next(3);
             string speech;
             speech = "Now. It is the time to summary, which group, left, or right is the " +
-                    "winner in overall. ";
+                    "winner in overall? ";
 
             LessonHelper.InsertNextSlideCommand("speak", speech);
+
+            List<string> winnerMembers = new List<string>();
 
             speech = "";
             if (LeftResult > RightResult)
             {
                 switch (rdmNum)
                 {
-                    case 0: speech += "Incredible! The winner is group 1. "; break;
+                    case 0: speech += "Incredible! The winner today is group 1. "; break;
                     case 1: speech += "Marvelous! Group 1 is the winner today. "; break;
-                    case 2: speech += "Terrific! Group 1 became the winner today"; break;
+                    case 2: speech += "Terrific! Group 1 became the winner today. "; break;
                 }
+
+                winnerMembers = TablePositionHelper.GetLeftGroupMembers();
+                
             }
             else if (LeftResult == RightResult)
             {
-                speech += "Unbelievable boys and girls. It is a draw. ";
+                speech += "It is absolutely unbelievable boys and girls. It is a draw. " +
+                    "Congratulation to the whole class. You guys are very awesome!";
             }
             else
             {
                 switch (rdmNum)
                 {
-                    case 0: speech += "Brilliant! The winner is group 2"; break;
+                    case 0: speech += "Brilliant! The winner is group 2. "; break;
                     case 1: speech += "Marvelous! Group 2 is the winner today. "; break;
-                    case 2: speech += "Terrific! Group 2 became the winner today"; break;
+                    case 2: speech += "Terrific! Group 2 became the winner today. "; break;
                 }
+                winnerMembers = TablePositionHelper.GetRightGroupMembers();
+
             }
 
+            if (winnerMembers.Count > 0)
+            {
+                speech += "Congratulation ";
+                foreach (var member in winnerMembers)
+                {
+                    speech += member + ", ";
+                }
+            }
+            
             LessonHelper.InsertNextSlideCommand("myhub", "RequestOpenResultURL,"
                         + "group-competition-final");
             LessonHelper.InsertNextSlideCommand("speak", speech);
             LessonHelper.InsertNextSlideCommand("playaudio", "champion");
+            LessonHelper.InsertNextSlideCommand("myhub", "RequestOpenResultURL,"
+                        + "hide-results");
 
         }
 

@@ -25,13 +25,15 @@ namespace HGPS_Robot
         public string Gesture { get; set; }
 
         public List<StudentHistoryDTO> AssessPerformance { get; set; }
+
+        private Random rand = new Random();
         #endregion
 
         #region Student Asking
         public void AfterQuizFinish(List<StudentHistoryDTO> list)
         {
-            var rdm = new Random();
-            int rdmNum = rdm.Next(1, 11);
+            //var rand = new Random();
+            int rdmNum = rand.Next(1, 11);
             if (LessonHelper.LessonSubject.ToLower() != "story"
                 && GlobalFlowControl.Lesson.ChosenStudent != null)
                 //|| rdmNum <= 5, robot will approach when teacher choose it
@@ -63,7 +65,7 @@ namespace HGPS_Robot
                     }
                     do
                     {
-                        randNum = rdm.Next(0, list.Count);
+                        randNum = rand.Next(0, list.Count);
                         Debug.WriteLine("Random Student: " + randNum);
                     } while (GlobalFlowControl.Lesson.IsStudentChosenBefore(list[randNum].Student_id));
 
@@ -74,7 +76,7 @@ namespace HGPS_Robot
                 }
 
                 string speech = student.UserAccountFullName + "! ";
-                int num = rdm.Next(0, 5);
+                int num = rand.Next(0, 5);
                 switch (num)
                 {
                     case 0:
@@ -113,10 +115,14 @@ namespace HGPS_Robot
                         switch (num)
                         {
                             case 0:
+                                resultSpeech = "I can't agree more ";
+                                break;
                             case 1:
                                 resultSpeech = "Excellent ";
                                 break;
                             case 2:
+                                resultSpeech = "Marvelous ";
+                                break;
                             case 3:
                                 resultSpeech = "Not bad ";
                                 break;
@@ -129,7 +135,23 @@ namespace HGPS_Robot
                     }
                     else
                     {
-                        resultSpeech = "Sorry " + student.Student_id + ". Your answer is not correct!";
+                        switch (num)
+                        {
+                            case 0: 
+                                resultSpeech = "Sorry " + student.Student_id + ". Your answer is not correct!";
+                                break;
+                            case 1:
+                                resultSpeech = "It is wrong " + student.Student_id;
+                                break;
+                            case 2:
+                            case 3:
+                            case 4:
+                                resultSpeech = "It is not correct " + student.Student_id;
+                                break;
+                           
+
+                        }
+                        
                     }
 
                     LessonHelper.InsertCommand("speak", resultSpeech);
@@ -168,16 +190,14 @@ namespace HGPS_Robot
         {
             StudentsPerformanceHelper.studentPerformanceOverall = list;
 
-            var rdm = new Random();
-            var rdmNum = rdm.Next(1, 4); // generate random number 1-3
 
             int incorrectCnt = StudentsPerformanceHelper.GetNumberOfInCorrectStudent(list);
             int correctCnt = StudentsPerformanceHelper.GetNumberOfCorrectStudent(list);
 
             var speech = "";
+            var x = rand.Next(0, 5);
             if (correctCnt == 0)
             {
-                var x = rdm.Next(0, 3);
                 switch (x)
                 {
                     case 0:
@@ -187,8 +207,11 @@ namespace HGPS_Robot
                         speech = "No one is correct. Is it because this question too difficult? ";
                         break;
                     case 2:
+                    case 3:
+                    case 4:
                         speech = "Sorry to say this, but none of you had a correct answer. ";
                         break;
+                    
                 }
                 speech += "Come on guys, don't give up. ";
 
@@ -198,7 +221,6 @@ namespace HGPS_Robot
             }
             else
             {
-                var x = rdm.Next(0, 3);
                 if (incorrectCnt == 0)
                 {
                     switch (x)
@@ -210,6 +232,8 @@ namespace HGPS_Robot
                             speech = "Amazing! Everybody answers are correct. ";
                             break;
                         case 2:
+                        case 3:
+                        case 4:
                             speech = "Incredible! All of you got the correct answer. ";
                             break;
                     }
@@ -231,6 +255,12 @@ namespace HGPS_Robot
                         case 2:
                             speech = "Good job everybody, most of you are correct. ";
                             break;
+                        case 3:
+                            speech = "Oh, very good, a lot of students made it correct. ";
+                            break;
+                        case 4:
+                            speech = "Wow, I received a lot of correct answers for this question.";
+                            break;
                     }
                 }
             }
@@ -238,25 +268,26 @@ namespace HGPS_Robot
             var numOfFullScore = StudentsPerformanceHelper.GetNumOfFullScore(list);
             if (numOfFullScore != 0)
             {
-                speech += $"Awesome, we have {numOfFullScore.ToString()} students with full score! ";
+                switch (x)
+                {
+                    case 0:
+                        speech += "Incredible! We have " + numOfFullScore + " students with full" +
+                            "score. ";
+                        break;
+                    case 1:
+                        speech += "Excellent! " + numOfFullScore + " students in the class " +
+                            "have not made any mistake so far";
+                        break;
+                    case 2:
+                    case 3:
+                    case 4:
+                        speech += "Amazing! " + numOfFullScore + " students have the maximum " +
+                            "scores so far ";
+                        break;
+                }
             }
 
-            switch (rdmNum)
-            {
-                case 1:
-                    speech += GetTopStudentsPraise(list);
-                    break;
-
-                case 2:
-
-                    speech += GetTopStudentsPraise(list);
-
-                    break;
-
-                case 3:
-                    speech += GetTopStudentsPraise(list);
-                    break;
-            }
+            speech += GetTopStudentsPraise(list);
 
             LessonHelper.InsertPraise(speech);
         }
@@ -268,7 +299,7 @@ namespace HGPS_Robot
                 var speech = new StringBuilder();
 
                 var topStudents = StudentsPerformanceHelper.GetTopStudents(list);
-                var x = new Random().Next(0, 3);
+                var x = rand.Next(0, 3);
 
                 if (topStudents.Count == 1)
                 {
