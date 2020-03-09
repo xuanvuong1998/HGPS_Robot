@@ -205,9 +205,9 @@ namespace HGPS_Robot
                             // due to delay when student received the quiz signal
                             Wait(QUIZ_BUFFER_SECONDS * 1000);
 
-                            GroupChallengeHelper.EndChallenge();
                             if (val.ToLower() == "group-challenge")
                             {
+                                GroupChallengeHelper.EndChallenge();
                                 GroupChallengeHelper.AssessGroupChallenge();
                             }
                                                        
@@ -242,6 +242,8 @@ namespace HGPS_Robot
                             TakeEmotionSurvey();
                         }else if (val.ToLower() == "group-competition")
                         {
+                            GroupCompetitionHelper.DeclareGroupMembers();
+
                             Debug.WriteLine("Group competition is happening now");
 
                             LessonStatusHelper.LessonStatus.LessonState

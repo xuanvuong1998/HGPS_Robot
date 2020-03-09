@@ -16,7 +16,7 @@ namespace HGPS_Robot
 
         // Indicate whether robot received student performance results from web server ot not yet
         public static bool ResultReceived { get; set; }
-        
+
         // Incicate whether robot is annoucing top students of the lesson
 
         public static bool PraisingBestStudents { get; set; }
@@ -84,15 +84,15 @@ namespace HGPS_Robot
                     speech += std + ". ";
                 }
 
-                speech += $"With the point of {point3}. You are " +
-                    "the top 3 of this lesson and awarded a bronze medal. " +
+                speech += $"Based on today's lesson. You are " +
+                    "awarded the bronze medal for the best student. " +
                     "Well done. ";
 
                 Synthesizer.Speak(speech);
                 AudioHelper.PlayApplauseSound();
                 speech = "";
             }
-            
+
             if (top2.Count() > 0)
             {
                 foreach (var std in top2)
@@ -100,25 +100,26 @@ namespace HGPS_Robot
                     speech += std + ". ";
                 }
 
-                speech += $"With the point of {point2}. You are "
-                        + "the top 2 of this lesson and received a silver medal. " +
+                speech += $"You are "
+                        + "awarded the silver medal. " +
                         "Very good job!";
-                
+
                 Synthesizer.Speak(speech);
                 AudioHelper.PlayApplauseSound();
 
                 speech = "";
             }
-            
+
 
             foreach (var std in top1)
             {
                 speech += std + ". ";
             }
 
-            speech += speech += $"With the point of {point1}. You are "
-                   + "the best student today, and you won the gold medal. Congratulation!";
-            
+            speech += speech += $"You are "
+                   + "the best student today, and you won the gold medal. " +
+                   "Very very good! Congratulation!";
+
             Synthesizer.Speak(speech);
 
             AudioHelper.PlayChampionSound();
@@ -140,13 +141,16 @@ namespace HGPS_Robot
 
             SyncHelper.RequestOpeningURL("individual-best-improvement");
 
+
+            Thread.Sleep(2000);
+
             string[] top1 = top.Split('-')[0].Split(',');
             string point1 = "-1";
 
             string[] infos = top.Split('-');
             int len = top.Split('-').Count();
             point1 = infos[len / 2];
-            
+
             string[] top2, top3;
 
             string point2 = "-1", point3 = "-1";
@@ -157,7 +161,7 @@ namespace HGPS_Robot
             else
             {
                 top2 = infos[1].Split(',');
-                
+
                 point2 = infos[len / 2 + 1];
 
             }
@@ -174,45 +178,63 @@ namespace HGPS_Robot
 
             string speech = "";
 
-            if (top3.Count() > 0)
+            //if (top3.Count() > 0)
+            //{
+            //    foreach (var std in top3)
+            //    {
+            //        speech += std + ". ";
+            //    }
+
+            //    speech += $"You are awarded a bronze medal for the " +
+            //        $"best improvement student. Good job. ";
+
+            //    Synthesizer.Speak(speech);
+            //    AudioHelper.PlayApplauseSound();
+            //    speech = "";
+            //}
+
+            //if (top2.Count() > 0)
+            //{
+            //    foreach (var std in top2)
+            //    {
+            //        speech += std + ". ";
+            //    }
+
+            //    speech += $"You are awarded the silver medal " +
+            //        $"for the best improvement student. Well done! ";
+
+            //    Synthesizer.Speak(speech);
+            //    AudioHelper.PlayApplauseSound();
+
+            //    speech = "";
+            //}
+
+            //foreach (var std in top1)
+            //{
+            //    speech += std + ". ";
+            //}
+
+            //if (point1.Contains("-")) point1 = "3"; // Fake
+            //speech += $"You are awarded the gold medal for the best improvement student. " +
+            //    $"Congratulation";
+
+            // don't ranking 3 students, 3 is the same effort
+            foreach (var std in top3)
             {
-                foreach (var std in top3)
-                {
-                    speech += std + ". ";
-                }
-
-                speech += $"You was awarded a bronze medal for the third best improvement " +
-                    $"compare to last lesson";
-
-                Synthesizer.Speak(speech);
-                AudioHelper.PlayApplauseSound();
-                speech = "";
+                speech += std + ". ";
             }
-
-            if (top2.Count() > 0)
+            foreach (var std in top2)
             {
-                foreach (var std in top2)
-                {
-                    speech += std + ". ";
-                }
-
-                speech += $"You won 1 silver medal for best improvement of lesson today";
-
-                Synthesizer.Speak(speech);
-                AudioHelper.PlayApplauseSound();
-
-                speech = "";
+                speech += std + ". ";
             }
-
-
             foreach (var std in top1)
             {
                 speech += std + ". ";
             }
 
-            if (point1.Contains("-")) point1 = "3"; // Fake
-            speech += speech += $"With the increment of {point1}. You deserved to " +
-                $"get the gold medal for the best improvement student. Well done. ";
+            speech += "I am very happy to" +
+                " see your positive results today. You guys deserve to get a medal for the " +
+                "best improvement students. Congratulation! ";
 
             Synthesizer.Speak(speech);
 
@@ -236,8 +258,9 @@ namespace HGPS_Robot
                         Synthesizer.Speak("It is absolutely correct! Good job "
                     + rdmStd); break;
                     case 2: Synthesizer.Speak("I couldn't agree more. Very good " + rdmStd); break;
-                    case 3: Synthesizer.Speak(rdmStd + ". Your answer is definitely accurate. " +
-                        "Good job. "); break;
+                    case 3:
+                        Synthesizer.Speak(rdmStd + ". Your answer is definitely accurate. " +
+                    "Good job. "); break;
                     case 4:
                         Synthesizer.Speak(rdmStd + ". that's very correct. There is " +
                     "nothing to add on that. Well done"); break;

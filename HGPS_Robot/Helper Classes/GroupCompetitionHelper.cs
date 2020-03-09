@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SpeechLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,30 @@ namespace HGPS_Robot
 
         private static Random rand = new Random();
 
+        public static void DeclareGroupMembers()
+        {
+            var left = TablePositionHelper.GetLeftGroupMembers();
+            var right = TablePositionHelper.GetRightGroupMembers();
+            string speech = "Now I will read " +
+                "all group member names. Group 1 are ";
+
+            foreach (var std in left)
+            {
+                speech += std + ", ";
+            }
+
+            Synthesizer.Speak(speech);
+
+            speech = "Group 2 are ";
+            foreach (var std in right)
+            {
+                speech += std + ", ";
+            }
+
+            Synthesizer.Speak(speech);
+
+        }
+
         public static void AnnouceCurrentResult()
         {
             string speech = "";
@@ -29,51 +54,58 @@ namespace HGPS_Robot
             {
                 case 0:
                     speech = "Everyone, please look at the projector screen to see " +
-                        "the result. Left, or right, will win this challenge?";
+                        "the competition result. Who will be the winner of " +
+                        "this question? Group 1 or Group 2?";
                     break;
                 case 1:
-                    speech = "Now. Let see, left, or right. is the winner of this question?";
+                    speech = "Ok, now let see which group is the winner of the question, " +
+                        "Group 1 or Group 2. ";
                     break;
                 case 2:
-                    speech = "Boys and girls, do you think the left, or the right will be " +
-                        "the winner of this question?";
+                    speech = "Boys and girls, will group 1 be winner, or " +
+                        "group 2?";
                     break;
             }
 
             LessonHelper.InsertNextSlideCommand("speak", speech);
 
-            speech = "here it is. ";
+            speech = "The result is...";
 
             if (LeftResult > RightResult)
             {
                 switch (rdmNum)
                 {
-                    case 0: speech += "Group 1 is the winner. Well done!"; break;
-                    case 1: speech += $"With {(int)LeftResult} percent of correct answers. " +
-                            $"Group 1 is the winner. Good job!"; break;
-                    case 2: speech += $"Group 1 is the winner. {(int)LeftResult} is the " +
-                            $"percentage of your correct answers. " +
+                    case 0: speech += "Oh yeah, Group 1 defeated Group 2, and become " +
+                            "the winner"; break;
+                    case 1: speech += $"Oh yes, With {(int)LeftResult} percent of correct answers. " +
+                            $"Group 1 has defeated group 2. "; break;
+                    case 2: speech += $"Wow, Group 1 is the winner. You get {(int)LeftResult} " +
+                            $"percent correct answers. " +
                             "Very good!"; break;
                 }
-
             }
             else if (LeftResult == RightResult)
             {
                 switch (rdmNum)
                 {
                     case 0: speech += "Absolutely unbelievable boys and girls. It is a draw"; break;
-                    case 1: speech += "Amazing boys and girls. It is a draw"; break;
-                    case 2: speech += "Fantastic boys and girls. It is a draw"; break;
+                    case 1: speech += $"Group 1 got {LeftResult} percent, " +
+                            $"Group 2 also got {RightResult} percent. It is a draw. " +
+                            $"Good job all of you. "; break;
+                    case 2: speech += "Fantastic boys and girls. It is a draw. " +
+                            "Group 1 and Group 2 have the same correct percentage. " +
+                            "Congratulation to all! "; break;
                 }
             }
             else
             {
                 switch (rdmNum)
                 {
-                    case 0: speech += "Awesome. Group 2 is the winner. Well done!"; break;
+                    case 0: speech += "Awesome. Group 1 was defeated by group 2. Congratulation " +
+                            "group 2"; break;
                     case 1:
                         speech += $"With {(int)RightResult} percent of correct answers. " +
-                        $"Group 2 is the winner. Good job!"; break;
+                        $"Group 2 is the winner of this question. Good job group 2"; break;
                     case 2:
                         speech += $"Group 2 is the winner. {(int)RightResult} is the " +
                         $"percentage of your correct answers. " +
@@ -84,6 +116,7 @@ namespace HGPS_Robot
             LessonHelper.InsertNextSlideCommand("myhub", "RequestOpenResultURL,"
                         + "group-competition");
 
+            LessonHelper.InsertNextSlideCommand("wait", "2000");
             LessonHelper.InsertPraise(speech);
 
             LessonHelper.InsertNextSlideCommand("myhub", "RequestOpenResultURL,"
@@ -97,8 +130,8 @@ namespace HGPS_Robot
         {
             int rdmNum = rand.Next(3);
             string speech;
-            speech = "Now. It is the time to summary, which group, left, or right is the " +
-                    "winner in overall? ";
+            speech = "Now. It is the time to summarize the result. Who " +
+                "will be the winner after all? Group 1 or Group 2? ";
 
             LessonHelper.InsertNextSlideCommand("speak", speech);
 
@@ -111,7 +144,7 @@ namespace HGPS_Robot
                 {
                     case 0: speech += "Incredible! The winner today is group 1. "; break;
                     case 1: speech += "Marvelous! Group 1 is the winner today. "; break;
-                    case 2: speech += "Terrific! Group 1 became the winner today. "; break;
+                    case 2: speech += "Terrific! Group 1 become the winner today. "; break;
                 }
 
                 winnerMembers = TablePositionHelper.GetLeftGroupMembers();
@@ -131,7 +164,6 @@ namespace HGPS_Robot
                     case 2: speech += "Terrific! Group 2 became the winner today. "; break;
                 }
                 winnerMembers = TablePositionHelper.GetRightGroupMembers();
-
             }
 
             if (winnerMembers.Count > 0)
@@ -149,7 +181,6 @@ namespace HGPS_Robot
             LessonHelper.InsertNextSlideCommand("playaudio", "champion");
             LessonHelper.InsertNextSlideCommand("myhub", "RequestOpenResultURL,"
                         + "hide-results");
-
         }
 
         public static void ProcessResult(string message)

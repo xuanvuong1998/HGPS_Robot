@@ -98,6 +98,8 @@ namespace HGPS_Robot
                 //Get position of student
                 var position = TablePositionHelper.FindTablePosByStdId(student.Student_id);
 
+                Debug.WriteLine("Position " + position);
+
                 if (position != null)
                 {
                     GlobalFlowControl.Lesson.ApproachStudent = position;
@@ -171,7 +173,6 @@ namespace HGPS_Robot
                 // marking the received signal to RobotCommands
 
                 StudentsPerformanceHelper.ResultReceived = true;
-
                 
                 if (GlobalFlowControl.Lesson.GroupCompetitionIsHappening)
                 {
