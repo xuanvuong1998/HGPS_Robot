@@ -173,16 +173,16 @@ namespace HGPS_Robot
             switch (direction)
             {
                 case "forward":
-                    ForwardDuring(2);
+                    ForwardDuring(1);
                     break;
                 case "backward":
-                    BackwardDuring(2);
+                    BackwardDuring(1);
                     break; 
                 case "left-turn":
-                    TurnLeftDuring(2);
+                    TurnLeftDuring(1);
                     break;
                 case "right-turn":
-                    TurnRightDuring(2);
+                    TurnRightDuring(1);
                     break;
                 case "stop":
                     Stop();
@@ -209,7 +209,6 @@ namespace HGPS_Robot
         }
         static public void Go(string location)
         {
-            return;
             try
             {
                 GlobalFlowControl.Navigation.ResetBeforeNavigation();
@@ -220,7 +219,6 @@ namespace HGPS_Robot
 
         static public void GoUntilReachedGoalOrCanceled(string location)
         {
-            return;
             Go(location);
             while (GlobalFlowControl.Navigation.Moving == true) ;
         }

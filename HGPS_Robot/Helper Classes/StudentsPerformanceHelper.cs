@@ -43,31 +43,36 @@ namespace HGPS_Robot
             }
 
             SyncHelper.RequestOpeningURL("individual-top-students");
+            string[] infos = top.Split('-');
 
-            string[] top1 = top.Split('-')[0].Split(',');
-            string point1 = top.Split('-')[3];
+            string[] top1 = infos[0].Split(',');
+
+            int len = top.Split('-').Count();
+            string point1 = infos[len / 2];
+
             string[] top2, top3;
 
             string point2 = "-1", point3 = "-1";
-            if (top.Split('-').Count() < 3)
+            if (len < 3)
             {
                 top2 = new string[] { };
             }
             else
             {
-                top2 = top.Split('-')[1].Split(',');
-                point2 = top.Split('-')[4];
+                top2 = infos[1].Split(',');
+
+                point2 = infos[len / 2 + 1];
 
             }
 
-            if (top.Split('-').Count() < 5)
+            if (len < 5)
             {
                 top3 = new string[] { };
             }
             else
             {
-                top3 = top.Split('-')[2].Split(',');
-                point3 = top.Split('-')[5];
+                top3 = infos[2].Split(',');
+                point3 = infos[len / 2 + 2];
             }
 
             string speech = "";
@@ -98,8 +103,6 @@ namespace HGPS_Robot
                 speech += $"With the point of {point2}. You are "
                         + "the top 2 of this lesson and received a silver medal. " +
                         "Very good job!";
-
-
                 
                 Synthesizer.Speak(speech);
                 AudioHelper.PlayApplauseSound();
@@ -114,7 +117,7 @@ namespace HGPS_Robot
             }
 
             speech += speech += $"With the point of {point1}. You are "
-                   + "the best student today and won a gold medal. Congratulation!";
+                   + "the best student today, and you won the gold medal. Congratulation!";
             
             Synthesizer.Speak(speech);
 
@@ -138,29 +141,35 @@ namespace HGPS_Robot
             SyncHelper.RequestOpeningURL("individual-best-improvement");
 
             string[] top1 = top.Split('-')[0].Split(',');
-            string point1 = top.Split('-')[3];
+            string point1 = "-1";
+
+            string[] infos = top.Split('-');
+            int len = top.Split('-').Count();
+            point1 = infos[len / 2];
+            
             string[] top2, top3;
 
             string point2 = "-1", point3 = "-1";
-            if (top.Split('-').Count() < 3)
+            if (len < 3)
             {
                 top2 = new string[] { };
             }
             else
             {
-                top2 = top.Split('-')[1].Split(',');
-                point2 = top.Split('-')[4];
+                top2 = infos[1].Split(',');
+                
+                point2 = infos[len / 2 + 1];
 
             }
 
-            if (top.Split('-').Count() < 5)
+            if (len < 5)
             {
                 top3 = new string[] { };
             }
             else
             {
-                top3 = top.Split('-')[2].Split(',');
-                point3 = top.Split('-')[5];
+                top3 = infos[2].Split(',');
+                point3 = infos[len / 2 + 2];
             }
 
             string speech = "";

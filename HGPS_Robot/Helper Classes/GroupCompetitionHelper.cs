@@ -158,6 +158,9 @@ namespace HGPS_Robot
             LeftResult = double.Parse(message.Split(';')[1]);
             RightResult = double.Parse(message.Split(';')[2]);
 
+            LeftResult *= 100;
+            RightResult *= 100; 
+
             AnnouceCurrentResult();
 
         }
