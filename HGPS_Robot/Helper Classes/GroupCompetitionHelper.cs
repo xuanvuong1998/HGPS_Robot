@@ -49,8 +49,11 @@ namespace HGPS_Robot
                 switch (rdmNum)
                 {
                     case 0: speech += "Group 1 is the winner. Well done!"; break;
-                    case 1: speech += "Group 1 is the winner. Good job!"; break;
-                    case 2: speech += "Group 1 is the winner. Very good!"; break;
+                    case 1: speech += $"With {(int)LeftResult} percent of correct answers. " +
+                            $"Group 1 is the winner. Good job!"; break;
+                    case 2: speech += $"Group 1 is the winner. {(int)LeftResult} is the " +
+                            $"percentage of your correct answers. " +
+                            "Very good!"; break;
                 }
 
             }
@@ -67,9 +70,14 @@ namespace HGPS_Robot
             {
                 switch (rdmNum)
                 {
-                    case 0: speech += "Group 2 is the winner. Wonderful!"; break;
-                    case 1: speech += "Group 2 is the winner. Congratualtion!"; break;
-                    case 2: speech += "Group 2 is the winner. Awesome"; break;
+                    case 0: speech += "Awesome. Group 2 is the winner. Well done!"; break;
+                    case 1:
+                        speech += $"With {(int)RightResult} percent of correct answers. " +
+                        $"Group 2 is the winner. Good job!"; break;
+                    case 2:
+                        speech += $"Group 2 is the winner. {(int)RightResult} is the " +
+                        $"percentage of your correct answers. " +
+                        "Very good!"; break;
                 }
             }
 

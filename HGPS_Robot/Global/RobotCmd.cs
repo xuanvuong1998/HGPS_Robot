@@ -276,13 +276,13 @@ namespace HGPS_Robot
                         break;
                     case 1:
                         speech += "Excellent! " + numOfFullScore + " students in the class " +
-                            "have not made any mistake so far";
+                            "have not made any mistake so far. ";
                         break;
                     case 2:
                     case 3:
                     case 4:
                         speech += "Amazing! " + numOfFullScore + " students have the maximum " +
-                            "scores so far ";
+                            "scores so far. ";
                         break;
                 }
             }
