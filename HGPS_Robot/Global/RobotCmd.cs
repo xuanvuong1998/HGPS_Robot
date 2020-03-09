@@ -354,14 +354,16 @@ namespace HGPS_Robot
             {
                 LessonHelper.PauseLesson();
                 LessonHelper.ResumeSpeak();
-                Synthesizer.Speak("Well, since some of you are not sure of this topic, let Mr Neezam explain again. ");
+                Synthesizer.Speak("Well, since some of you are not sure " +
+                    "of this topic, let our teacher have some explanations again. ");
             } // Ok, happy or neutral
             else
             {
                 LessonHelper.PauseLesson();
                 LessonHelper.ResumeSpeak();
 
-                Synthesizer.Speak("Wow, most of you understand the topic! Let us continue with the lesson. ");
+                Synthesizer.Speak("Wow, most of you understand the topic!" +
+                    " Let us continue with the lesson. ");
 
                 LessonHelper.ResumeLesson();
             }

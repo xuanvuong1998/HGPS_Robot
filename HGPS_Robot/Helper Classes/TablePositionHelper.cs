@@ -11,6 +11,9 @@ namespace HGPS_Robot
         public static List<TablePosition> TablePositions { get; set; } = new List<TablePosition>();
         public static List<string> ChosenStudentList { get; set; } = new List<string>(); //  List of chosen students for asking a question
         public static string LatestChosenStudent {get; set;} // Latest PICKED UP student for asking
+
+        private static Random rand = new Random();
+
         public static void LoadTablesInfo()
         {
             TablePositions = WebHelper.GetTablePositions();
@@ -91,7 +94,7 @@ namespace HGPS_Robot
 
             do
             {
-                rdmStd = TablePositions[new Random().Next(TablePositions.Count)].Student_Id;
+                rdmStd = TablePositions[rand.Next(TablePositions.Count)].Student_Id;
             } while (ChosenStudentList.Contains(rdmStd));
 
             ChosenStudentList.Add(rdmStd);

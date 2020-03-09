@@ -23,6 +23,8 @@ namespace HGPS_Robot
 
         public static bool PraisingBestImprovements { get; set; }
 
+        private static Random rand = new Random();
+
         public static void AnnouceBestStudentsOfLesson(string top)
         {
             // Wait to finish annoucing best improvement first
@@ -248,12 +250,12 @@ namespace HGPS_Robot
             Synthesizer.Resume();
             var rdmStd = TablePositionHelper.LatestChosenStudent;
 
-            int rdmNum = new Random().Next(5);
+            int rdmNum = rand.Next(5);
             if (res == "correct")
             {
                 switch (rdmNum)
                 {
-                    case 0: Synthesizer.Speak("I think...Yes exactly ! Well done " + rdmNum); break;
+                    case 0: Synthesizer.Speak("I think...Yes exactly ! Well done " + rdmStd); break;
                     case 1:
                         Synthesizer.Speak("It is absolutely correct! Good job "
                     + rdmStd); break;

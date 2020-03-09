@@ -131,7 +131,6 @@ namespace HGPS_Robot
                         break;
 
                     case "playaudio":
-                        
                         if (val.Contains("applause"))
                         {
                             AudioHelper.PlayApplauseSound();

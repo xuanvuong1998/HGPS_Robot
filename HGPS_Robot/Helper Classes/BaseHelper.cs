@@ -209,7 +209,6 @@ namespace HGPS_Robot
         }
         static public void Go(string location)
         {
-            //MessageBox.Show(location); return;
             try
             {
                 GlobalFlowControl.Navigation.ResetBeforeNavigation();
@@ -220,7 +219,6 @@ namespace HGPS_Robot
 
         static public void GoUntilReachedGoalOrCanceled(string location)
         {
-            //MessageBox.Show("GO UNTIL " + location); return;
             Go(location);
             while (GlobalFlowControl.Navigation.Moving == true) ;
         }

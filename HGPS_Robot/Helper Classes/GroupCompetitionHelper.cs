@@ -23,7 +23,10 @@ namespace HGPS_Robot
 
         public static void DeclareGroupMembers()
         {
+            // A1 A3 A5 A7 A9
             var left = TablePositionHelper.GetLeftGroupMembers();
+            // A2 A4 A6 A8
+
             var right = TablePositionHelper.GetRightGroupMembers();
             string speech = "Now I will read " +
                 "all group member names. Group 1 are ";
