@@ -12,6 +12,8 @@ namespace HGPS_Robot
 {
     class Conversation
     {
+        public static Random rand = new Random();
+        
         private static string[] startNewConversationKeyword =
             { "Hi! I am Cody. How can I help you with?",
             "Yes, I am here, please ask me a question",
@@ -60,7 +62,7 @@ namespace HGPS_Robot
 
         private static string PickOne(string[] list)
         {
-            var speech = list[new Random().Next(list.Length)];
+            var speech = list[rand.Next(list.Length)];
             return speech;
         }
 
@@ -89,7 +91,6 @@ namespace HGPS_Robot
 
         private static string Filter(string question)
         {
-
             while (!char.IsLetterOrDigit(question[question.Length - 1]))
             {
                 question = question.Remove(question.Length - 1);
@@ -120,7 +121,6 @@ namespace HGPS_Robot
 
             }
 
-
             return reply;
         }
 
@@ -150,7 +150,6 @@ namespace HGPS_Robot
                         if (tryCnt == 2) break;
                         reply = PickOne(dontUnderstandWords);
                         Synthesizer.Speak(reply);
-
                     }
                     else
                     {

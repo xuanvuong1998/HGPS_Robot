@@ -51,7 +51,7 @@
             this.picBackground.Location = new System.Drawing.Point(51, 68);
             this.picBackground.Margin = new System.Windows.Forms.Padding(6);
             this.picBackground.Name = "picBackground";
-            this.picBackground.Size = new System.Drawing.Size(297, 334);
+            this.picBackground.Size = new System.Drawing.Size(266, 188);
             this.picBackground.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.picBackground.TabIndex = 1;
             this.picBackground.TabStop = false;
@@ -61,7 +61,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1637, 905);
+            this.ClientSize = new System.Drawing.Size(1637, 1636);
             this.Controls.Add(this.picBackground);
             this.Controls.Add(this.lblMessage);
             this.Margin = new System.Windows.Forms.Padding(4);

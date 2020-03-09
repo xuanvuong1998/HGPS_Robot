@@ -18,10 +18,6 @@ namespace HGPS_Robot
         public static double LINEAR_SPEED = 0.3;
         public static double ANGULAR_SPEED = 0.8;
         private static Base rBase = new Base();
-        private static int nextRovingLocationIndex = 0;
-        private static string[] locationList;
-        private static Thread rovingThread;
-        private static bool rovingDirection; 
         private static Timer rBaseStopTimer = new Timer();
         private static readonly double METER_PER_ROUND = 1.27484;
         private static readonly string BASE_IP = "192.168.31.200:9090";
@@ -213,6 +209,7 @@ namespace HGPS_Robot
         }
         static public void Go(string location)
         {
+            return;
             try
             {
                 GlobalFlowControl.Navigation.ResetBeforeNavigation();
@@ -223,6 +220,7 @@ namespace HGPS_Robot
 
         static public void GoUntilReachedGoalOrCanceled(string location)
         {
+            return;
             Go(location);
             while (GlobalFlowControl.Navigation.Moving == true) ;
         }

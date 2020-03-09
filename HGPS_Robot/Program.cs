@@ -19,12 +19,7 @@ namespace HGPS_Robot
         /// </summary>
         [STAThread]
         static void Main()
-        {
-
-            //StudentsPerformanceHelper.InitMockData();
-            //GroupChallengeHelper.InitRobotResponsibility();
-
-            //return;
+        {            
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainUI());

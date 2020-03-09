@@ -1,6 +1,7 @@
 ﻿using SpeechLibrary;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -12,6 +13,204 @@ namespace HGPS_Robot
     {
         public static List<StudentHistoryDTO> studentPerformanceOverall
              = new List<StudentHistoryDTO>();
+
+        // Indicate whether robot received student performance results from web server ot not yet
+        public static bool ResultReceived { get; set; }
+        
+        // Incicate whether robot is annoucing top students of the lesson
+
+        public static bool PraisingBestStudents { get; set; }
+
+        public static bool PraisingBestImprovements { get; set; }
+
+        public static void AnnouceBestStudentsOfLesson(string top)
+        {
+            // Wait to finish annoucing best improvement first
+            // Because signal received from server hub => different thread
+
+            while (PraisingBestImprovements)
+            {
+                Thread.Sleep(1000);
+            }
+
+            Debug.WriteLine("Top students " + top);
+
+            if (top == "")
+            {
+                PraisingBestStudents = false; // Finish praising
+
+                return;
+            }
+
+            SyncHelper.RequestOpeningURL("individual-top-students");
+
+            string[] top1 = top.Split('-')[0].Split(',');
+            string point1 = top.Split('-')[3];
+            string[] top2, top3;
+
+            string point2 = "-1", point3 = "-1";
+            if (top.Split('-').Count() < 3)
+            {
+                top2 = new string[] { };
+            }
+            else
+            {
+                top2 = top.Split('-')[1].Split(',');
+                point2 = top.Split('-')[4];
+
+            }
+
+            if (top.Split('-').Count() < 5)
+            {
+                top3 = new string[] { };
+            }
+            else
+            {
+                top3 = top.Split('-')[2].Split(',');
+                point3 = top.Split('-')[5];
+            }
+
+            string speech = "";
+
+            if (top3.Count() > 0)
+            {
+                foreach (var std in top3)
+                {
+                    speech += std + ". ";
+                }
+
+                speech += $"With the point of {point3}. You are " +
+                    "the top 3 of this lesson and awarded a bronze medal. " +
+                    "Well done. ";
+
+                Synthesizer.Speak(speech);
+                AudioHelper.PlayApplauseSound();
+                speech = "";
+            }
+            
+            if (top2.Count() > 0)
+            {
+                foreach (var std in top2)
+                {
+                    speech += std + ". ";
+                }
+
+                speech += $"With the point of {point2}. You are "
+                        + "the top 2 of this lesson and received a silver medal. " +
+                        "Very good job!";
+
+
+                
+                Synthesizer.Speak(speech);
+                AudioHelper.PlayApplauseSound();
+
+                speech = "";
+            }
+            
+
+            foreach (var std in top1)
+            {
+                speech += std + ". ";
+            }
+
+            speech += speech += $"With the point of {point1}. You are "
+                   + "the best student today and won a gold medal. Congratulation!";
+            
+            Synthesizer.Speak(speech);
+
+            AudioHelper.PlayChampionSound();
+
+            SyncHelper.RequestOpeningURL("hide-results");
+            PraisingBestStudents = false; // Finish praising
+        }
+
+        public static void AnnouceBestImprovements(string top)
+        {
+            Debug.WriteLine("Best Improvement" + top);
+
+            if (top == "")
+            {
+                PraisingBestImprovements = false; // Finish praising
+
+                return;
+            }
+
+            SyncHelper.RequestOpeningURL("individual-best-improvement");
+
+            string[] top1 = top.Split('-')[0].Split(',');
+            string point1 = top.Split('-')[3];
+            string[] top2, top3;
+
+            string point2 = "-1", point3 = "-1";
+            if (top.Split('-').Count() < 3)
+            {
+                top2 = new string[] { };
+            }
+            else
+            {
+                top2 = top.Split('-')[1].Split(',');
+                point2 = top.Split('-')[4];
+
+            }
+
+            if (top.Split('-').Count() < 5)
+            {
+                top3 = new string[] { };
+            }
+            else
+            {
+                top3 = top.Split('-')[2].Split(',');
+                point3 = top.Split('-')[5];
+            }
+
+            string speech = "";
+
+            if (top3.Count() > 0)
+            {
+                foreach (var std in top3)
+                {
+                    speech += std + ". ";
+                }
+
+                speech += $"You was awarded a bronze medal for the third best improvement " +
+                    $"compare to last lesson";
+
+                Synthesizer.Speak(speech);
+                AudioHelper.PlayApplauseSound();
+                speech = "";
+            }
+
+            if (top2.Count() > 0)
+            {
+                foreach (var std in top2)
+                {
+                    speech += std + ". ";
+                }
+
+                speech += $"You won 1 silver medal for best improvement of lesson today";
+
+                Synthesizer.Speak(speech);
+                AudioHelper.PlayApplauseSound();
+
+                speech = "";
+            }
+
+
+            foreach (var std in top1)
+            {
+                speech += std + ". ";
+            }
+
+            if (point1.Contains("-")) point1 = "3"; // Fake
+            speech += speech += $"With the increment of {point1}. You deserved to " +
+                $"get the gold medal for the best improvement student. Well done. ";
+
+            Synthesizer.Speak(speech);
+
+            AudioHelper.PlayChampionSound();
+
+            PraisingBestImprovements = false; // Finish praising best improvements
+        }
 
         public static void AssessStudentAnswer(string res)
         {
@@ -132,7 +331,6 @@ namespace HGPS_Robot
             return ranks;
         }
 
-      
         public static int GetNumberOfCorrectStudent(List<StudentHistoryDTO> stdHis)
         {
             int cnt = 0;

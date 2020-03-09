@@ -24,7 +24,7 @@ namespace HGPS_Robot
 
         public static int CurrentDisplaySlideNumber { get; set; } = 0;
 
-        public static int TotalSlidesNumber { get; set; } = 0;
+        public static int LastSlideNumber { get; set; } = 0;
        
 
         private static Thread _thread = null;
@@ -66,7 +66,7 @@ namespace HGPS_Robot
             _thread = new Thread(new ThreadStart(() =>
             {
                 int endSlideNum = FileHelper.GetLessonSlidesNumber(lessonName);
-                TotalSlidesNumber = endSlideNum;
+                LastSlideNumber = endSlideNum;
                 string codePath = FileHelper.BasePath + @"\" + lessonName + @"\code.pptx";
                 progData = PowerpointHelper.GetSlidesData(codePath);
 
@@ -126,6 +126,10 @@ namespace HGPS_Robot
 
         }
 
+        /// <summary>
+        /// Insert praise after assessing student performance
+        /// </summary>
+        /// <param name="speech"></param>
         public static void InsertPraise(string speech)
         {
             //this method will insert a 'speak' command into
@@ -133,7 +137,9 @@ namespace HGPS_Robot
             int slideNum = CurrentSlideNumber;
 
             var _nextProgSlide = progData[slideNum]; //next slide since slide 1 starts from index 0
-            _nextProgSlide.Commands.Add(new RobotCommand("asking", "0"));
+            _nextProgSlide.Commands.Add(new RobotCommand("asking", "0")); // tell server that
+            // robot not asking student anymore, please show the result
+
             _nextProgSlide.Commands.Add(new RobotCommand("speak", speech));
             _nextProgSlide.Commands.Add(new RobotCommand("playaudio", "applause"));
 
