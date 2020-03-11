@@ -92,6 +92,15 @@ namespace HGPS_Robot
             {
                 lessonUI.ShowDialog();
             }
+            if (e.KeyCode == Keys.K)
+            {
+                GlobalFlowControl.Lesson.Starting = true;
+                RobotActionHelper.MoveDuringLesson();
+            }
+            if (e.KeyCode == Keys.S)
+            {
+                GlobalFlowControl.Lesson.Starting = false;
+            }
         }
     }
 }
