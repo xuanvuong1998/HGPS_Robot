@@ -10,9 +10,10 @@ namespace HGPS_Robot
 {
     public class UpperBodyHelper
     {
-        static int[] minPos = { 2048, 2000, 2730, 1200, 2816, 1870, 2200, 1930 };
+        //static int[] minPos = { 2048, 2000, 2730, 1200, 2816, 1870, 2200, 1930 };
+        static int[] minPos = { 2048, 2000, 2730, 2048, 2094, 1870, 2200, 1930 };
         //static int[] maxPos = { 2840, 1400, 2150, 2048, 2030, 1430, 2048, 2240 };
-        static int[] maxPos = { 2640, 1600, 2350, 1848, 2230, 1530, 2048, 2240 };
+        static int[] maxPos = { 2640, 1600, 2350, 1664, 2600, 1530, 2048, 2240 };
         public static class Head
         {
             const string HEAD_UP = "HEAD_UP";

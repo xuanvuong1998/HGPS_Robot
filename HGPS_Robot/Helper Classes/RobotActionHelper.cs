@@ -70,7 +70,7 @@ namespace HGPS_Robot
                         }
                         for (int i = 1; i <= 6; i++)
                         {
-                            UpperBodyHelper.MoveRandomly(i, 0.5);
+                            UpperBodyHelper.MoveRandomly(i, 1);
                         }
 
                         int headMovementRdm = rdm.Next(2);
