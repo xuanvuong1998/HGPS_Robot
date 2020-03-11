@@ -49,7 +49,7 @@ namespace HGPS_Robot
                 do
                 {
                     // RObot stop doing gestures when
-                    //:moving, group challenge, teaching taking over (lesson is pausing)
+                    //:moving, group challenge, teacher taking over (lesson is pausing)
 
                     if (GlobalFlowControl.Navigation.Moving 
                        || GlobalFlowControl.GroupChallenge.IsHappening
@@ -70,7 +70,7 @@ namespace HGPS_Robot
                         }
                         for (int i = 1; i <= 6; i++)
                         {
-                            UpperBodyHelper.MoveRandomly(i, 0.7);
+                            UpperBodyHelper.MoveRandomly(i, 0.5);
                         }
 
                         int headMovementRdm = rdm.Next(2);

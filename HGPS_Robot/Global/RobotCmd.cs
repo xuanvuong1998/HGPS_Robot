@@ -151,7 +151,6 @@ namespace HGPS_Robot
                                 resultSpeech = "It is not correct " + student.Student_id;
                                 break;
                            
-
                         }
                         
                     }

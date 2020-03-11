@@ -27,7 +27,6 @@ namespace HGPS_Robot
             {
                 upperBody.Move(HEAD_UP);
             }
-
             public static void Down()
             {
                 upperBody.Move(HEAD_DOWN);
@@ -224,6 +223,25 @@ namespace HGPS_Robot
             upperBody.UnlockMotors();
         }
 
+        /// <summary>
+        /// Check all motors are almost near these original positions
+        /// </summary>
+        /// <returns></returns>
+        public static bool AreMotorsOriginalPos()
+        {
+            var presentPositions = ReadPresentLocations();
+            
+            for(int i = 0; i < presentPositions.Count; i++)
+            {
+                if (Math.Abs(minPos[i] - presentPositions[i]) > 50)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public static void MoveTo(int motorId, int goalPos)
         {
             upperBody.MoveTo(motorId, goalPos);
@@ -250,7 +268,6 @@ namespace HGPS_Robot
         {
 
         }
-
 
         public static void Wait(int milliseconds)
         {
@@ -313,11 +330,11 @@ namespace HGPS_Robot
 
             if (x < y)
             {
-                randomV = new Random().Next(y - x + 1) * delta + x;
+                randomV = RandomHelper.RandomInt(y - x + 1) * delta + x;
             }
             else
             {
-                randomV = new Random().Next(x - y + 1) * delta + y;
+                randomV = x - RandomHelper.RandomInt(x - y + 1) * delta;
             }
 
             MoveTo(motorId, (int)randomV);
@@ -407,13 +424,16 @@ namespace HGPS_Robot
 
         public static void ResetAll()
         {
-            SetSpeedAll(50);
+            SetSpeedAll(50); 
             Head.Reset();
             Shoulder.LeftS.Reset();
             Shoulder.RightS.Reset();
             Elbow.LeftS.Reset();
             Elbow.RightS.Reset();
+            Wait(3000);
+            UnLockMotors();
             SetSpeedAll(30);
+            
         }
 
         public static void ResetHead()

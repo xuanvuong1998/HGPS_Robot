@@ -9,19 +9,19 @@ namespace HGPS_Robot
 
         public static void PlayApplauseSound()
         {
-            int rdNum = new Random().Next(5);
+            int rdNum = RandomHelper.RandomInt(5);
             PlayAudio("cheering" + (rdNum + 1) + ".wav");
         }
 
         public static void PlaySadSound()
         {
-            int rdNum = new Random().Next(4);
+            int rdNum = RandomHelper.RandomInt(4);
             PlayAudio("sad" + (rdNum + 1) + ".wav");
         }
 
         public static void PlayChampionSound()
         {
-            int rdNum = new Random().Next(2);
+            int rdNum = RandomHelper.RandomInt(2);
             PlayAudio("champion" + (rdNum + 1) + ".wav");
         }
 
