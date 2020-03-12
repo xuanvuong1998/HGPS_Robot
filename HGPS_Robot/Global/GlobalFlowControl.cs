@@ -10,6 +10,7 @@ namespace HGPS_Robot
 
     class GlobalFlowControl
     {
+        // just testing
         public class Navigation
         {
             public static bool Moving { get; set; }
