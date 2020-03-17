@@ -25,7 +25,7 @@ namespace HGPS_Robot
         public string Subject { get; private set; } = null;
 
         public Image Image { get; set; } = null;
-        private string _code = null;
+        private string _code = null; 
         private Question _question = new Question();
 
         private void ProcessCommands()
@@ -36,7 +36,7 @@ namespace HGPS_Robot
                 string[] CommandLines = Code.Split(';');
                 foreach (var cmdLine in CommandLines)
                 {                    
-                    if (!String.IsNullOrEmpty(cmdLine.Trim()))
+                    if (!string.IsNullOrEmpty(cmdLine.Trim()))
                     {
                         var cmdInfo = cmdLine.Trim().Split(new[] { '/' }, 2);
                         if (cmdInfo[0].ToLower() == "teacherid") TeacherId = cmdInfo[1];
@@ -50,6 +50,7 @@ namespace HGPS_Robot
                 Commands = _commands;
             }
         }
+
 
         private void CheckForQuiz(RobotCommand cmd)
         {
@@ -104,10 +105,9 @@ namespace HGPS_Robot
                     _question.Points = Convert.ToInt32(cmd.Value);
                     break;
 
-                case "start": 
-                    if (cmd.Value.ToLower() == "quiz" 
-                        || cmd.Value.ToLower() == "group-challenge")
-                            Question = _question;
+                case "start":
+                    if (cmd.Value.ToLower() == "quiz")
+                        Question = _question;
                     break;
             }
         }

@@ -11,6 +11,7 @@ namespace HGPS_Robot
     class GlobalFlowControl
     {
         // just testing
+        
         public class Navigation
         {
             public static bool Moving { get; set; }
@@ -158,7 +159,7 @@ namespace HGPS_Robot
                 get; set;
             }
 
-            public static bool StartingQuiz { get; set; }
+            public static bool QuizIsStarting { get; set; }
 
             // StudentID who be chosen to ask robot go there for asking after a quiz finished
             // Chosen by teacher from teacher panel control
@@ -183,10 +184,8 @@ namespace HGPS_Robot
             public static void ResetAll()
             {
                 Starting = true;
-                Synthesizer.SetSpeed(-2);
-                GroupRecords.Clear();
-                GroupChallenge.ResetQueue();
-                GroupChallengeHelper.LoadHints();// load list of hints image names from dropbox hint folder
+                Synthesizer.SetSpeed(-3);
+                GroupChallengeHelper.ResetAll();
                 TablePositionHelper.LoadTablesInfo();
                 TablePositionHelper.DeleteChosenStudentList();
                 if (ChosenStudentList != null) ChosenStudentList.Clear();

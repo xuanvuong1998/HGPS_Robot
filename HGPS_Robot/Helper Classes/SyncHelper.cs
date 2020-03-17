@@ -68,6 +68,12 @@ namespace HGPS_Robot
             StatusChanged?.Invoke(null, e);
         }
 
+        public static void SendGroupChallengStepsToServer()
+        {
+            _myHub.Invoke<List<Quiz>>("InitGroupChallengeSteps",
+           GroupChallengeHelper.GroupChallengeSteps.Values.ToList());
+        }
+
         public static void InvokeRankingsResult(string type)
         {
             _myHub.Invoke<string>("AcquireRankingResults", type);

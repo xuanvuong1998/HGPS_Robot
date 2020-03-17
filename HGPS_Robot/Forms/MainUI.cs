@@ -16,7 +16,6 @@ namespace HGPS_Robot
             InitializeComponent();
         }
 
-
         private void Form3_Shown(object sender, EventArgs e)
         {
             this.CenterToScreen();
@@ -26,7 +25,7 @@ namespace HGPS_Robot
             var area = Screen.FromControl(this).WorkingArea;
             picBackground.Location = new Point(0, 0);
             picBackground.Size = new Size(area.Width, area.Height);
-
+            
             SystemUpdateHelper.Start();
             SystemUpdateHelper.SystemUpdated += SystemUpdateHelper_SystemUpdated;
 
@@ -34,8 +33,6 @@ namespace HGPS_Robot
 
             UpperBodyHelper.Init();
             BaseHelper.Connect();
-
-            
         }
 
         private void SystemUpdateHelper_SystemUpdated(object sender, EventArgs e)
@@ -94,12 +91,11 @@ namespace HGPS_Robot
             }
             if (e.KeyCode == Keys.K)
             {
-                GlobalFlowControl.Lesson.Starting = true;
                 RobotActionHelper.MoveDuringLesson();
             }
             if (e.KeyCode == Keys.S)
             {
-                GlobalFlowControl.Lesson.Starting = false;
+                RobotActionHelper.StopAll();
             }
         }
     }

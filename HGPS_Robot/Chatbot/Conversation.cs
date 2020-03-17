@@ -46,7 +46,6 @@ namespace HGPS_Robot
 
         private static int minQueryLength = 5;
         private static int maxRecogTime = 12;
-        private static int unableToReplyCount;
         public static void Init()
         {
             var subKey = GlobalData.SpeechKey;
@@ -138,7 +137,6 @@ namespace HGPS_Robot
                 Synthesizer.Speak(PickOne(startNewConversationKeyword));
                 do
                 {
-                    unableToReplyCount = 0;
                     var ques = await Recognizer.RecognizeQueryWithTimeOut(minQueryLength, maxRecogTime)
                                     .ConfigureAwait(false);
 

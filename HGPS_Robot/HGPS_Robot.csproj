@@ -121,8 +121,18 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
-    <Reference Include="Robot">
-      <HintPath>..\..\..\..\..\Desktop\CODDIE\Robotx64\Robot\bin\Debug\Robot.dll</HintPath>
+    <Reference Include="Robot, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>dlls\Robot.dll</HintPath>
+    </Reference>
+    <Reference Include="rosbridge_client_common">
+      <HintPath>..\..\..\..\..\Desktop\VUONG\Robotx64\Robot\bin\Debug\rosbridge_client_common.dll</HintPath>
+    </Reference>
+    <Reference Include="rosbridge_client_socket_for_desktop">
+      <HintPath>..\..\..\..\..\Desktop\VUONG\Robotx64\Robot\bin\Debug\rosbridge_client_socket_for_desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="ROSHelper">
+      <HintPath>..\..\..\..\..\Desktop\VUONG\Robotx64\Robot\bin\Debug\ROSHelper.dll</HintPath>
     </Reference>
     <Reference Include="SpeechLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
@@ -369,6 +379,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="dlls\Robot.dll" />
     <Content Include="dlls\SpeechLibrary.dll" />
     <Content Include="Images\img_forest.jpg" />
     <None Include="Resources\CoddieUI2.png" />

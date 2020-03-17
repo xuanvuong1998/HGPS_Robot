@@ -53,6 +53,7 @@ namespace HGPS_Robot
         public static void Start(string lessonName, int startSlideNum, string voiceName)
         {
             LessonName = lessonName;
+            
             GlobalFlowControl.Lesson.ResetAll();
             Synthesizer.SelectVoiceByName(GlobalData.GetVoiceNameFromVoiceNumber(voiceName));
             RobotActionHelper.MoveDuringLesson();
@@ -69,10 +70,11 @@ namespace HGPS_Robot
                 LastSlideNumber = endSlideNum;
                 string codePath = FileHelper.BasePath + @"\" + lessonName + @"\code.pptx";
                 progData = PowerpointHelper.GetSlidesData(codePath);
-
+               
+                //SyncHelper.SendGroupChallengStepsToServer();
+                
                 for (CurrentSlideNumber = 1; CurrentSlideNumber <= endSlideNum; CurrentSlideNumber++)
                 {
-                   
                     if (CurrentSlideNumber < startSlideNum)
                     {
                         RobotProgSlide _currentProgSlide = progData[CurrentSlideNumber - 1];
@@ -82,7 +84,7 @@ namespace HGPS_Robot
                         foreach (var cmd in commands)
                         {
                             if (cmd.Type.ToLower() == "start")
-                                if (cmd.Value.ToLower() == "quiz" || cmd.Value.ToLower() == "group-challenge")
+                                if (cmd.Value.ToLower() == "quiz")
                                 {
                                     QuestionNumber++; // Synchronize question number flow
                                 }
@@ -202,6 +204,7 @@ namespace HGPS_Robot
         {
             BaseHelper.Go("A0");
             GlobalFlowControl.Lesson.Starting = false;
+            RobotActionHelper.StopAll();
             try
             {
                 Synthesizer.SetSpeed(0);

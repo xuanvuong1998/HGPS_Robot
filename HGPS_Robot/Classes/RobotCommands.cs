@@ -26,7 +26,7 @@ namespace HGPS_Robot
         public delegate void CommandUpdateHandler(object sender, CommandEventArgs e);
         public event CommandUpdateHandler OnCommandUpdate;
         private List<RobotCommand> _commands;
-        private SoundPlayer _soundPlayer = new SoundPlayer();        
+        private SoundPlayer _soundPlayer = new SoundPlayer();
         private const int QUIZ_BUFFER_SECONDS = 2;
 
         private Timer quizTimer = new Timer();
@@ -37,12 +37,12 @@ namespace HGPS_Robot
         public int QuizElapsedTime
         {
             get { return quizElapsed; }
-            set {
+            set
+            {
                 GlobalFlowControl.Lesson.QuizElapsedTime = value;
                 quizElapsed = value;
             }
         }
-
 
         public RobotCommands(List<RobotCommand> commands)
         {
@@ -50,17 +50,10 @@ namespace HGPS_Robot
         }
 
 
-        public void PauseSpeak()
-        {            
-            Synthesizer.Pause();
-        }
-        public void ResumeSpeak()
+        #region Core
+        private void Wait(int milliseconds)
         {
-            Synthesizer.Resume();
-        }
-        public void StopSpeak()
-        {
-            Synthesizer.StopSpeaking();
+            Thread.Sleep(milliseconds);
         }
         public void Execute()
         {
@@ -83,22 +76,19 @@ namespace HGPS_Robot
         }
 
         int commandIteration = 0;
+        #endregion
+
+        #region Command Handler
+        private void UpdateCommand(string type, string value)
+        {
+            if (OnCommandUpdate != null)
+            {
+                CommandEventArgs args = new CommandEventArgs(type, value);
+                OnCommandUpdate(this, args);
+            }
+        }
         private void CommandHandler()
         {
-            if (LessonHelper.CurrentSlideNumber == LessonHelper.LastSlideNumber)
-            {
-                Debug.WriteLine("LAST SLIDE: annoucing top students");
-                
-                StudentsPerformanceHelper.PraisingBestStudents = true;
-                
-                SyncHelper.InvokeRankingsResult("individual");
-
-                while(StudentsPerformanceHelper.PraisingBestStudents == true)
-                {
-                    Wait(1500);
-                }
-                
-            }
 
             var quiz = new Quiz();
 
@@ -110,34 +100,52 @@ namespace HGPS_Robot
                 }
 
                 CurrentCommand = _commands[commandIteration];
+
+                GroupChallengeHelper.CheckForGroupChallenge(CurrentCommand);
+                
                 var cmd = CurrentCommand.Type;
                 var val = CurrentCommand.Value;
-                
+
                 UpdateCommand(cmd.ToLower(), val);
-                
-                Debug.WriteLine(cmd + "/" + val); 
-                
+
+                Debug.WriteLine(cmd + "/" + val);
+
+
                 switch (cmd.ToLower())
                 {
+                    #region Information Setter
                     case "subject":
                         LessonHelper.LessonSubject = val;
                         break;
+                    #endregion
+
+                    #region Speech
                     case "speak":
+                        Wait(1000);
                         Speak(val);
                         break;
 
                     case "speakasync":
+                        Wait(1000);
                         SpeakAsync(val);
                         break;
+                    #endregion
 
+                    #region Media
+                    case "playmedia":
+                        PlayMedia(val);
+                        break;
                     case "playaudio":
+                        val = val.ToLower();
                         if (val.Contains("applause"))
                         {
                             AudioHelper.PlayApplauseSound();
-                        }else if (val.Contains("sad"))
+                        }
+                        else if (val.Contains("sad"))
                         {
                             AudioHelper.PlaySadSound();
-                        }else if (val.Contains("champion"))
+                        }
+                        else if (val.Contains("champion"))
                         {
                             AudioHelper.PlayChampionSound();
                         }
@@ -149,21 +157,60 @@ namespace HGPS_Robot
                     case "myspeechasync":
                         MySpeechAsync(val);
                         break;
+                    #endregion
 
-                    case "move":
-                        Move(val);
+                    #region Robot Movement
+                    case "gountil":
+                        BaseHelper.GoUntilReachedGoalOrCanceled(val);
                         break;
+                    case "go":
+                        BaseHelper.Go(val);
+                        break;
+                    case "move":
+                        BaseHelper.DoBaseMovements(val);
+                        break;
+                    #endregion
 
+                    #region Flow Control
                     case "wait":
                         Wait(Convert.ToInt32(val));
                         break;
-
-                    case "playmedia":
-                        PlayMedia(val);
+                    case "asking": // Asking student answer after the quiz ended
+                        var status = LessonStatusHelper.LessonStatus;
+                        if (Convert.ToInt32(val) == 1)
+                        {
+                            status.LessonState = "asking";
+                        }
+                        else
+                        {
+                            status.LessonState = "notAsking";
+                        }
+                        WebHelper.UpdateStatus(status);
+                        Wait(1500);
+                        break;
+                    case "lesson":
+                        if (val.ToLower() == "pause")
+                        {
+                            LessonHelper.SendPausedStatusToServer("paused");
+                            LessonHelper.PauseLesson();
+                        }
+                        else if (val.ToLower() == "continue")
+                        {
+                            LessonHelper.SendPausedStatusToServer("resumed");
+                            LessonHelper.ResumeLesson();
+                        }
                         break;
 
+
+                    case "myhub":
+                        InvokeHubMethod(val);
+                        break;
+                    #endregion
+
+                    #region Quiz Info
+
                     case "quizformat":
-                        quiz.QuizFormat = val;
+                        quiz.QuizFormat = val.ToLower();
                         break;
 
                     case "answer":
@@ -184,35 +231,41 @@ namespace HGPS_Robot
                     case "points":
                         quiz.Points = int.Parse(val);
                         break;
+                    #endregion
 
+                    #region Robot Gesture
                     case "gesture":
                         UpperBodyHelper.DoGestures(val);
                         break;
+                    #endregion
 
-                    case "start":
-                        if (val.ToLower() == "quiz" || val.ToLower() == "group-challenge")
+                    #region Asking Students
+                    case "robot":
+                        if (val.ToLower() == "pickup-std")
                         {
+                            RandomAskStudentQuestion();
+                            LessonHelper.SendPausedStatusToServer("asking-std");
+                        }
+                        break;
+                    #endregion
+
+                    #region Triggers
+                    case "start":
+                        if (val.ToLower() == "quiz")
+                        { 
                             LessonHelper.QuestionNumber += 1;
-                            if (val.ToLower() == "group-challenge")
-                            {
-                                GroupChallengeHelper.InitNewChallenge();
-                            }
+
                             quiz.QuestionNumber = LessonHelper.QuestionNumber;
-                            StartQuiz(quiz); 
                             
+                            StartQuiz(quiz);
+
                             // This QUIZ BUFFER TO give extra time for all student submit the answer
                             // due to delay when student received the quiz signal
                             Wait(QUIZ_BUFFER_SECONDS * 1000);
 
-                            if (val.ToLower() == "group-challenge")
-                            {
-                                GroupChallengeHelper.EndChallenge();
-                                GroupChallengeHelper.AssessGroupChallenge();
-                            }
-                                                       
                             // Prevent receiving quiz again in server received side
                             LessonStatusHelper.LessonStatus.CurQuiz = null;
-                                                        
+
                             // Haven't received 
                             StudentsPerformanceHelper.ResultReceived = false;
 
@@ -239,11 +292,10 @@ namespace HGPS_Robot
                         else if (val.ToLower() == "emotion-survey")
                         {
                             TakeEmotionSurvey();
-                        }else if (val.ToLower() == "group-competition")
+                        }
+                        else if (val.ToLower() == "group-competition")
                         {
                             GroupCompetitionHelper.DeclareGroupMembers();
-
-                            Debug.WriteLine("Group competition is happening now");
 
                             LessonStatusHelper.LessonStatus.LessonState
                                 = "start-group-competition";
@@ -251,8 +303,12 @@ namespace HGPS_Robot
                             WebHelper.UpdateStatus(LessonStatusHelper.LessonStatus);
 
                             GlobalFlowControl.Lesson.GroupCompetitionIsHappening = true;
+                        }else if (val.ToLower() == "group-challenge")
+                        {
+                            StartGroupChallenge();
                         }
                         break;
+
                     case "stop":
                         if (val.ToLower() == "group-competition")
                         {
@@ -263,58 +319,44 @@ namespace HGPS_Robot
                             GlobalFlowControl.Lesson.GroupCompetitionIsHappening = false;
 
                             GroupCompetitionHelper.AnnouceOverallResult();
-                            
-                        }
-                        break;
-                    case "gountil":
-                        BaseHelper.GoUntilReachedGoalOrCanceled(val);
-                        break;
-                    case "go":
-                        BaseHelper.Go(val);
-                        break;
-
-                    case "asking": // Asking student answer after the quiz ended
-                        var status = LessonStatusHelper.LessonStatus;
-                        if (Convert.ToInt32(val) == 1)
-                        {
-                            status.LessonState = "asking";
-                        }
-                        else
-                        {
-                            status.LessonState = "notAsking";
-                        }
-                        WebHelper.UpdateStatus(status);
-                        Wait(1500);
-                        break;
-                    case "lesson":
-                        if (val.ToLower() == "pause")
-                        {
-                            LessonHelper.SendPausedStatusToServer("paused");
-                            LessonHelper.PauseLesson();
-                        }else if (val.ToLower() == "continue")
-                        {
-                            LessonHelper.SendPausedStatusToServer("resumed");
-                            LessonHelper.ResumeLesson();
-                        }
-                        break;
-                    case "robot":
-                        if (val == "pickup-std")
-                        {
-                            RandomAskStudentQuestion();
-                            LessonHelper.SendPausedStatusToServer("asking-std");
                         }
                         break;
 
-                    case "myhub":
-                        InvokeHubMethod(val);
+                    #endregion
+
+                    #region Praise
+
+                    case "praise":
+                        Praise(val.ToLower());
                         break;
+                    #endregion
+
                     default:
                         //MessageBox.Show($"Unknown Type: {cmd}");
                         break;
                 }
             }
         }
+        #endregion
+        
+        #region Praise
+        private void Praise(string type)
+        {
+            if (type.Contains("top-students"))
+            {
+                StudentsPerformanceHelper.PraisingBestStudents = true;
 
+                SyncHelper.InvokeRankingsResult("individual");
+
+                while (StudentsPerformanceHelper.PraisingBestStudents == true)
+                {
+                    Wait(1500);
+                }
+            }
+        }
+        #endregion
+
+        #region Invoke Hub 
         private void InvokeHubMethod(string val)
         {
             string method = val.Split(',')[0];
@@ -323,7 +365,63 @@ namespace HGPS_Robot
 
             SyncHelper.RequestOpeningURL(param);
         }
+        #endregion
 
+        #region ProcessSpeech
+        public void PauseSpeak()
+        {
+            Synthesizer.Pause();
+        }
+        public void ResumeSpeak()
+        {
+            Synthesizer.Resume();
+        }
+        public void StopSpeak()
+        {
+            Synthesizer.StopSpeaking();
+        }
+        private void Speak(string text)
+        {
+            text = SynthesizerFilter.ChangeWords(text);
+            Synthesizer.Speak(text);
+        }
+        private void SpeakAsync(string text)
+        {
+            text = SynthesizerFilter.ChangeWords(text);
+            Synthesizer.SpeakAsync(text);
+        }
+        #endregion
+
+        #region Process Media
+        private void PlayMedia(string url)
+        {
+            MediaPlaying = true;
+            var status = LessonStatusHelper.LessonStatus;
+            status.MediaPath = url;
+            WebHelper.UpdateStatus(status);
+
+            while (MediaPlaying) ; //wait for media to finish playing
+            Thread.Sleep(2000); // wait for 2 seconds before resuming
+        }
+        private void MySpeech(string file)
+        {
+            var status = LessonStatusHelper.LessonStatus;
+            var fileLocation = FileHelper.BasePath + $@"{status.LessonName}\Speech\{file}";
+            _soundPlayer.SoundLocation = fileLocation;
+            _soundPlayer.PlaySync();
+        }
+
+        private void MySpeechAsync(string file)
+        {
+            var status = LessonStatusHelper.LessonStatus;
+            var fileLocation = FileHelper.BasePath + $@"{status.LessonName}\Speech\{file}";
+            _soundPlayer.SoundLocation = fileLocation;
+            _soundPlayer.Play();
+        }
+
+        #endregion
+
+        #region Asking Students
         private void RandomAskStudentQuestion()
         {
             //Synthesizer.Speak("")
@@ -339,7 +437,9 @@ namespace HGPS_Robot
 
             switch (rdmIndex)
             {
-                case 0: case 3: case 4:
+                case 0:
+                case 3:
+                case 4:
                     Synthesizer.Speak(rdmStd + ". " + "Can you stand up?"); break;
                 case 1: case 2: Synthesizer.Speak(rdmStd + ". " + "Please stand up"); break;
             }
@@ -366,53 +466,20 @@ namespace HGPS_Robot
                 case 3:
                     speech = $"{rdmStd}. Are you willing to answer a question from me.";
                     break;
-                    
+
                 case 4:
                     speech = $"{rdmStd}. Here is the question for you. Please try your " +
                         $"best to give me the correct answer";
                     break;
             }
-            
+
             Synthesizer.Speak(speech);
 
-            
-        }
 
-        private void Speak(string text)
-        {
-            text = SynthesizerFilter.ChangeWords(text);
-            Synthesizer.Speak(text);
         }
-        private void SpeakAsync(string text)
-        {
-            text = SynthesizerFilter.ChangeWords(text);
-            Synthesizer.SpeakAsync(text);
-        }
-        private void MySpeech(string file)
-        {
-            var status = LessonStatusHelper.LessonStatus;
-            var fileLocation = FileHelper.BasePath + $@"{status.LessonName}\Speech\{file}";
-            _soundPlayer.SoundLocation = fileLocation;
-            _soundPlayer.PlaySync();
-        }
+        #endregion
 
-        private void MySpeechAsync(string file)
-        {
-            var status = LessonStatusHelper.LessonStatus;
-            var fileLocation = FileHelper.BasePath + $@"{status.LessonName}\Speech\{file}";
-            _soundPlayer.SoundLocation = fileLocation;
-            _soundPlayer.Play();
-        }
-
-        private void Move(string action_name)
-        {
-            //MessageBox.Show($"Move: {action_name}");
-        }
-        private void Wait(int milliseconds)
-        {
-            Thread.Sleep(milliseconds);
-        }
-
+        #region Emotion Survey
         private void TakeEmotionSurvey()
         {
             Debug.WriteLine("Request server to take student's emotion survey");
@@ -425,29 +492,20 @@ namespace HGPS_Robot
             WebHelper.UpdateStatus(status);
 
             while (!GlobalFlowControl.Lesson.StudentFeedbackReceived) ;
-            
+
             LessonStatusHelper.LessonStatus.LessonState = previousLessonStatus;
             Wait(7000); // Remove thread conflict
-            
+
             Debug.WriteLine("Received student feedback");
 
             GlobalFlowControl.Lesson.StudentFeedbackReceived = false; // Reset for the next feedback
         }
+        #endregion
 
-        private void PlayMedia(string url)
-        {
-            MediaPlaying = true;
-            var status = LessonStatusHelper.LessonStatus;
-            status.MediaPath = url;
-            WebHelper.UpdateStatus(status);
-
-            while (MediaPlaying) ; //wait for media to finish playing
-            Thread.Sleep(2000); // wait for 2 seconds before resuming
-        }
-
+        #region Process Quiz
         private void StartQuizTimer()
         {
-            GlobalFlowControl.Lesson.StartingQuiz = true;
+            GlobalFlowControl.Lesson.QuizIsStarting = true;
             quizTimer.Interval = 1000;
             quizTimer.AutoReset = true;
             quizTimer.Elapsed += Timer_Elapsed;
@@ -467,11 +525,11 @@ namespace HGPS_Robot
             }
 
             Debug.WriteLine("Time Left: " + (quizTime - QuizElapsedTime));
-            
-            if (QuizElapsedTime >= quizTime || GlobalFlowControl.Lesson.StartingQuiz == false)
-            { 
-                GlobalFlowControl.Lesson.StartingQuiz = false; 
-                quizTimer.Stop();             
+
+            if (QuizElapsedTime >= quizTime || GlobalFlowControl.Lesson.QuizIsStarting == false)
+            {
+                GlobalFlowControl.Lesson.QuizIsStarting = false;
+                quizTimer.Stop();
             }
         }
 
@@ -479,7 +537,7 @@ namespace HGPS_Robot
         {
             // unselect student for asking after ending a quiz
             GlobalFlowControl.Lesson.ChosenStudent = null;
-            
+
             var status = LessonStatusHelper.LessonStatus;
             status.CurQuiz = q;
             status.LessonId = LessonHelper.LessonId;
@@ -490,10 +548,10 @@ namespace HGPS_Robot
 
             quizTime = q.TimeOut;
             LessonHelper.CurrentQuizTimeout = q.TimeOut;
-            
+
             StartQuizTimer();
 
-            while (GlobalFlowControl.Lesson.StartingQuiz)
+            while (GlobalFlowControl.Lesson.QuizIsStarting)
             {
                 Wait(500); // Prevent looping too much
                 // Busy-waiting: wait for quiz timeout or all students already submitted the answers
@@ -510,17 +568,35 @@ namespace HGPS_Robot
             var status = LessonStatusHelper.LessonStatus;
             status.CurQuiz = null;
             status.LessonState = "quiz completed";
-            
+
             WebHelper.UpdateStatus(status);
         }
-        private void UpdateCommand(string type, string value)
+        #endregion
+
+        #region Process Group Challenge
+
+        public void StartGroupChallenge()
         {
-            if (OnCommandUpdate != null)
+            GroupChallengeHelper.InitNewChallenge();
+
+            SyncHelper.SendGroupChallengStepsToServer();
+
+            int totalTime = 0;
+
+            
+            
+            
+            while (GlobalFlowControl.GroupChallenge.IsHappening)
             {
-                CommandEventArgs args = new CommandEventArgs(type, value);
-                OnCommandUpdate(this, args);
+                
             }
+
+            GroupChallengeHelper.EndChallenge();
+            GroupChallengeHelper.AssessGroupChallenge();
+
         }
+        #endregion
+
     }
     public class CommandEventArgs : EventArgs
     {

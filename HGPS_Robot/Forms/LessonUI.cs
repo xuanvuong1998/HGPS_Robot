@@ -98,7 +98,7 @@ namespace HGPS_Robot
                 }
                 else if (status.LessonState == "end")
                 {
-                    GlobalFlowControl.Lesson.StartingQuiz = false;
+                    GlobalFlowControl.Lesson.QuizIsStarting = false;
                     try
                     {
                         if (InvokeRequired)

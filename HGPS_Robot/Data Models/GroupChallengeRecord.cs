@@ -10,22 +10,24 @@ namespace HGPS_Robot
     {
         public int ChallengeNumber { get; set; }
         public int GroupNumber { get; set; }
-        public List<string> Submission { get; set; } = new List<string>(); // time-result
 
-        public int GetSubmissionCount() => Submission.Count();
+        // Submission results each step (string: submittedTime - 0/1)
+        public List<string> StepSubmissions { get; set; } = new List<string>(); // time-result
+
+        public int GetSubmissionCount() => StepSubmissions.Count();
         
         public int GetLeftChancesNumber()
         {
             var members = TablePositionHelper.GetMembersByGroupNumber(GroupNumber);
 
-            int leftChances = members.Count - Submission.Count;
+            int leftChances = members.Count - StepSubmissions.Count;
 
             return leftChances;
         }
         
         public string GetLatestSubmission()
         {
-            var subs = Submission.OrderByDescending(x => int.Parse(x.Split('-')[0])).ToList();
+            var subs = StepSubmissions.OrderByDescending(x => int.Parse(x.Split('-')[0])).ToList();
             if (subs == null || subs.Count == 0) return null;
             return subs[0];
         }
@@ -33,7 +35,7 @@ namespace HGPS_Robot
         public int GetNumberOfCorrectSub()
         {
             int cnt = 0;
-            foreach (var sub in Submission)
+            foreach (var sub in StepSubmissions)
             {
                 cnt += IsCorrectAnswer(sub);
             }
@@ -42,7 +44,7 @@ namespace HGPS_Robot
 
         public int GetNumberOfIncorrectSub()
         {
-            return Submission.Count - GetNumberOfCorrectSub();
+            return StepSubmissions.Count - GetNumberOfCorrectSub();
         }
 
         public string GetFinalResult()
@@ -78,7 +80,7 @@ namespace HGPS_Robot
               
         public string GetFirstCorrectSubmission()
         {
-            var subs = Submission.OrderBy(x => int.Parse(x.Split('-')[0])).ToList();
+            var subs = StepSubmissions.OrderBy(x => int.Parse(x.Split('-')[0])).ToList();
 
             foreach (var sub in subs)
             {

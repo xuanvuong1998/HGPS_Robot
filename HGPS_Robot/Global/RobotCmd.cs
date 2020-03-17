@@ -389,12 +389,12 @@ namespace HGPS_Robot
                     ChallengeNumber = LessonHelper.ChallengeNumber,
                     GroupNumber = groupNumber,
                 };
-                groupRecord.Submission.Add(submittedTime + "-" + result);
+                groupRecord.StepSubmissions.Add(submittedTime + "-" + result);
                 records.Add(groupRecord);
             }
             else
             {
-                groupRecord.Submission.Add(submittedTime + "-" + result);
+                groupRecord.StepSubmissions.Add(submittedTime + "-" + result);
             }
 
             Debug.WriteLine("Submission Updated!");
@@ -485,7 +485,7 @@ namespace HGPS_Robot
                         //                            "reveal the result now. Are you ready???");
                         //}
                         
-                        GlobalFlowControl.Lesson.StartingQuiz = false;
+                        GlobalFlowControl.Lesson.QuizIsStarting = false;
                     }
                 }
                 else if (LessonStatus == "Next")

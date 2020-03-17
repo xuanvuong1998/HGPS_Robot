@@ -20,6 +20,10 @@ namespace HGPS_Robot
         private static int CHECKING_INTERVAL = 60; // 30 seconds
         private const int OFFER_HINT_INTERVAL = 5; // 30 seconds
         private static int checkingTimerTick = 0;
+        
+        public static Dictionary<int, Quiz> GroupChallengeSteps
+                        = new Dictionary<int, Quiz>();
+
         private static Timer checkingTimer = new Timer
         { AutoReset = true, Interval = 1000 };
 
@@ -28,12 +32,176 @@ namespace HGPS_Robot
             checkingTimer.Elapsed += CheckingTimer_Elapsed;
         }
 
-        private static void Wait(int miliSec)
+        #region Group Challenge Steps
+        public static void CheckForGroupChallenge(RobotCommand cmd)
         {
-            Thread.Sleep(miliSec);
+            var type = cmd.Type.ToLower();
+            var val = cmd.Value;
+
+            if (type.Contains("step"))
+            {
+                int step = type[4] - '0';
+
+                if (GroupChallengeSteps.ContainsKey(step) == false)
+                {
+                    GroupChallengeSteps.Add(step,
+                        new Quiz { QuizFormat = "text" });
+                }
+
+                var curStepQuiz = GroupChallengeSteps[step];
+
+                if (type.Contains("question"))
+                {
+                    curStepQuiz.QuestionContent = val;
+                }
+                else if (type.Contains("answer"))
+                {
+                    curStepQuiz.Answer = val;
+                }
+                else if (type.Contains("points"))
+                {
+                    curStepQuiz.Points = int.Parse(val);
+                }
+                else if (type.Contains("timeout"))
+                {
+                    curStepQuiz.TimeOut = int.Parse(val);
+                }
+                else if (type.Contains("choice"))
+                {
+                    curStepQuiz.QuizFormat = "mcq";
+                    curStepQuiz.Choices += val + ";";
+                }
+            }
+        }
+        #endregion
+
+        #region Init
+        private static bool IsRobotResponsible(int groupNum)
+        {
+            return responsibleGroups.Contains(groupNum);
+        }
+        public static void ResetAll()
+        {
+            InitRobotResponsibility();
+            hints.Clear();
+            LoadHints();
+            GroupChallengeSteps.Clear();
+            GlobalFlowControl.GroupChallenge.ResetQueue();
+            GlobalFlowControl.Lesson.GroupRecords.Clear();
+        }
+        private static void InitChallengeRecordList()
+        {
+            var groupQty = TablePositionHelper.GetGroupQuantity();
+
+            var globalRecord = GlobalFlowControl.Lesson.GroupRecords;
+
+            for (int i = 1; i <= groupQty; i++)
+            {
+                globalRecord.Add(new GroupChallengeRecord
+                {
+                    ChallengeNumber = LessonHelper.ChallengeNumber,
+                    GroupNumber = i
+                });
+            }
         }
 
+        public static void InitNewChallenge()
+        {
+            BaseHelper.Go("HOME");
+
+            LessonHelper.StartGroupChallenge();
+
+            receivedHintStudentList.Clear();
+
+            InitChallengeRecordList();
+
+            GlobalFlowControl.GroupChallenge.IsHappening = true;
+
+            StartServing();
+        }
+
+        /// <summary>
+        /// Assign middle-class groups for robot take care(offer hints during group challenge)
+        /// </summary>
+        public static void InitRobotResponsibility()
+        {
+            var ranks = StudentsPerformanceHelper.GetStudentsRanking();
+
+            var tables = TablePositionHelper.TablePositions;
+
+            Dictionary<int, int> groupLevel = new Dictionary<int, int>();
+
+            foreach (var table in tables)
+            {
+                int gNum = (int)table.GroupNumber;
+
+                string std = table.Student_Id;
+
+
+                if (ranks.ContainsKey(std))
+                {
+                    if (groupLevel.ContainsKey(gNum) == false)
+                    {
+                        groupLevel.Add(gNum, ranks[std]);
+                    }
+                    else
+                    {
+                        groupLevel[gNum] = (groupLevel[gNum] + ranks[std]) / 2;
+                    }
+                }
+            }
+
+            var list = groupLevel.OrderBy(x => x.Value).ToList();
+
+            int parts = (list.Count + 2) / 3; // 3 divided level (smart - normal - weak)
+
+            List<int> chosenGroups = new List<int>();
+            // Choose 'middle-class'
+            for (int i = parts; i < parts * 2; i++)
+            {
+                chosenGroups.Add(list[i].Key);
+            }
+
+            if (parts == 0)
+            {
+                for (int i = 1; i <= TablePositionHelper.GetGroupQuantity(); i++)
+                {
+                    chosenGroups.Add(i);
+                }
+            }
+
+            Debug.WriteLine("Group responsibility");
+
+            foreach (var item in chosenGroups)
+            {
+                Debug.WriteLine("Group " + item);
+            }
+
+            responsibleGroups = chosenGroups;
+        }
+
+        #endregion
+
+        #region Hints
         public static List<int> receivedHintStudentList = new List<int>();
+        private static void FindGroupNeedHelp()
+        {
+            var currentChallengeRecord =
+                GlobalFlowControl.Lesson.GroupRecords
+                .Where(x => x.ChallengeNumber == LessonHelper.ChallengeNumber);
+
+            foreach (var groupRecord in currentChallengeRecord)
+            {
+                if (groupRecord.GetSubmissionCount() == 0
+                    && IsRobotResponsible(groupRecord.GroupNumber)) // Haven't submitted
+                                                                    // and is robot responsibility
+                {
+                    Debug.WriteLine("Suggest group " + groupRecord.GroupNumber);
+                    SuggestHint(groupRecord.GroupNumber);
+                }
+            }
+        }
+       
 
         public static void SuggestHint(int groupNum)
         {
@@ -99,95 +267,13 @@ namespace HGPS_Robot
 
         }
 
-        private static void InitChallengeRecordList()
+        #endregion
+
+        #region Flow
+        private static void Wait(int miliSec)
         {
-            var groupQty = TablePositionHelper.GetGroupQuantity();
-
-            var globalRecord = GlobalFlowControl.Lesson.GroupRecords;
-
-            for (int i = 1; i <= groupQty; i++)
-            {
-                globalRecord.Add(new GroupChallengeRecord
-                {
-                    ChallengeNumber = LessonHelper.ChallengeNumber,
-                    GroupNumber = i
-                });
-            }
-
+            Thread.Sleep(miliSec);
         }
-
-        public static void InitNewChallenge()
-        {
-            BaseHelper.Go("HOME");
-            LessonHelper.StartGroupChallenge();
-            receivedHintStudentList.Clear();
-            InitRobotResponsibility();
-            InitChallengeRecordList();
-
-            GlobalFlowControl.GroupChallenge.IsHappening = true;
-            StartServing();
-        }
-
-        /// <summary>
-        /// Assign middle-class groups for robot take care(offer hints during group challenge)
-        /// </summary>
-        public static void InitRobotResponsibility()
-        {
-            var ranks = StudentsPerformanceHelper.GetStudentsRanking();
-
-            var tables = TablePositionHelper.TablePositions;
-
-            Dictionary<int, int> groupLevel = new Dictionary<int, int>();
-
-            foreach (var table in tables)
-            {
-                int gNum = (int)table.GroupNumber;
-
-                string std = table.Student_Id;
-
-
-                if (ranks.ContainsKey(std))
-                {
-                    if (groupLevel.ContainsKey(gNum) == false)
-                    {
-                        groupLevel.Add(gNum, ranks[std]);
-                    }
-                    else
-                    {
-                        groupLevel[gNum] = (groupLevel[gNum] + ranks[std]) / 2;
-                    }
-                }
-            }
-
-            var list = groupLevel.OrderBy(x => x.Value).ToList();
-
-            int parts = (list.Count + 2) / 3; // 3 divided level (smart - normal - weak)
-
-            List<int> chosenGroups = new List<int>();
-            // Choose 'middle-class'
-            for (int i = parts; i < parts * 2; i++)
-            {
-                chosenGroups.Add(list[i].Key);
-            }
-
-            if (parts == 0)
-            {
-                for (int i = 1; i <= TablePositionHelper.GetGroupQuantity(); i++)
-                {
-                    chosenGroups.Add(i);
-                }
-            }
-
-            Debug.WriteLine("Group responsibility");
-
-            foreach (var item in chosenGroups)
-            {
-                Debug.WriteLine("Group " + item);
-            }
-
-            responsibleGroups = chosenGroups;
-        }
-
         public static void EndChallenge()
         {
             BaseHelper.Go("HOME");
@@ -202,29 +288,10 @@ namespace HGPS_Robot
             checkingTimer.Start();
         }
 
-        private static bool IsRobotResponsible(int groupNum)
-        {
-            return responsibleGroups.Contains(groupNum);
-        }
+        #endregion
+       
 
         // Check if some groups haven't submitted any answer
-        private static void FindGroupNeedHelp()
-        {
-            var currentChallengeRecord =
-                GlobalFlowControl.Lesson.GroupRecords
-                .Where(x => x.ChallengeNumber == LessonHelper.ChallengeNumber);
-
-            foreach (var groupRecord in currentChallengeRecord)
-            {
-                if (groupRecord.GetSubmissionCount() == 0
-                    && IsRobotResponsible(groupRecord.GroupNumber)) // Haven't submitted
-                                                                    // and is robot responsibility
-                {
-                    Debug.WriteLine("Suggest group " + groupRecord.GroupNumber);
-                    SuggestHint(groupRecord.GroupNumber);
-                }
-            }
-        }
 
         private static void CheckingTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
@@ -308,25 +375,25 @@ namespace HGPS_Robot
             {
                 ChallengeNumber = 1,
                 GroupNumber = 1,
-                Submission = new List<string> { "5-0", "8-0", "12-0" }
+                StepSubmissions = new List<string> { "5-0", "8-0", "12-0" }
             };
             var p2 = new GroupChallengeRecord
             {
                 ChallengeNumber = 1,
                 GroupNumber = 2,
-                Submission = new List<string> { "2-1", "10-0", "50-0" }
+                StepSubmissions = new List<string> { "2-1", "10-0", "50-0" }
             };
             var p3 = new GroupChallengeRecord
             {
                 ChallengeNumber = 1,
                 GroupNumber = 3,
-                Submission = new List<string> { "4-1", "10-0", "30-1" }
+                StepSubmissions = new List<string> { "4-1", "10-0", "30-1" }
             };
             var p4 = new GroupChallengeRecord
             {
                 ChallengeNumber = 1,
                 GroupNumber = 4,
-                Submission = new List<string> { "5-1", "7-1", "50-1" }
+                StepSubmissions = new List<string> { "5-1", "7-1", "50-1" }
             };
 
 
@@ -335,25 +402,25 @@ namespace HGPS_Robot
             {
                 ChallengeNumber = 2,
                 GroupNumber = 1,
-                Submission = new List<string> { "5-0", "8-0", "12-0", "20-1" }
+                StepSubmissions = new List<string> { "5-0", "8-0", "12-0", "20-1" }
             };
             var p22 = new GroupChallengeRecord
             {
                 ChallengeNumber = 2,
                 GroupNumber = 2,
-                Submission = new List<string> { "1-1", "2-1", "3-1" }
+                StepSubmissions = new List<string> { "1-1", "2-1", "3-1" }
             };
             var p32 = new GroupChallengeRecord
             {
                 ChallengeNumber = 2,
                 GroupNumber = 3,
-                Submission = new List<string> { "4-1", "10-1", "30-0" }
+                StepSubmissions = new List<string> { "4-1", "10-1", "30-0" }
             };
             var p42 = new GroupChallengeRecord
             {
                 ChallengeNumber = 2,
                 GroupNumber = 4,
-                Submission = new List<string> { "5-0", "9-0", "20-1" }
+                StepSubmissions = new List<string> { "5-0", "9-0", "20-1" }
             };
 
             records.Add(p1);

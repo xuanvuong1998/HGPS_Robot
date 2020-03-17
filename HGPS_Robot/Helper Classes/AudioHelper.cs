@@ -32,16 +32,6 @@ namespace HGPS_Robot
 
             player.PlaySync();
 
-            //CoreAudioDevice defaultPlaybackDevice = new CoreAudioController().DefaultPlaybackDevice;
-            //Debug.WriteLine("Current Volume:" + defaultPlaybackDevice.Volume);
-            //defaultPlaybackDevice.Volume = 60;
-
-            //MediaPlayer player = new MediaPlayer();
-            //player.Open(new Uri(startupPath + fileLocation));
-
-            //player.Volume = 100 / 100.0f;
-            //player.Play();
-
         }
     }
 }
