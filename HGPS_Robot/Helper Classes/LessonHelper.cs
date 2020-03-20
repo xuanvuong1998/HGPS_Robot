@@ -39,7 +39,7 @@ namespace HGPS_Robot
 
         static LessonHelper() { }
 
-        public static void StartGroupChallenge()
+        public static void InitGroupChallenge()
         {
             ChallengeNumber++;
             frmInLesson.ShowMessage("GROUP CHALLENGE"); 
@@ -155,11 +155,13 @@ namespace HGPS_Robot
 
         public static void PauseSpeak()
         {
+            if (_robotCommands != null)
             _robotCommands.PauseSpeak();
         }
 
         public static void ResumeSpeak()
         {
+            if (_robotCommands != null)
             _robotCommands.ResumeSpeak();
         }
 

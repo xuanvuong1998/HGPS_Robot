@@ -46,12 +46,13 @@ namespace HGPS_Robot
 
         public void OfferHint()
         {
-            var top = GlobalFlowControl.GroupChallenge.RemoveCurrentOffer();
+            var top = GlobalFlowControl.GroupChallenge.GetNextOffer();
+            GlobalFlowControl.GroupChallenge.RemoveCurrentOffer();
 
             var groupNum = int.Parse(top.Split('-')[0]);
 
             BaseHelper.GoUntilReachedGoalOrCanceled("A" + groupNum);
-            Synthesizer.SetVolume(50);
+            Synthesizer.SetVolume(30);
             int rdmNum = new Random().Next(3);
 
             switch (rdmNum)

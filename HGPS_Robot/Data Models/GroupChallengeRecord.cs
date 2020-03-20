@@ -11,8 +11,9 @@ namespace HGPS_Robot
         public int ChallengeNumber { get; set; }
         public int GroupNumber { get; set; }
 
-        // Submission results each step (string: submittedTime - 0/1)
-        public List<string> StepSubmissions { get; set; } = new List<string>(); // time-result
+        // Submission results each step 
+        // Format: result(0/1)-submittedCnt-submittedTime-step
+        public List<string> StepSubmissions { get; set; } = new List<string>(); 
 
         public int GetSubmissionCount() => StepSubmissions.Count();
         

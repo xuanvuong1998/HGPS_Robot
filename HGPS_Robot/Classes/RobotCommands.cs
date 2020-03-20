@@ -30,7 +30,9 @@ namespace HGPS_Robot
         private const int QUIZ_BUFFER_SECONDS = 2;
 
         private Timer quizTimer = new Timer();
-        private int quizTime;
+        
+        // Timeout of a quiz (Including when Group Challenge start)
+        private int QuizTime;
 
         private int quizElapsed;
 
@@ -47,6 +49,9 @@ namespace HGPS_Robot
         public RobotCommands(List<RobotCommand> commands)
         {
             _commands = commands;
+            quizTimer.Interval = 1000;
+            quizTimer.AutoReset = true;
+            quizTimer.Elapsed += Timer_Elapsed;
         }
 
 
@@ -506,9 +511,7 @@ namespace HGPS_Robot
         private void StartQuizTimer()
         {
             GlobalFlowControl.Lesson.QuizIsStarting = true;
-            quizTimer.Interval = 1000;
-            quizTimer.AutoReset = true;
-            quizTimer.Elapsed += Timer_Elapsed;
+            
             QuizElapsedTime = 1;
             quizTimer.Start();
         }
@@ -524,9 +527,9 @@ namespace HGPS_Robot
                 Debug.WriteLine("Lesson is pausing");
             }
 
-            Debug.WriteLine("Time Left: " + (quizTime - QuizElapsedTime));
+            Debug.WriteLine("Time Left: " + (QuizTime - QuizElapsedTime));
 
-            if (QuizElapsedTime >= quizTime || GlobalFlowControl.Lesson.QuizIsStarting == false)
+            if (QuizElapsedTime >= QuizTime || GlobalFlowControl.Lesson.QuizIsStarting == false)
             {
                 GlobalFlowControl.Lesson.QuizIsStarting = false;
                 quizTimer.Stop();
@@ -546,7 +549,7 @@ namespace HGPS_Robot
             LessonStatusHelper.LessonStatus = status;
             WebHelper.UpdateStatus(status);
 
-            quizTime = q.TimeOut;
+            QuizTime = q.TimeOut;
             LessonHelper.CurrentQuizTimeout = q.TimeOut;
 
             StartQuizTimer();
@@ -581,23 +584,32 @@ namespace HGPS_Robot
 
             SyncHelper.SendGroupChallengStepsToServer();
 
-            int totalTime = 0;
+            QuizTime = GroupChallengeHelper.GetTotalTimeOut()
+                        + 10 ; // Extra timeout 
 
-            
-            
-            
-            while (GlobalFlowControl.GroupChallenge.IsHappening)
+            StartQuizTimer();
+
+            // Actually many quizzes (steps) are starting
+            // Different groups might have different quizzes (steps)
+            // Based on how many steps they passed
+            while (GlobalFlowControl.Lesson.QuizIsStarting)
             {
-                
+                Wait(1000); // Reduce workload
             }
 
-            GroupChallengeHelper.EndChallenge();
+            BaseHelper.Go("Home"); // Go to the center to annouce results
+
             GroupChallengeHelper.AssessGroupChallenge();
 
+            
         }
         #endregion
 
     }
+
+    #region Command Event Args
+
+    
     public class CommandEventArgs : EventArgs
     {
         public string CommandType { get; private set; }
@@ -609,4 +621,5 @@ namespace HGPS_Robot
             CommandValue = value;
         }
     }
+    #endregion
 }

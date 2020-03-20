@@ -13,6 +13,8 @@ namespace HGPS_Robot
 {
     class GroupChallengeHelper
     {
+        #region Properties
+
         // records of current challenge sorted by performance (correct then time order)
         private static List<GroupChallengeRecord> currentChallengeRecord;
         private static List<int> responsibleGroups;
@@ -32,7 +34,15 @@ namespace HGPS_Robot
             checkingTimer.Elapsed += CheckingTimer_Elapsed;
         }
 
+        #endregion
+
         #region Group Challenge Steps
+        
+        /// <summary>
+        /// Check if the command is one of  group challenge property 
+        /// And add to the *steps* list
+        /// </summary>
+        /// <param name="cmd"></param>
         public static void CheckForGroupChallenge(RobotCommand cmd)
         {
             var type = cmd.Type.ToLower();
@@ -73,6 +83,24 @@ namespace HGPS_Robot
                 }
             }
         }
+
+      
+
+        /// <summary>
+        /// Total time out of all steps
+        /// </summary>
+        /// <returns></returns>
+        public static int GetTotalTimeOut()
+        {
+            int cnt = 0;
+            foreach (var step in GroupChallengeSteps)
+            {
+                cnt += step.Value.TimeOut;
+            }
+
+            return cnt;
+        }
+
         #endregion
 
         #region Init
@@ -109,7 +137,7 @@ namespace HGPS_Robot
         {
             BaseHelper.Go("HOME");
 
-            LessonHelper.StartGroupChallenge();
+            LessonHelper.InitGroupChallenge();
 
             receivedHintStudentList.Clear();
 
@@ -117,6 +145,9 @@ namespace HGPS_Robot
 
             GlobalFlowControl.GroupChallenge.IsHappening = true;
 
+            RobotActionHelper.StopAll();
+            
+            // periodically check struggling groups and offer hints
             StartServing();
         }
 
@@ -130,23 +161,25 @@ namespace HGPS_Robot
             var tables = TablePositionHelper.TablePositions;
 
             Dictionary<int, int> groupLevel = new Dictionary<int, int>();
-
+            
             foreach (var table in tables)
             {
-                int gNum = (int)table.GroupNumber;
-
-                string std = table.Student_Id;
-
-
-                if (ranks.ContainsKey(std))
+                if (table.GroupNumber != null)
                 {
-                    if (groupLevel.ContainsKey(gNum) == false)
+                    int gNum = (int)table.GroupNumber;
+
+                    string std = table.Student_Id;
+
+                    if (ranks.ContainsKey(std))
                     {
-                        groupLevel.Add(gNum, ranks[std]);
-                    }
-                    else
-                    {
-                        groupLevel[gNum] = (groupLevel[gNum] + ranks[std]) / 2;
+                        if (groupLevel.ContainsKey(gNum) == false)
+                        {
+                            groupLevel.Add(gNum, ranks[std]);
+                        }
+                        else
+                        {
+                            groupLevel[gNum] = (groupLevel[gNum] + ranks[std]) / 2;
+                        }
                     }
                 }
             }
@@ -180,13 +213,13 @@ namespace HGPS_Robot
             responsibleGroups = chosenGroups;
         }
 
-        #endregion
+        #endregion 
 
         #region Hints
         public static List<int> receivedHintStudentList = new List<int>();
         private static void FindGroupNeedHelp()
         {
-            var currentChallengeRecord =
+            var currentChallengeRecord = 
                 GlobalFlowControl.Lesson.GroupRecords
                 .Where(x => x.ChallengeNumber == LessonHelper.ChallengeNumber);
 
@@ -194,14 +227,42 @@ namespace HGPS_Robot
             {
                 if (groupRecord.GetSubmissionCount() == 0
                     && IsRobotResponsible(groupRecord.GroupNumber)) // Haven't submitted
-                                                                    // and is robot responsibility
                 {
                     Debug.WriteLine("Suggest group " + groupRecord.GroupNumber);
                     SuggestHint(groupRecord.GroupNumber);
                 }
             }
         }
-       
+
+        private static bool CheckGroupStatusBeforeOfferHint()
+        {
+            string nextOffer = GlobalFlowControl.GroupChallenge.GetNextOffer();
+            int groupNumber = int.Parse(nextOffer.Split('-')[0]);
+            
+            var currentChallengeRecords
+                    = GlobalFlowControl.Lesson.GroupRecords
+                        .Where(x => x.ChallengeNumber
+                            == LessonHelper.ChallengeNumber).ToList();
+
+            var groupRecord = currentChallengeRecords.SingleOrDefault(x =>
+                            x.GroupNumber == groupNumber);
+
+            // Good job, this group has already had a correct submission
+            
+
+
+            return true;
+        }
+
+        public static void SuggestHint(int groupNum, int stepNum)
+        {
+            var hint = GetChallengeHint(stepNum);
+            
+            if (hint != null) 
+            {
+                GlobalFlowControl.GroupChallenge.AddToServingQueue(groupNum, hint);
+            }
+        }
 
         public static void SuggestHint(int groupNum)
         {
@@ -240,15 +301,12 @@ namespace HGPS_Robot
 
         public static string GetChallengeHint(int hintNum)
         {
-            var avlHints = hints.Where(x =>
-                            x.Contains("C" + LessonHelper.ChallengeNumber)).ToList();
-
-            if (hintNum > avlHints.Count) return null;
-
-            var hintName = "C" + LessonHelper.ChallengeNumber
-                      + "H" + hintNum + ".png";
-
-            return hintName;
+            string foundHint = hints.Where(x =>
+                            x.Contains("C" + LessonHelper.ChallengeNumber
+                                + "H" + hintNum)).FirstOrDefault();          
+            
+            // Name of image file (Including extension)
+            return foundHint;
         }
 
         public static void LoadHints()
@@ -274,12 +332,6 @@ namespace HGPS_Robot
         {
             Thread.Sleep(miliSec);
         }
-        public static void EndChallenge()
-        {
-            BaseHelper.Go("HOME");
-            GlobalFlowControl.GroupChallenge.IsHappening = false;
-            //hints.Clear();
-        }
 
         public static void StartServing()
         {
@@ -289,9 +341,8 @@ namespace HGPS_Robot
         }
 
         #endregion
-       
 
-        // Check if some groups haven't submitted any answer
+        #region Checking Hints Timer
 
         private static void CheckingTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
@@ -305,7 +356,7 @@ namespace HGPS_Robot
             if (checkingTimerTick % CHECKING_INTERVAL == 0) // Every each 20 seconds
             {
                 Debug.WriteLine("Find group who haven't submitted");
-                FindGroupNeedHelp();
+                //FindGroupNeedHelp();
             }
 
             if (checkingTimerTick % OFFER_HINT_INTERVAL == 0 // Offer hint every each 4 seconds
@@ -336,37 +387,9 @@ namespace HGPS_Robot
 
         }
 
-        /// <summary>
-        /// At the time we added to the queue, haven't submitted or wrong ans
-        /// But at the time when robot try to offer, that group has submitted 
-        /// Correct answer => No need
-        /// </summary>
-        private static bool CheckGroupStatusBeforeOfferHint()
-        {
-            string nextOffer = GlobalFlowControl.GroupChallenge.GetNextOffer();
+        #endregion
 
-            int groupNumber = int.Parse(nextOffer.Split('-')[0]);
-
-            var currentChallengeRecords
-                    = GlobalFlowControl.Lesson.GroupRecords
-                        .Where(x => x.ChallengeNumber
-                            == LessonHelper.ChallengeNumber).ToList();
-
-            var groupRecord = currentChallengeRecords.SingleOrDefault(x =>
-                            x.GroupNumber == groupNumber);
-
-            // Good job, this group has already had a correct submission
-            if ((groupRecord.GetSubmissionCount() > 0
-                && groupRecord.GetFinalSubResultInBool() == true)
-                || groupRecord.GetLeftChancesNumber() == 0) // No more chance => No need hint
-            {
-                GlobalFlowControl.GroupChallenge.RemoveCurrentOffer();
-                return false;
-            }
-
-            return true;
-        }
-
+        #region Mock DATA
         public static void MockData()
         {
             var records = GlobalFlowControl.Lesson.GroupRecords;
@@ -434,6 +457,9 @@ namespace HGPS_Robot
             records.Add(p42);
 
         }
+        #endregion
+
+        #region Results
 
         public static void AssessGroupChallenge()
         {
@@ -846,5 +872,45 @@ namespace HGPS_Robot
             Wait(1500);
             FindAnyCorrectAnswer(currentChallengeRecord.Count - i + 1);
         }
+        #endregion
+
+        #region Submissions
+
+        // Receive from robot
+        internal static void ReceiveNewSubmission(string groupSub)
+        {
+            string[] info = groupSub.Split('-');
+
+            string groupNum = info[0];
+            string step = info[1];
+            string result = info[2];
+            string subCnt = info[3];
+            string subTime = info[4];   
+            
+            if (result == "1")
+            {
+                Synthesizer.SpeakAsync("Group " + groupNum + " has passed step " +
+                    "number " + step);
+            }
+            else
+            {
+                if (subCnt == "2")
+                {
+                    Synthesizer.SpeakAsync("NO MORE CHANCE FOR group " + groupNum);
+                    // second time also wrong
+                }else if (subCnt == "1")
+                {
+                    // First time wrong, try to offer a hint (if any)
+                    Synthesizer.SpeakAsync("1 MORE CHANCE FOR group " + groupNum);
+
+                    Debug.WriteLine("Group " + groupNum + " submitted wrong " +
+                        "in the first time");
+                    SuggestHint(int.Parse(groupNum), int.Parse(step));
+                    // step + 1 because step counted from zero in the server
+                }
+            }
+
+        }
+        #endregion
     }
 }

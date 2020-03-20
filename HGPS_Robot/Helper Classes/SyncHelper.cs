@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,8 +14,8 @@ namespace HGPS_Robot
         private static HubConnection _hubConnection;
         private static IHubProxy _syncHub, _myHub;
         private const string CLIENT_NAME = "Robo-TA";
-        private const string _baseAddress = "http://robo-ta.com/";
-        //private const string _baseAddress = "https://localhost:44353/";
+        //private const string _baseAddress = "http://robo-ta.com/";
+        private const string _baseAddress = "https://localhost:44353/";
 
         public static event EventHandler<StatusEventArgs> StatusChanged;
         public static event EventHandler<RobotCommandEventArgs> RobotCommandChanged;
@@ -24,13 +25,32 @@ namespace HGPS_Robot
             _hubConnection = new HubConnection(_baseAddress);
             _syncHub = _hubConnection.CreateHubProxy("SyncHub");
             _myHub = _hubConnection.CreateHubProxy("MyHub");
-            _syncHub.On<string>("statusChanged", (status) => OnStatusChanged(status));
+
             _myHub.On("displayRankings", (rankingsType)
                 => OnDisplayResult(rankingsType));
+            _myHub.On<List<List<string>>>("updateGroupResult", (results) =>
+                    OnUpdateGroupResult(results));
+            _myHub.On<string>("SendGroupResultToRobot", (groupSub)
+                 => OnUpdateGroupSubmission(groupSub));
+
+
+            _syncHub.On<string>("statusChanged", (status) => OnStatusChanged(status));
             _syncHub.On<RobotCmd>("haveRobotCommands", (command) => OnRobotCommand(command));            
+            
             _hubConnection.Start().Wait();
 
             _syncHub.Invoke("Notify", CLIENT_NAME, _hubConnection.ConnectionId);
+        }
+
+        private static void OnUpdateGroupSubmission(string groupSub)
+        {
+            GroupChallengeHelper.ReceiveNewSubmission(groupSub);
+        }
+
+        private static void OnUpdateGroupResult(List<List<string>> results)
+        {
+            Debug.WriteLine("Received Group results"); 
+            GlobalFlowControl.GroupChallenge.GroupResults = results; 
         }
 
         // Event handler from myhub

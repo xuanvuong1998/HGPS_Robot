@@ -79,13 +79,23 @@ namespace HGPS_Robot
 
         public class GroupChallenge
         {
+            // Results of each group : Result of taken steps
+            // String format: result(0/1)-subCnt-subTime-groupAns
+            public static List<List<string>> GroupResults { get; set; }
+
+            private static List<string> ServingHintsQueue { get; set; } = new List<string>();
             private static Queue<string> ServeHintsQueue { get; set; } = new Queue<string>();
             public static bool IsOfferingHint { get; set; } = false;
             public static bool IsHappening { get; set; } = false;
-
+            
             public static void AddToServingQueue(int groupNumber, string hint)
             {
-                ServeHintsQueue.Enqueue(groupNumber + "-" + hint);
+                ServingHintsQueue.Add(groupNumber + "-" + hint);
+
+                // The group who have passed less steps will be served first
+                ServingHintsQueue = 
+                    ServingHintsQueue.OrderBy(x => x.Split('-')[1]).ToList();
+                //ServeHintsQueue.Enqueue(groupNumber + "-" + hint);
             }
 
             /// <summary>
@@ -94,12 +104,12 @@ namespace HGPS_Robot
             /// <returns></returns>
             public static string GetNextOffer()
             {
-                return ServeHintsQueue.Peek();
+                return ServingHintsQueue[0];
             }
-
-            public static string RemoveCurrentOffer()
+            
+            public static void RemoveCurrentOffer()
             {
-                return ServeHintsQueue.Dequeue();
+                ServingHintsQueue.RemoveAt(0);
             }
 
             public static void ResetQueue()
@@ -159,6 +169,8 @@ namespace HGPS_Robot
                 get; set;
             }
 
+            public static bool HaveGroupChallenge { get; set; }
+            
             public static bool QuizIsStarting { get; set; }
 
             // StudentID who be chosen to ask robot go there for asking after a quiz finished
@@ -185,8 +197,13 @@ namespace HGPS_Robot
             {
                 Starting = true;
                 Synthesizer.SetSpeed(-3);
-                GroupChallengeHelper.ResetAll();
                 TablePositionHelper.LoadTablesInfo();
+
+                if (HaveGroupChallenge)
+                {
+                    GroupChallengeHelper.ResetAll();
+                }
+
                 TablePositionHelper.DeleteChosenStudentList();
                 if (ChosenStudentList != null) ChosenStudentList.Clear();
                 else ChosenStudentList = new List<string>();

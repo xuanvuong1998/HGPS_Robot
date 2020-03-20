@@ -108,6 +108,10 @@ namespace HGPS_Robot
                 case "start":
                     if (cmd.Value.ToLower() == "quiz")
                         Question = _question;
+                    if (cmd.Value.ToLower() == "group-challenge")
+                    {
+                        GlobalFlowControl.Lesson.HaveGroupChallenge = true;
+                    }
                     break;
             }
         }
