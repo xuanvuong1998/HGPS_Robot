@@ -18,7 +18,11 @@ namespace HGPS_Robot
         private string hintImagePath;
         private Timer timer = new Timer();
         private bool hintShown = false;
-        private const int HINT_TIMEOUT = 30 * 1000; // 30 seconds, hints will hided
+        // the timeout for hint offer (before touching)
+        private const int HINT_TIMEOUT = 10 * 1000; 
+        // the timeout for hint displaying (after touching)
+        private const int HINT_DISPLAY_TIMEOUT = 30 * 1000; 
+        
         private Image defaultBackgroundImage;
 
         public LessonSpeechUI()
@@ -28,6 +32,7 @@ namespace HGPS_Robot
             timer.Interval = HINT_TIMEOUT;
             timer.AutoReset = false;
             timer.Elapsed += Timer_Elapsed;
+
         }
 
         private void ResetLabel()
@@ -35,13 +40,19 @@ namespace HGPS_Robot
             ShowMessage("GROUP CHALLENGE"); // Reset label
             picBackground.SizeMode = PictureBoxSizeMode.StretchImage;
             picBackground.Image = defaultBackgroundImage;
+
+            btnHideHint.Invoke(new Action(() => btnHideHint.Visible = false));
         }
 
-        
-        private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private void HideHint()
         {
             GlobalFlowControl.GroupChallenge.IsOfferingHint = false;
             ResetLabel();
+        }
+
+        private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            HideHint();
         }
 
         public void OfferHint()
@@ -53,26 +64,33 @@ namespace HGPS_Robot
 
             BaseHelper.GoUntilReachedGoalOrCanceled("A" + groupNum);
             Synthesizer.SetVolume(30);
-            int rdmNum = new Random().Next(3);
+            int rdmNum = new Random().Next(4);
 
             switch (rdmNum)
             {
                 case 0:
-                    Synthesizer.SpeakAsync("Group " + groupNum + ". Do you " +
-             "need a hint for this challenge? You can touch the screen to show it. "); break;
+                    Synthesizer.SpeakAsync("Hello Group " + groupNum + ". Touch" +
+             "the screen to reveal the hint of this step"); break;
                 case 1:
-                    Synthesizer.SpeakAsync("Group " + groupNum + ". Please touch me if " +
-                        "you need help about this challenge "); break;
-                case 2:
-                    Synthesizer.SpeakAsync("Group " + groupNum + ". Do you need " +
-                        "any help? Why don't try to touch me to receive a hint"); break;
+                    Synthesizer.SpeakAsync("Hi group " + groupNum + ". " +
+                        "Touch me if you need help for this step" ); break;
+                case 2: 
+                    Synthesizer.SpeakAsync("Group " + groupNum + ". I am willing to " +
+                        "offer you guys a hint if you are in trouble"); break;
+
+                case 3:
+                    Synthesizer.SpeakAsync("Hi Group " + groupNum + ". " +
+                        "I have a hint for this step, touch me if you want " +
+                        "to see it"); break;
             }
 
             Synthesizer.SetVolume(100);
-            hintImagePath = FileHelper.GetHintFolderPath() + top.Split('-')[1];
+
+            hintImagePath = GroupChallengeHelper.GetFullHintImagePath(top.Split('-')[1]);
 
             ShowMessage("TOUCH ME TO SEE THE HINT");
             hintShown = false;
+            
             timer.Start();
 
         }
@@ -97,8 +115,9 @@ namespace HGPS_Robot
             lblMessage.Location = new Point(50, 150);
             lblMessage.BackColor = Color.Transparent;
 
+            btnHideHint.Location = new Point(this.Width / 2 - 100, this.Height - 200);
 
-           
+
         }
 
         public void ShowForm()
@@ -156,6 +175,10 @@ namespace HGPS_Robot
 
         private void ShowHintImage()
         {
+            timer.Stop();
+            timer.Interval = HINT_DISPLAY_TIMEOUT;
+            timer.Start();
+            btnHideHint.Invoke(new Action(() => btnHideHint.Visible = true));
             lblMessage.Text = "";
 
             picBackground.SizeMode = PictureBoxSizeMode.Zoom;
@@ -187,5 +210,11 @@ namespace HGPS_Robot
 
         }
 
+        private void btnHideHint_Click(object sender, EventArgs e)
+        {
+            HideHint();
+
+            timer.Stop();
+        }
     }
 }

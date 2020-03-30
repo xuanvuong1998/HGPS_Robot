@@ -584,8 +584,9 @@ namespace HGPS_Robot
 
             SyncHelper.SendGroupChallengStepsToServer();
 
-            QuizTime = GroupChallengeHelper.GetTotalTimeOut()
-                        + 10 ; // Extra timeout 
+            QuizTime = GroupChallengeHelper.GetTotalTimeOut();
+
+            LessonHelper.CurrentQuizTimeout = QuizTime;
 
             StartQuizTimer();
 

@@ -9,146 +9,63 @@ namespace HGPS_Robot
     public class GroupChallengeRecord : IComparable
     {
         public int ChallengeNumber { get; set; }
-        public int GroupNumber { get; set; }
+        public int GroupNumber { get; set; }    
 
         // Submission results each step 
-        // Format: result(0/1)-submittedCnt-submittedTime-step
-        public List<string> StepSubmissions { get; set; } = new List<string>(); 
+        // Format: result(0/1)-submittedCnt-submittedTime-groupAns
+        public List<string> StepSubmissions { get; set; } = new List<string>();
 
-        public int GetSubmissionCount() => StepSubmissions.Count();
-        
-        public int GetLeftChancesNumber()
-        {
-            var members = TablePositionHelper.GetMembersByGroupNumber(GroupNumber);
-
-            int leftChances = members.Count - StepSubmissions.Count;
-
-            return leftChances;
-        }
-        
-        public string GetLatestSubmission()
-        {
-            var subs = StepSubmissions.OrderByDescending(x => int.Parse(x.Split('-')[0])).ToList();
-            if (subs == null || subs.Count == 0) return null;
-            return subs[0];
-        }
-
-        public int GetNumberOfCorrectSub()
+        public int GetNumberOfCorrectSteps()
         {
             int cnt = 0;
-            foreach (var sub in StepSubmissions)
+            foreach (var step in StepSubmissions)
             {
-                cnt += IsCorrectAnswer(sub);
+                cnt += step[0] - '0';
             }
             return cnt;
         }
 
-        public int GetNumberOfIncorrectSub()
+        public int GetNumberOfSubmissions()
         {
-            return StepSubmissions.Count - GetNumberOfCorrectSub();
-        }
-
-        public string GetFinalResult()
-        {
-            var latestSub = GetLatestSubmission();
-            if (latestSub == null) return null;
-            var isCorrect = latestSub.Split('-')[1] == "1";
-
-            if (isCorrect) return GetFirstCorrectSubmission();
-
-            return latestSub;
-        }
-
-        public int GetFinalSubTime()
-        {
-            var finalRes = GetFinalResult();
-            if (finalRes == null) return -1;
-            return int.Parse(finalRes.Split('-')[0]);
-        }
-
-        public bool GetFinalSubResultInBool()
-        {
-            var finalRes = GetFinalResult();
-            if (finalRes == null) return false;
-            return GetFinalResult().Split('-')[1] == "1";
-        }
-
-        private int IsCorrectAnswer(string sub)
-        {
-            if (sub == null || sub == "") return 0;
-            return sub.Split('-')[1] == "1" ? 1 : 0;
-        }
-              
-        public string GetFirstCorrectSubmission()
-        {
-            var subs = StepSubmissions.OrderBy(x => int.Parse(x.Split('-')[0])).ToList();
-
-            foreach (var sub in subs)
+            int cnt = 0;
+            foreach (var step in StepSubmissions)
             {
-                if (sub.Split('-')[1] == "1") return sub;
+                cnt += step[2] - '0'; // ex: 0-2
             }
-
-            return null; // It never happens, because this function called
-            // when checked exist at least 1 correct sub
+            return cnt;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns>GroupNumber: subTime-result, correctSubCnt</returns>
-        public string ToStringFormat()
+        public int GetTotalSubTime()
         {
-            var finalRes = GetFinalResult();
-
-            string output = $"Group {GroupNumber}: {finalRes}, {GetNumberOfCorrectSub()}";
-
-            return output;
+            int cnt = 0;
+            foreach (var step in StepSubmissions)
+            {
+                cnt += int.Parse(step.Split('-')[2]);
+            }
+            return cnt;
         }
 
         public int CompareTo(object obj)
         {
             var another = obj as GroupChallengeRecord;
 
-            // Compare Challenge Number first, if it different, don't compare another things
+            int x = this.GetNumberOfCorrectSteps();
+            int y = another.GetNumberOfCorrectSteps();
 
-            int c1, c2;
+            if (x != y) return y - x; // who has more passed steps will have smaller order index
 
-            c1 = this.ChallengeNumber;
-            c2 = another.ChallengeNumber;
+            x = this.GetNumberOfSubmissions();
+            y = another.GetNumberOfSubmissions();
 
-            if (c1 != c2) return c1 - c2;
+            if (x != y) return x - y; // prioritize who has less submissions
 
-            string f1 = this.GetFinalResult();
-            string f2 = another.GetFinalResult();
+            x = this.GetTotalSubTime();
+            y = another.GetTotalSubTime();
 
-            c1 = IsCorrectAnswer(f1); // 1: true, 0: false
-            c2 = IsCorrectAnswer(f2);
-
-            if (c1 != c2)
-                return c2 - c1; // Compare the final result first
-
-            // If both are correct, compare the first submitted time
-
-            if (c1 == 1) // c2 of course = 1 also
-            {
-                c1 = int.Parse(f1.Split('-')[0]);
-                c2 = int.Parse(f2.Split('-')[0]);
-
-                return c1 - c2;
-            }
-            
-            // Wow, both are correct and also same submitted time
-            // Or both are not correct => We check by number of correct times
-            // If still the same, :((( never mind, too enough, don't compare any more
-
-            c1 = GetNumberOfCorrectSub();
-            c2 = another.GetNumberOfCorrectSub();
-
-            if (c1 != c2) return c2 - c1; // If the last answer is the same
-
-            return -1; // Let it be, don't swap
-            
+            return x - y; // Last factor             
         }
+
+       
     }
 
 }

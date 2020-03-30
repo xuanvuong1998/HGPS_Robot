@@ -372,81 +372,15 @@ namespace HGPS_Robot
 
         #region GroupChallenge
 
-        public GroupChallengeRecord UpdateGroupSubmission()
-        {
-            var groupNumber = int.Parse(GroupChallenge.Split('-')[0]);
-            var result = GroupChallenge.Split('-')[1];
-            var submittedTime = int.Parse(GroupChallenge.Split('-')[3]);
-            var submittedCnt = int.Parse(GroupChallenge.Split('-')[2]);
-            var records = GlobalFlowControl.Lesson.GroupRecords;
-
-            var groupRecord = records.SingleOrDefault
-                (x => x.ChallengeNumber == LessonHelper.ChallengeNumber
-                   && x.GroupNumber == groupNumber);
-
-            if (groupRecord == null)
-            {
-                groupRecord = new GroupChallengeRecord
-                {
-                    ChallengeNumber = LessonHelper.ChallengeNumber,
-                    GroupNumber = groupNumber,
-                };
-                groupRecord.StepSubmissions.Add(submittedTime + "-" + result);
-                records.Add(groupRecord);
-            }
-            else
-            {
-                groupRecord.StepSubmissions.Add(submittedTime + "-" + result);
-            }
-
-            Debug.WriteLine("Submission Updated!");
-            foreach (var item in records)
-            {
-                Debug.WriteLine(item.ToStringFormat());
-            }
-
-            return groupRecord;
-        }
-
         /// <summary>
         /// Receive new submission
         /// </summary>
         public void ProcessGroupChallenge()
         {
-            //var groupRecord = UpdateGroupSubmission();
-            //var subCnt = groupRecord.GetSubmissionCount();
-            //var groupNum = groupRecord.GroupNumber;
-
-            //int leftChances = groupRecord.GetLeftChancesNumber();
-
-            //var leftSeconds = LessonHelper.CurrentQuizTimeout -
-            //    GlobalFlowControl.Lesson.QuizElapsedTime;
-
-            //if (leftSeconds <= 10) return;
-
-            //if (leftChances == 0)
-            //{
-            //    Synthesizer.SpeakAsync("Group " + groupNum + " is done");
-            //}
-            //else
-            //{
-            //    Synthesizer.SpeakAsync($"Group {groupNum} submitted. ");
-            //}
-
-            //var subResult = GroupChallenge.Split('-')[1];
-
-            //if (subResult == "0" && leftSeconds > 20)
-            //// Suggest hint for group just Submit incorrect answer
-            //// (But at most 2 hints)
-            //{
-            //    var gnum = int.Parse(GroupChallenge.Split('-')[0]);
-            //    GroupChallengeHelper.SuggestHint(groupNum);
-            //}
-
             int groupNum = int.Parse(GroupChallenge.Split('-')[0]);
             int stepNum = int.Parse(GroupChallenge.Split('-')[1]);
             string result = GroupChallenge.Split('-')[2];
-
+            
             if (result == "1") // Correct submission
             {
                 Synthesizer.SpeakAsync("Group " + groupNum +
@@ -488,6 +422,12 @@ namespace HGPS_Robot
                 Debug.WriteLine(LessonStatus + " Lesson Status");
                 if (LessonStatus == "StopQuestion")
                 {
+                    if (GlobalFlowControl.GroupChallenge.IsHappening)
+                    {
+                        Thread.Sleep(2000); // give extra time for robot
+                        // to receive the last submissions result
+                    }
+
                     var secondsLeft = LessonHelper.CurrentQuizTimeout
                         - GlobalFlowControl.Lesson.QuizElapsedTime;
                             

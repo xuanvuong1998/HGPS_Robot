@@ -19,11 +19,12 @@ namespace HGPS_Robot
         private static List<GroupChallengeRecord> currentChallengeRecord;
         private static List<int> responsibleGroups;
         public static List<string> hints = new List<string>(); // List of hints image path
-        private static int CHECKING_INTERVAL = 60; // 30 seconds
-        private const int OFFER_HINT_INTERVAL = 5; // 30 seconds
+        private const int CHECKING_INTERVAL = 60; // 30 seconds
+        private const int OFFER_HINT_INTERVAL = 3; //
+        private const int MIN_REMAINING_OFFER_TIME = 25; //
         private static int checkingTimerTick = 0;
-        
-        public static Dictionary<int, Quiz> GroupChallengeSteps
+
+        public static Dictionary<int, Quiz> GroupChallengeSteps { get; set; }
                         = new Dictionary<int, Quiz>();
 
         private static Timer checkingTimer = new Timer
@@ -37,7 +38,7 @@ namespace HGPS_Robot
         #endregion
 
         #region Group Challenge Steps
-        
+
         /// <summary>
         /// Check if the command is one of  group challenge property 
         /// And add to the *steps* list
@@ -84,7 +85,7 @@ namespace HGPS_Robot
             }
         }
 
-      
+
 
         /// <summary>
         /// Total time out of all steps
@@ -146,7 +147,7 @@ namespace HGPS_Robot
             GlobalFlowControl.GroupChallenge.IsHappening = true;
 
             RobotActionHelper.StopAll();
-            
+
             // periodically check struggling groups and offer hints
             StartServing();
         }
@@ -161,7 +162,7 @@ namespace HGPS_Robot
             var tables = TablePositionHelper.TablePositions;
 
             Dictionary<int, int> groupLevel = new Dictionary<int, int>();
-            
+
             foreach (var table in tables)
             {
                 if (table.GroupNumber != null)
@@ -219,37 +220,67 @@ namespace HGPS_Robot
         public static List<int> receivedHintStudentList = new List<int>();
         private static void FindGroupNeedHelp()
         {
-            var currentChallengeRecord = 
-                GlobalFlowControl.Lesson.GroupRecords
-                .Where(x => x.ChallengeNumber == LessonHelper.ChallengeNumber);
 
-            foreach (var groupRecord in currentChallengeRecord)
+        }
+
+        /// <summary>
+        /// Make sure the remaining time is not less than a specified period
+        /// </summary>
+        /// <returns></returns>
+        private static bool CheckTimeElapsedBeforeOfferHint()
+        {
+            string nextOffer = GlobalFlowControl.GroupChallenge.GetNextOffer();
+
+            int offerStep = nextOffer.Split('-')[1][3] - '0'; // C1H2 -> 2: is step number
+
+            int preStepTimeout = 0;
+
+            for (int i = 1; i < offerStep; i++)
             {
-                if (groupRecord.GetSubmissionCount() == 0
-                    && IsRobotResponsible(groupRecord.GroupNumber)) // Haven't submitted
-                {
-                    Debug.WriteLine("Suggest group " + groupRecord.GroupNumber);
-                    SuggestHint(groupRecord.GroupNumber);
-                }
+                preStepTimeout = GroupChallengeSteps[i].TimeOut;
             }
+
+            int curStepTimeElapsed = GlobalFlowControl.Lesson.QuizElapsedTime
+                                - preStepTimeout;
+            int curStepTimeOut = GroupChallengeSteps[offerStep].TimeOut;
+
+            if (curStepTimeOut - curStepTimeElapsed < MIN_REMAINING_OFFER_TIME)
+            {
+                GlobalFlowControl.GroupChallenge.RemoveCurrentOffer();
+                return false;
+            }
+
+            return true;
         }
 
         private static bool CheckGroupStatusBeforeOfferHint()
         {
+            Debug.WriteLine("Checking group status before offering hint");
+
+            if (CheckTimeElapsedBeforeOfferHint() == false)
+            {
+                Debug.WriteLine("Time of the step is almost over. no offer");
+                return false;
+            }
+
             string nextOffer = GlobalFlowControl.GroupChallenge.GetNextOffer();
             int groupNumber = int.Parse(nextOffer.Split('-')[0]);
-            
-            var currentChallengeRecords
-                    = GlobalFlowControl.Lesson.GroupRecords
-                        .Where(x => x.ChallengeNumber
-                            == LessonHelper.ChallengeNumber).ToList();
 
-            var groupRecord = currentChallengeRecords.SingleOrDefault(x =>
-                            x.GroupNumber == groupNumber);
+            var records = GlobalFlowControl.GroupChallenge.GroupResults;
+
+
+            var offerStep = nextOffer.Split('-')[1][3] - '0';
+            var stepSub = records[groupNumber - 1][offerStep - 1];
+            var subCnt = stepSub.Split('-')[1];
 
             // Good job, this group has already had a correct submission
-            
-
+            if (stepSub[0] == '1' || (stepSub[0] == '0' && subCnt == "2"))
+            {
+                Debug.WriteLine("Oh. group " + groupNumber
+                    + " has submitted a right answer. Or no more chance");
+                GlobalFlowControl.GroupChallenge.RemoveCurrentOffer();
+                return false;
+            }
 
             return true;
         }
@@ -257,61 +288,50 @@ namespace HGPS_Robot
         public static void SuggestHint(int groupNum, int stepNum)
         {
             var hint = GetChallengeHint(stepNum);
-            
-            if (hint != null) 
+
+            if (hint != null)
             {
                 GlobalFlowControl.GroupChallenge.AddToServingQueue(groupNum, hint);
             }
         }
 
-        public static void SuggestHint(int groupNum)
-        {
-            int receivedBefore = receivedHintStudentList.Count(
-                x => x == groupNum);
-
-            if (receivedBefore == 0)
-            {
-                var hint = GetChallengeHint(1);
-                Debug.WriteLine(hint);
-                if (hint != null)
-                {
-                    receivedHintStudentList.Add(groupNum);
-                    GlobalFlowControl.GroupChallenge.AddToServingQueue(groupNum,
-                       hint);
-                }
-
-            }
-            else if (receivedBefore == 1)
-            {
-                var hint = GetChallengeHint(2);
-                Debug.WriteLine(hint);
-                if (hint != null)
-                {
-                    receivedHintStudentList.Add(groupNum);
-                    GlobalFlowControl.GroupChallenge.AddToServingQueue(groupNum,
-                        GetChallengeHint(2));
-                }
-            }
-            else
-            {
-                // Too enough, have to do yourself
-                // No hint any more
-            }
-        }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="hintNum"></param>
+        /// <example >C1H1.png</example>
+        /// <returns>file name with extension of a  hint</returns>
         public static string GetChallengeHint(int hintNum)
         {
+            string hintConvention = "C" + LessonHelper.ChallengeNumber
+                                + "H" + hintNum;
+
+            Debug.WriteLine("Hint Convention");
+
             string foundHint = hints.Where(x =>
-                            x.Contains("C" + LessonHelper.ChallengeNumber
-                                + "H" + hintNum)).FirstOrDefault();          
-            
-            // Name of image file (Including extension)
+                            x.Contains(hintConvention)).FirstOrDefault();
+
+            Debug.WriteLine("Found hint : " + foundHint);
+            if (foundHint != null)
+            {
+                return hintConvention;
+            }
+
+            return null;
+        }
+
+        public static string GetFullHintImagePath(string hintConvention)
+        {
+            string foundHint = hints.Where(x =>
+                            x.Contains(hintConvention)).FirstOrDefault();
+
             return foundHint;
         }
 
         public static void LoadHints()
         {
             var hintFolder = FileHelper.GetHintFolderPath();
+            //var hintFolder = @"C:\Users\Surface\Dropbox\Lessons\Week 08 - Group Challenge Breaking Down\Hints";
 
             if (Directory.Exists(hintFolder))
             {
@@ -333,6 +353,7 @@ namespace HGPS_Robot
             Thread.Sleep(miliSec);
         }
 
+        // Start Serving hints to groups need help (periodically checking)
         public static void StartServing()
         {
             Debug.WriteLine("START SERVING");
@@ -355,36 +376,32 @@ namespace HGPS_Robot
 
             if (checkingTimerTick % CHECKING_INTERVAL == 0) // Every each 20 seconds
             {
-                Debug.WriteLine("Find group who haven't submitted");
+                //Debug.WriteLine("Find group who haven't submitted");
                 //FindGroupNeedHelp();
             }
 
-            if (checkingTimerTick % OFFER_HINT_INTERVAL == 0 // Offer hint every each 4 seconds
+            if (checkingTimerTick % OFFER_HINT_INTERVAL == 0 // Offer hints after a short period
                 && GlobalFlowControl.GroupChallenge.IsOfferingHint == false
-                && GlobalFlowControl.GroupChallenge.IsServingQueueEmpty() == false
-               )
+                && GlobalFlowControl.GroupChallenge.IsServingQueueEmpty() == false)
             {
-                int timeLeft = LessonHelper.CurrentQuizTimeout
-                                - GlobalFlowControl.Lesson.QuizElapsedTime;
-                if (timeLeft >= 30)
+
+                bool stt = CheckGroupStatusBeforeOfferHint();
+
+                // true: can offer, false: no need offer, this group had a 
+                // correct sub (after first wrong sub)
+                // Or the remaining time is less than a specified time
+
+                if (stt)
                 {
-                    bool stt = CheckGroupStatusBeforeOfferHint();
-
-                    // true: can offer, false: no need offer, that group did well already
-
-                    if (stt)
-                    {
-                        Debug.WriteLine("Checked! Some group need help now. ");
-                        GlobalFlowControl.GroupChallenge.IsOfferingHint = true;
-                        LessonHelper.OfferHint();
-                    }
-                    else
-                    {
-                        Debug.WriteLine("No need hint any more");
-                    }
+                    Debug.WriteLine("Checked! Group will be served");
+                    GlobalFlowControl.GroupChallenge.IsOfferingHint = true;
+                    LessonHelper.OfferHint();
+                }
+                else
+                {
+                    Debug.WriteLine("Checked! Don't offer hint");
                 }
             }
-
         }
 
         #endregion
@@ -461,259 +478,114 @@ namespace HGPS_Robot
 
         #region Results
 
-        public static void AssessGroupChallenge()
+        private static int GetNumberOfCorrectSteps(List<string> stepSubs)
         {
-            var records = GlobalFlowControl.Lesson.GroupRecords;
-
-            var currentChallengeRecords
-                    = records.Where(x => x.ChallengeNumber
-                            == LessonHelper.ChallengeNumber).ToList();
-
-            currentChallengeRecords.Sort(); // Sort by Comparable in GroupChallengeRecord class
-
-            currentChallengeRecord = currentChallengeRecords;
-
-            foreach (var rec in currentChallengeRecords)
+            int cnt = 0;
+            foreach (var step in stepSubs)
             {
-                Debug.WriteLine(rec.ToStringFormat());
+                cnt += step[1] - '0';
             }
-
-            AnnouceGroupResults();
-
-            if (LessonHelper.ChallengeNumberTotal > 1
-                && LessonHelper.ChallengeNumber
-                == LessonHelper.ChallengeNumberTotal) // last challenge ended
-            {
-                // Summary all challenges
-
-                //Synthesizer.Speak("So... We already finished " +
-                //    LessonHelper.ChallengeNumberTotal + " challenges. " +
-                //    "Lets summary the results of all challenges. ");
-
-                //Wait(2000);
-                //ConsolidateGroupChallenges();
-            }
+            return cnt;
         }
 
-        public static void ConsolidateGroupChallenges()
+        private static int GetNumberOfSubmissions(List<string> stepSubs)
         {
-            var records = GlobalFlowControl.Lesson.GroupRecords;
-
-            // Key: groupnumber, value: passedCount-TotalSubmittedTime
-            Dictionary<int, string> totalRecords
-                = new Dictionary<int, string>();
-
-            // Set values for list by iterating the records list
-            foreach (var currentChallengeRecord in records)
+            int cnt = 0;
+            foreach (var step in stepSubs)
             {
-                var gnum = currentChallengeRecord.GroupNumber;
-                var subTime = currentChallengeRecord.GetFinalSubTime();
-                var result = currentChallengeRecord.GetFinalSubResultInBool();
-
-                if (totalRecords.ContainsKey(gnum) == false)
-                {
-                    totalRecords.Add(gnum, "0-0");
-                }
-
-                var cur = totalRecords[gnum];
-
-                // Current Number of passed challenges
-                var curTotalPoints = int.Parse(cur.Split('-')[0]);
-                // Current total submitted time
-                var curTotalTime = int.Parse(cur.Split('-')[1]);
-
-                if (result) // if it is a correct pass
-                {
-                    curTotalPoints += 1; // 1 more passed challenge
-                    curTotalTime += subTime;
-
-                    //Update again the dictionary
-                    totalRecords[gnum] = curTotalPoints + "-" + curTotalTime;
-                }
-
-
+                cnt += step[2] - '0';
             }
-            // Greedy rank groups by number of passed challenge and
-            // Total submitted time (only correct ones)
+            return cnt;
+        }
 
-            var sortedList = totalRecords.OrderByDescending(x =>
-                        int.Parse(x.Value.Split('-')[0]))
-                         .ThenBy(x => int.Parse(x.Value.Split('-')[1]))
-                         .ToList();
-
-            Synthesizer.Speak($"After {LessonHelper.ChallengeNumberTotal}" +
-                $" challenges, we have the result like this...");
-
-            int rank = 0;
-            foreach (var group in sortedList)
+        private static int GetTotalSubTime(List<string> stepSubs)
+        {
+            int cnt = 0;
+            foreach (var step in stepSubs)
             {
-                rank++;
-                int gnum = group.Key;
-
-                int correctQty = int.Parse(group.Value.Split('-')[0]);
-                int subTime = int.Parse(group.Value.Split('-')[1]);
-
-                var members = TablePositionHelper.GetMembersByGroupNumber(gnum);
-
-                string speech = "Group " + gnum + ". ";
-
-                foreach (var m in members)
-                {
-                    speech += m + ". ";
-                }
-
-                if (rank <= sortedList.Count / 2)
-                {
-                    int rdmNum = new Random().Next(2);
-
-                    if (rdmNum == 0)
-                    {
-                        speech += "you guys are the number " + rank + " in overall. " +
-                                                "Very good job. Congratulation!";
-                    }
-                    else
-                    {
-                        speech += "Your overall standing is number " + rank
-                            + ". Congratulation!";
-                    }
-
-                    Synthesizer.Speak(speech);
-
-                    if (rank == 1)
-                    {
-                        AudioHelper.PlayChampionSound();
-                    }
-                    else
-                    {
-                        AudioHelper.PlayApplauseSound();
-                    }
-                }
-                else
-                {
-                    speech += "you are the top " + rank + ". ";
-                    int rdmNum = new Random().Next(2);
-                    if (rdmNum == 0)
-                    {
-                        speech += "you guys are also very good. Good luck for the " +
-                            "next time. Be more careful and faster";
-                    }
-                    else
-                    {
-                        speech += "you all also did a good job. Do your best " +
-                            "in the next challenge to get the higher position. ";
-                    }
-                    Synthesizer.Speak(speech);
-                    AudioHelper.PlayApplauseSound();
-                }
-
+                cnt += int.Parse(step.Split('-')[2]);
             }
+            return cnt;
+        }
+
+        private static int CompareStepsSubmission(List<string> g1, List<string> g2)
+        {
+            int x = GetNumberOfCorrectSteps(g1);
+            int y = GetNumberOfCorrectSteps(g2);
+
+            if (x != y) return y - x; // who has more passed steps will have smaller order index
+
+            x = GetNumberOfSubmissions(g1);
+            y = GetNumberOfSubmissions(g2);
+
+            if (x != y) return x - y; // prioritize who has less submissions
+
+            x = GetTotalSubTime(g1);
+            y = GetTotalSubTime(g2);
+
+            return x - y; // Last factor 
 
         }
 
         /// <summary>
-        /// Check those groups did not have correct last submission
-        /// But had correct submission before???
+        /// Convert List of List(string) to List of GroupChallengeRecord
         /// </summary>
-        private static void FindAnyCorrectAnswer(int remainingCnt)
+        private static void ConvertToGroupRecordModel()
         {
-            int regretCnt = 0;
-
-            List<int> mistakeGroups = new List<int>();
-
-            foreach (var group in currentChallengeRecord)
+            var records = GlobalFlowControl.GroupChallenge.GroupResults;
+            if (currentChallengeRecord == null)
             {
-                bool finalRes = group.GetFinalSubResultInBool();
-
-                if (finalRes == true) continue;
-                int correctNum = group.GetNumberOfCorrectSub();
-
-                var firstCorrect = group.GetFirstCorrectSubmission();
-
-                if (correctNum > 0)
-                {
-                    mistakeGroups.Add(group.GroupNumber);
-                    regretCnt++;
-                    int rdmNum = new Random().Next(2);
-                    if (rdmNum == 0)
-                    {
-                        Synthesizer.Speak($"Oh...dear..." +
-                            $"Group {group.GroupNumber}. you guys had {correctNum} times correct. " +
-                            $"But. Unluckily, your last submission is not correct. ");
-
-                        AudioHelper.PlaySadSound();
-                    }
-                    else
-                    {
-                        Synthesizer.Speak($"Oh...No...Group {group.GroupNumber}. " +
-                            $"It is so regretful... " +
-                            $"You guys actually submitted correct answer at the " +
-                            $"second of {firstCorrect.Split('-')[0]}. " +
-                            $"But sadly, your final answer is not correct. ");
-
-                        AudioHelper.PlaySadSound();
-
-                    }
-                    Wait(1500);
-
-                }
-            }
-
-            if (regretCnt > 0 && regretCnt < remainingCnt)
-            {
-                string speech = "So. ";
-
-                foreach (var g in mistakeGroups)
-                {
-                    speech += "Group " + g + ". ";
-                }
-
-                speech += "All of you are also very good. " +
-                    "Just be careful one thing. Remember to check" +
-                    " your answer before submitting the last one. ok?." +
-                    " Please Try your best. Don't give up. ";
-
-                Synthesizer.Speak(speech);
+                currentChallengeRecord = new List<GroupChallengeRecord>();
             }
             else
             {
-                Synthesizer.Speak(
-                    "another groups, all your answers are not correct. " +
-                    "Don't worry. " +
-                    "Let's try your best in the next challenge. " +
-                    "All of you, please don't give up. ");
+                currentChallengeRecord.Clear();
+            }
+            for (int i = 0; i < records.Count; i++)
+            {
+                var newRecord = new GroupChallengeRecord
+                {
+                    ChallengeNumber = LessonHelper.ChallengeNumber,
+                    GroupNumber = i + 1,
+                    StepSubmissions = records[i]
+                };
+
+                currentChallengeRecord.Add(newRecord);
             }
 
-            AudioHelper.PlayApplauseSound();
+            currentChallengeRecord.Sort();
+        }
+
+        public static List<int> GetTop3()
+        {
+            List<int> top3 = new List<int>();
+            for(int i = 0; i < Math.Min(3, currentChallengeRecord.Count); i++)
+            {
+                top3.Add(currentChallengeRecord[i].GroupNumber);
+            }
+
+            return top3;
+        }
+        public static void AssessGroupChallenge()
+        {
+            ConvertToGroupRecordModel();
+
+            AnnouceGroupResults();
 
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns>true if all group have no correct answer</returns>
-        private static bool CheckFirstTopGroup()
+        private static string GetMembersSpeech(int group)
         {
-            bool firstG = currentChallengeRecord[0].GetFinalSubResultInBool();
+            List<string> members = TablePositionHelper.GetMembersByGroupNumber(group);
 
-            if (firstG == true) return false;
+            string speech = "";
 
-            string speech = "Well... I am very sorry to say that, " +
-                "with this challenge, no group got any correct answer. ";
-            Synthesizer.Speak(speech);
+            foreach (var std in members)
+            {
+                speech += std + ", ";
+            }
 
-            AudioHelper.PlaySadSound();
-
-            speech = "Ok. Don't worry about it. " +
-                "Let me check again, is there any time that you " +
-                "have submitted any correct answer. ";
-
-            Synthesizer.Speak(speech);
-
-            Wait(2000);
-
-            FindAnyCorrectAnswer(currentChallengeRecord.Count);
-
-            return true;
+            return speech;
         }
 
         private static void AnnouceGroupResults()
@@ -740,11 +612,7 @@ namespace HGPS_Robot
                     break;
             }
 
-            Thread.Sleep(1500);
-            // All group answer are wrong
-            bool isWorst = CheckFirstTopGroup();
-
-            if (isWorst) return;
+            Thread.Sleep(1000);
 
             switch (rdmNum)
             {
@@ -757,84 +625,78 @@ namespace HGPS_Robot
 
             Synthesizer.Speak("Here it is! ");
 
-            Wait(1500);
+            Wait(1000);
+
+            SyncHelper.RequestOpeningURL("group-challenge");
 
             int rank = 1;
             int i = 0;
+
+
+            // Sorted by performance
 
             while (i < currentChallengeRecord.Count)
             {
                 var curGroup = currentChallengeRecord[i];
 
                 int groupNum = curGroup.GroupNumber;
-                int subTime = curGroup.GetFinalSubTime();
-                bool isCorrect = curGroup.GetFinalSubResultInBool();
+                int passedCnt = curGroup.GetNumberOfCorrectSteps();
+                int totalSubTime = curGroup.GetTotalSubTime();
 
                 string speech = "";
+
                 if (i == 0)
                 {
                     rdmNum = new Random().Next(3);
                     switch (rdmNum)
                     {
-                        case 0: speech = "Very good job, "; break;
-                        case 1: speech = "Excellent, "; break;
-                        case 2: speech = "Amazing, "; break;
+                        case 0: speech += "Very good job, "; break;
+                        case 1: speech += "Excellent, "; break;
+                        case 2: speech += "Amazing, "; break;
+                    }
+                    
+                    speech += $" group {groupNum}. ";
+                    if (i < 3)
+                    {
+                        speech += GetMembersSpeech(groupNum);
                     }
 
-                    speech += $" group {groupNum}...... "
-                        + $"You are the number 1... Within only {subTime} seconds, you " +
-                        $"become the fastest group, who got the correct answer! ";
+                    speech += $"You are the number 1... Within only {totalSubTime} seconds, you " +
+                        $"has passed {passedCnt} steps of the group challenge. ";
 
-                    speech += "Everyone, please give a round of applause for" +
+                    speech += "Everyone, please give a big applause for" +
                         $"group {groupNum}.";
 
                     Synthesizer.Speak(speech);
 
                     AudioHelper.PlayChampionSound();
                 }
-                else if (isCorrect)
+                else if (passedCnt > 0)
                 {
-                    // Same rank with the higher one
-                    if (subTime == currentChallengeRecord[i - 1].GetFinalSubTime())
+                    rank++;
+
+                    rdmNum = new Random().Next(3);
+                    switch (rdmNum)
                     {
-                        speech = $"Unbelievable! Group {groupNum} has " +
-                            $"the same submisson time with group " +
-                            $"{currentChallengeRecord[i - 1].GroupNumber}. " +
-                            $"Therefore, Group {groupNum} is also the top " +
-                            $"{rank} of this challenge. ";
+                        case 0:
+                            speech += $"Group {groupNum}... Congratulation, " +
+                     $"you are the top {rank} of this challenge. ";
+                            break;
+                        case 1:
+                            speech = "Next group is... ";
+                            speech += $"Group {groupNum}... Well done, " +
+                        $"you are the top {rank} of this challenge. " +
+                        $"Your total submitted time is {totalSubTime} seconds. ";
+                            break;
 
-                        AudioHelper.PlayApplauseSound();
+                        case 2:
+                            speech = "The following group is... ";
+                            speech += $"Group {groupNum}. Good job, " +
+                                $"you got {passedCnt} correct steps. " +
+                        $"you are the top {rank} of this challenge. ";
+                            break;
                     }
-                    else
-                    {
-                        rank++;
 
-                        rdmNum = new Random().Next(3);
-                        switch (rdmNum)
-                        {
-                            case 0:
-                                speech = "With the time of " + subTime + ", I wanna " +
-                                 "say that... ";
-                                speech += $"Group {groupNum}... Congratulation, " +
-                         $"you are the top {rank} of this challenge. ";
-                                break;
-                            case 1:
-                                speech = "Next group is... ";
-                                speech += $"Group {groupNum}... Well done, " +
-                            $"you are the top {rank} of this challenge. " +
-                            $"Your submitted time is {subTime}. ";
-                                break;
-
-                            case 2:
-                                speech = "The following group is... ";
-                                speech += $"Group {groupNum}. Good job, " +
-                                    $"your first correct answer, was recorded at " +
-                                    $"the second of {subTime}. And now, " +
-                            $"you are the top {rank} of this challenge. ";
-                                break;
-                        }
-
-                    }
 
                     rdmNum = new Random().Next(2);
                     if (rdmNum == 0)
@@ -863,14 +725,9 @@ namespace HGPS_Robot
 
             if (i == currentChallengeRecord.Count) return;
 
-            Synthesizer.Speak("What about the remaining groups? ");
-            //Synthesizer.Speak("I am so sorry to say that your final " +
-            //    "answer is not correct. But. Don't worry. " +
-            //    "Now, I will check again, to see is there any time you had " +
-            //    "a correct answer. ");
+            Synthesizer.Speak("Other groups. You guys have no any correct " +
+                "submission. Please try your best in the next challenge ");
 
-            Wait(1500);
-            FindAnyCorrectAnswer(currentChallengeRecord.Count - i + 1);
         }
         #endregion
 
@@ -885,8 +742,8 @@ namespace HGPS_Robot
             string step = info[1];
             string result = info[2];
             string subCnt = info[3];
-            string subTime = info[4];   
-            
+            string subTime = info[4];
+
             if (result == "1")
             {
                 Synthesizer.SpeakAsync("Group " + groupNum + " has passed step " +
@@ -896,17 +753,18 @@ namespace HGPS_Robot
             {
                 if (subCnt == "2")
                 {
-                    Synthesizer.SpeakAsync("NO MORE CHANCE FOR group " + groupNum);
+                    //Synthesizer.SpeakAsync("NO MORE CHANCE FOR group " + groupNum);
                     // second time also wrong
-                }else if (subCnt == "1")
+                }
+                else if (subCnt == "1")
                 {
                     // First time wrong, try to offer a hint (if any)
-                    Synthesizer.SpeakAsync("1 MORE CHANCE FOR group " + groupNum);
+                    //Synthesizer.SpeakAsync("1 MORE CHANCE FOR group " + groupNum);
 
                     Debug.WriteLine("Group " + groupNum + " submitted wrong " +
                         "in the first time");
+
                     SuggestHint(int.Parse(groupNum), int.Parse(step));
-                    // step + 1 because step counted from zero in the server
                 }
             }
 

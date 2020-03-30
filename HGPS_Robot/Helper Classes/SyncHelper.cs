@@ -32,7 +32,8 @@ namespace HGPS_Robot
                     OnUpdateGroupResult(results));
             _myHub.On<string>("SendGroupResultToRobot", (groupSub)
                  => OnUpdateGroupSubmission(groupSub));
-
+            _myHub.On("RequireGroupChallengeFromRobot", () =>
+                    OnRequireGroupChallengeResults());
 
             _syncHub.On<string>("statusChanged", (status) => OnStatusChanged(status));
             _syncHub.On<RobotCmd>("haveRobotCommands", (command) => OnRobotCommand(command));            
@@ -40,6 +41,32 @@ namespace HGPS_Robot
             _hubConnection.Start().Wait();
 
             _syncHub.Invoke("Notify", CLIENT_NAME, _hubConnection.ConnectionId);
+        }
+
+        private static void OnRequireGroupChallengeResults()
+        {
+            List<int> top3 = GroupChallengeHelper.GetTop3();
+
+            List<List<string>> members = new List<List<string>>();
+
+            foreach (var topGroup in top3)
+            {
+                List<string> memberInGroup =
+                        TablePositionHelper.GetMembersByGroupNumber(topGroup);
+
+                members.Add(memberInGroup);
+            }
+
+            string top3InStringFormat = "";
+            foreach (var item in top3)
+            {
+                top3InStringFormat += "Group " + item + "-";
+            }
+
+            // remove last "-"
+            string order = top3InStringFormat.Remove(top3InStringFormat.Length - 1);
+
+            _myHub.Invoke("ReceiveTop3GroupChallenge", order, members);
         }
 
         private static void OnUpdateGroupSubmission(string groupSub)

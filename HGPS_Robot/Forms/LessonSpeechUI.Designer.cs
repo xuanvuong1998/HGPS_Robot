@@ -30,16 +30,17 @@
         {
             this.lblMessage = new System.Windows.Forms.Label();
             this.picBackground = new System.Windows.Forms.PictureBox();
+            this.btnHideHint = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.picBackground)).BeginInit();
             this.SuspendLayout();
             // 
             // lblMessage
             // 
             this.lblMessage.Font = new System.Drawing.Font("Arial Rounded MT Bold", 52F, System.Drawing.FontStyle.Italic);
-            this.lblMessage.Location = new System.Drawing.Point(358, 68);
+            this.lblMessage.Location = new System.Drawing.Point(391, 71);
             this.lblMessage.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblMessage.Name = "lblMessage";
-            this.lblMessage.Size = new System.Drawing.Size(398, 170);
+            this.lblMessage.Size = new System.Drawing.Size(434, 177);
             this.lblMessage.TabIndex = 0;
             this.lblMessage.Text = "message";
             this.lblMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -48,20 +49,33 @@
             // picBackground
             // 
             this.picBackground.Image = global::HGPS_Robot.Properties.Resources.LessonInProgress;
-            this.picBackground.Location = new System.Drawing.Point(51, 68);
-            this.picBackground.Margin = new System.Windows.Forms.Padding(6);
+            this.picBackground.Location = new System.Drawing.Point(56, 71);
+            this.picBackground.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.picBackground.Name = "picBackground";
-            this.picBackground.Size = new System.Drawing.Size(266, 188);
+            this.picBackground.Size = new System.Drawing.Size(290, 196);
             this.picBackground.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.picBackground.TabIndex = 1;
             this.picBackground.TabStop = false;
             this.picBackground.Click += new System.EventHandler(this.picBackground_Click);
             // 
+            // btnHideHint
+            // 
+            this.btnHideHint.Font = new System.Drawing.Font("Microsoft Sans Serif", 17.875F);
+            this.btnHideHint.Location = new System.Drawing.Point(764, 507);
+            this.btnHideHint.Name = "btnHideHint";
+            this.btnHideHint.Size = new System.Drawing.Size(370, 164);
+            this.btnHideHint.TabIndex = 2;
+            this.btnHideHint.Text = "OK! THANKS";
+            this.btnHideHint.UseVisualStyleBackColor = true;
+            this.btnHideHint.Visible = false;
+            this.btnHideHint.Click += new System.EventHandler(this.btnHideHint_Click);
+            // 
             // LessonSpeechUI
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1637, 1636);
+            this.ClientSize = new System.Drawing.Size(1786, 1704);
+            this.Controls.Add(this.btnHideHint);
             this.Controls.Add(this.picBackground);
             this.Controls.Add(this.lblMessage);
             this.Margin = new System.Windows.Forms.Padding(4);
@@ -77,5 +91,6 @@
 
         private System.Windows.Forms.Label lblMessage;
         private System.Windows.Forms.PictureBox picBackground;
+        private System.Windows.Forms.Button btnHideHint;
     }
 }

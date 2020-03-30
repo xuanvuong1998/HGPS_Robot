@@ -79,12 +79,16 @@ namespace HGPS_Robot
 
         public class GroupChallenge
         {
-            // Results of each group : Result of taken steps
-            // String format: result(0/1)-subCnt-subTime-groupAns
+
+            /// <summary>
+            /// Results of each group : Result of taken steps
+            /// The outer List: List of group numbers sorted by group (1, 2. ... x)
+            /// Inner list: list of step-submissions of according group
+            /// String format: result(0/1)-subCnt-subTime-groupAns
+            /// </summary>
             public static List<List<string>> GroupResults { get; set; }
 
             private static List<string> ServingHintsQueue { get; set; } = new List<string>();
-            private static Queue<string> ServeHintsQueue { get; set; } = new Queue<string>();
             public static bool IsOfferingHint { get; set; } = false;
             public static bool IsHappening { get; set; } = false;
             
@@ -95,7 +99,7 @@ namespace HGPS_Robot
                 // The group who have passed less steps will be served first
                 ServingHintsQueue = 
                     ServingHintsQueue.OrderBy(x => x.Split('-')[1]).ToList();
-                //ServeHintsQueue.Enqueue(groupNumber + "-" + hint);
+                //ServingHintsQueue.Enqueue(groupNumber + "-" + hint);
             }
 
             /// <summary>
@@ -114,12 +118,12 @@ namespace HGPS_Robot
 
             public static void ResetQueue()
             {
-                ServeHintsQueue.Clear();
+                ServingHintsQueue.Clear();
             }
 
             public static bool IsServingQueueEmpty()
             {
-                return ServeHintsQueue.Count == 0;
+                return ServingHintsQueue.Count == 0;
             }
            
         }
