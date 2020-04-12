@@ -89,6 +89,7 @@ namespace HGPS_Robot
                                 if (cmd.Value.ToLower() == "quiz")
                                 {
                                     QuestionNumber++; // Synchronize question number flow
+                                    // in case if teacher won't start the lesson from begining 
                                 }
                         }
 
@@ -103,11 +104,21 @@ namespace HGPS_Robot
 
                         CurrentDisplaySlideNumber = CurrentSlideNumber;
                         Debug.WriteLine("Current Slide -----------" + CurrentSlideNumber);
-                        LessonStatusHelper.Update(lessonName, CurrentSlideNumber, "started", null, null, null);
 
                         RobotProgSlide _currentProgSlide = progData[CurrentSlideNumber - 1];
                         _robotCommands = new RobotCommands(_currentProgSlide.Commands);
+                        
+                        
+                        if (_robotCommands.IsGroupChallengeSlide())
+                        {
+                            GroupChallengeHelper.DeclareGroupMembers();
+                        }else if (_robotCommands.IsGroupCompetitionStartingPoint())
+                        {
+                            GroupCompetitionHelper.AnnouceGroupCompetition();
+                        }
 
+                        LessonStatusHelper.Update(lessonName, CurrentSlideNumber, "started", null, null, null);
+                        
                         _robotCommands.OnCommandUpdate += _robotCommands_OnCommandUpdate;
                         _robotCommands.Execute();
                     }

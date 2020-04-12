@@ -15,36 +15,46 @@ namespace HGPS_Robot
         // Indicate whether robot received group performance results from web server ot not yet
         public static bool ResultReceived { get; set; }
 
+        // Group 1
         public static double LeftResult { get; set; }
 
+        // Group 2
         public static double RightResult { get; set; }
 
         private static Random rand = new Random();
 
-        public static void DeclareGroupMembers()
+        public static void AnnouceGroupCompetition()
         {
-            // A1 A3 A5 A7 A9
-            var left = TablePositionHelper.GetLeftGroupMembers();
-            // A2 A4 A6 A8
 
-            var right = TablePositionHelper.GetRightGroupMembers();
-            string speech = "Now I will read " +
-                "all group member names. Group 1 are ";
-
-            foreach (var std in left)
-            {
-                speech += std + ", ";
-            }
+            string speech = "Before starting the quiz, I would like to " +
+                "divide our class into 2 groups. My right side is group 1. " +
+                "And my left side is group 2. ";
 
             Synthesizer.Speak(speech);
 
-            speech = "Group 2 are ";
-            foreach (var std in right)
-            {
-                speech += std + ", ";
-            }
 
-            Synthesizer.Speak(speech);
+            //// A1 A3 A5 A7 A9
+            //var left = TablePositionHelper.GetLeftGroupMembers();
+            //// A2 A4 A6 A8
+
+            //var right = TablePositionHelper.GetRightGroupMembers();
+            //speech = "Now I will read " +
+            //    "all group member names. Group 1 are ";
+
+            //foreach (var std in left)
+            //{
+            //    speech += std + ", ";
+            //}
+
+            //Synthesizer.Speak(speech);
+
+            //speech = "Group 2 are ";
+            //foreach (var std in right)
+            //{
+            //    speech += std + ", ";
+            //}
+
+            //Synthesizer.Speak(speech);
 
         }
 
@@ -57,7 +67,7 @@ namespace HGPS_Robot
             {
                 case 0:
                     speech = "Everyone, please look at the projector screen to see " +
-                        "the competition result. Who will be the winner of " +
+                        "the competition result, Who will be the winner of " +
                         "this question? Group 1 or Group 2?";
                     break;
                 case 1:
@@ -65,7 +75,7 @@ namespace HGPS_Robot
                         "Group 1 or Group 2. ";
                     break;
                 case 2:
-                    speech = "Boys and girls, will group 1 be winner, or " +
+                    speech = "Boys and girls, will group 1 be the winner, or " +
                         "group 2?";
                     break;
             }
@@ -116,6 +126,7 @@ namespace HGPS_Robot
                 }
             }
 
+            // Open result in slide viewer (display on projector)
             LessonHelper.InsertNextSlideCommand("myhub", "RequestOpenResultURL,"
                         + "group-competition");
 

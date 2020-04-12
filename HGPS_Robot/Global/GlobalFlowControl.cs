@@ -130,38 +130,7 @@ namespace HGPS_Robot
 
         public class Lesson
         {
-            private static int quizElapsedValue;
-
-            public static int QuizElapsedTime
-            {
-                get { return quizElapsedValue; }
-                set
-                {
-                    quizElapsedValue = value;
-                    var secondsLeft = LessonHelper.CurrentQuizTimeout
-                        - value;
-
-                    if (secondsLeft <= 0) return;
-                    
-                    if (secondsLeft <= 10)
-                    {
-                        Synthesizer.SpeakAsync(secondsLeft + "");
-                    }
-                    
-                    if (secondsLeft == 30 || secondsLeft == 20)
-                    {
-                        Synthesizer.SpeakAsync(secondsLeft + " more seconds " +
-                            "every one. ");
-                    }
-
-                    if (secondsLeft == 40)
-                    {
-                        Synthesizer.SpeakAsync("Attention please, you" +
-                        " guys have " + secondsLeft + " seconds left");
-
-                    }
-                }
-            }
+            public static int QuizElapsedTime { get; set; }
 
             public static string Name { get; set; }
 

@@ -115,7 +115,7 @@ namespace HGPS_Robot
             lblMessage.Location = new Point(50, 150);
             lblMessage.BackColor = Color.Transparent;
 
-            btnHideHint.Location = new Point(this.Width / 2 - 100, this.Height - 200);
+            btnHideHint.Location = new Point(this.Width / 2 - 100, this.Height * 95 / 100);
 
 
         }

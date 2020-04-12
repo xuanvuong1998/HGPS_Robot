@@ -35,8 +35,7 @@ namespace HGPS_Robot
         {
             //var rand = new Random();
             int rdmNum = rand.Next(1, 11);
-            if (LessonHelper.LessonSubject.ToLower() != "story"
-                && GlobalFlowControl.Lesson.ChosenStudent != null)
+            if (GlobalFlowControl.Lesson.ChosenStudent != null)
                 //|| rdmNum <= 5, robot will approach when teacher choose it
             {
                 //ask
@@ -425,7 +424,7 @@ namespace HGPS_Robot
                     if (GlobalFlowControl.GroupChallenge.IsHappening)
                     {
                         Thread.Sleep(2000); // give extra time for robot
-                        // to receive the last submissions result
+                        // to receive the last group submissions result
                     }
 
                     var secondsLeft = LessonHelper.CurrentQuizTimeout
@@ -434,14 +433,7 @@ namespace HGPS_Robot
                     //Thread.Sleep(2000);
                     if (secondsLeft > 13) // If just have only few seconds
                         // let the robot count down from 10 to 1
-                    {
-                        //if (GlobalFlowControl.GroupChallenge.IsHappening == true)
-                        //{
-                        //    Synthesizer.Speak("Wow. Since all of you have done " +
-                        //                            "already. I will terminate the quiz early, and " +
-                        //                            "reveal the result now. Are you ready???");
-                        //}
-                        
+                    {                        
                         GlobalFlowControl.Lesson.QuizIsStarting = false;
                     }
                 }

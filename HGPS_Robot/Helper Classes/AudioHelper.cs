@@ -6,7 +6,6 @@ namespace HGPS_Robot
 {
     class AudioHelper
     {
-
         public static void PlayApplauseSound()
         {
             int rdNum = RandomHelper.RandomInt(5);

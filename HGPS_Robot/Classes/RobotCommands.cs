@@ -41,8 +41,8 @@ namespace HGPS_Robot
             get { return quizElapsed; }
             set
             {
-                GlobalFlowControl.Lesson.QuizElapsedTime = value;
                 quizElapsed = value;
+                GlobalFlowControl.Lesson.QuizElapsedTime = value;
             }
         }
 
@@ -92,6 +92,36 @@ namespace HGPS_Robot
                 OnCommandUpdate(this, args);
             }
         }
+
+        /// <summary>
+        /// CHeck if this slide contains group challenge script
+        /// </summary>
+        public bool IsGroupChallengeSlide()
+        {
+            foreach (var cmd in _commands)
+            {
+                if (cmd.Type == "start" 
+                    && cmd.Value == "group-challenge") return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// CHeck if this slide indicate start point to start group competition
+        /// </summary>
+        /// <returns></returns>
+        public bool IsGroupCompetitionStartingPoint()
+        {
+            foreach (var cmd in _commands)
+            {
+                if (cmd.Type == "start"
+                    && cmd.Value == "group-competition") return true;
+            }
+
+            return false;
+        }
+
         private void CommandHandler()
         {
 
@@ -300,7 +330,8 @@ namespace HGPS_Robot
                         }
                         else if (val.ToLower() == "group-competition")
                         {
-                            GroupCompetitionHelper.DeclareGroupMembers();
+                            // read out all members of left and right side
+                            //GroupCompetitionHelper.DeclareGroupMembers();
 
                             LessonStatusHelper.LessonStatus.LessonState
                                 = "start-group-competition";
@@ -315,7 +346,8 @@ namespace HGPS_Robot
                         break;
 
                     case "stop":
-                        if (val.ToLower() == "group-competition")
+                        if (val.ToLower() == "group-competition"
+                            || GlobalFlowControl.Lesson.GroupCompetitionIsHappening)
                         {
                             LessonStatusHelper.LessonStatus.LessonState
                                 = "stop-group-competition";
@@ -509,13 +541,35 @@ namespace HGPS_Robot
 
         #region Process Quiz
         private void StartQuizTimer()
-        {
+        { 
             GlobalFlowControl.Lesson.QuizIsStarting = true;
             
             QuizElapsedTime = 1;
             quizTimer.Start();
         }
 
+        private void AnnouceTimeLeft(int secondsLeft)
+        {
+            if (secondsLeft <= 0 || LessonHelper.PauseRequested) return;
+
+            if (secondsLeft <= 10)
+            {
+                Synthesizer.SpeakAsync(secondsLeft + "");
+            }
+
+            if (secondsLeft == 30 || secondsLeft == 20)
+            {
+                Synthesizer.SpeakAsync(secondsLeft + " more seconds " +
+                    "every one. ");
+            }
+
+            if (secondsLeft == 40)
+            {
+                Synthesizer.SpeakAsync("Attention please, you" +
+                " guys have " + secondsLeft + " seconds left");
+
+            }
+        }
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             if (LessonHelper.PauseRequested == false)
@@ -527,9 +581,12 @@ namespace HGPS_Robot
                 Debug.WriteLine("Lesson is pausing");
             }
 
-            Debug.WriteLine("Time Left: " + (QuizTime - QuizElapsedTime));
+            Debug.WriteLine("Time Left: " + (LessonHelper.CurrentQuizTimeout - QuizElapsedTime));
 
-            if (QuizElapsedTime >= QuizTime || GlobalFlowControl.Lesson.QuizIsStarting == false)
+            AnnouceTimeLeft(LessonHelper.CurrentQuizTimeout - QuizElapsedTime);
+
+            if (QuizElapsedTime >= QuizTime ||
+                GlobalFlowControl.Lesson.QuizIsStarting == false)
             {
                 GlobalFlowControl.Lesson.QuizIsStarting = false;
                 quizTimer.Stop();
@@ -584,9 +641,9 @@ namespace HGPS_Robot
 
             SyncHelper.SendGroupChallengStepsToServer();
 
-            QuizTime = GroupChallengeHelper.GetTotalTimeOut();
+            QuizTime = GroupChallengeHelper.GetTotalTimeOut() + 2;// extra delay time
 
-            LessonHelper.CurrentQuizTimeout = QuizTime;
+            LessonHelper.CurrentQuizTimeout = QuizTime; 
 
             StartQuizTimer();
 

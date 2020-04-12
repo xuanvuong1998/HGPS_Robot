@@ -37,6 +37,30 @@ namespace HGPS_Robot
 
         #endregion
 
+        #region Members
+
+        public static void DeclareGroupMembers()
+        {
+            int groupQty = TablePositionHelper.GetGroupQuantity();
+
+            Synthesizer.Speak("Before starting group challenge. Let me check " +
+                "members of each group again. ");
+
+            for(int i = 1; i <= groupQty; i++)
+            {
+                var groupMems = TablePositionHelper.GetMembersByGroupNumber(i);
+
+                string speech = "Group " + 1 + ". ";
+
+                foreach (var mem in groupMems)
+                {
+                    speech += mem + ", ";
+                }
+
+                Synthesizer.Speak(speech);
+            }
+        }
+        #endregion
         #region Group Challenge Steps
 
         /// <summary>
@@ -267,7 +291,7 @@ namespace HGPS_Robot
             int groupNumber = int.Parse(nextOffer.Split('-')[0]);
 
             var records = GlobalFlowControl.GroupChallenge.GroupResults;
-
+            
 
             var offerStep = nextOffer.Split('-')[1][3] - '0';
             var stepSub = records[groupNumber - 1][offerStep - 1];
@@ -592,9 +616,6 @@ namespace HGPS_Robot
         {
             int rdmNum = new Random().Next(3);
 
-            var secondsLeft = LessonHelper.CurrentQuizTimeout
-                        - GlobalFlowControl.Lesson.QuizElapsedTime;
-
             switch (rdmNum)
             {
                 case 0:
@@ -721,7 +742,7 @@ namespace HGPS_Robot
                 i++;
             }
 
-            Wait(2000);
+            //Wait(2000);
 
             if (i == currentChallengeRecord.Count) return;
 
