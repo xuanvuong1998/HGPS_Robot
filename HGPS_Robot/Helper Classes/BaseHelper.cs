@@ -23,12 +23,12 @@ namespace HGPS_Robot
         private static readonly string BASE_IP = "192.168.31.200:9090";
 
         static BaseHelper()
-        {                     
+        {
             rBaseStopTimer.Interval = 1000;
             rBaseStopTimer.Elapsed += RBaseStopTimer_Elapsed;
             rBaseStopTimer.AutoReset = false;
         }
-        
+
         #region events
         private static void RBaseStopTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
@@ -61,12 +61,12 @@ namespace HGPS_Robot
 
         public static void TurnLeft()
         {
-           Move(ROS.BaseDirection.ANTICLOCKWISE);
+            Move(ROS.BaseDirection.ANTICLOCKWISE);
         }
 
         public static void TurnRight()
         {
-           Move(ROS.BaseDirection.CLOCKWISE);
+            Move(ROS.BaseDirection.CLOCKWISE);
         }
         public static void TurnLeft(int rounds)
         {
@@ -111,7 +111,7 @@ namespace HGPS_Robot
         #region Moves
         public static void Forward()
         {
-           Move(ROS.BaseDirection.FORWARD);
+            Move(ROS.BaseDirection.FORWARD);
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace HGPS_Robot
 
         public static void Backward()
         {
-           Move(ROS.BaseDirection.BACKWARD);
+            Move(ROS.BaseDirection.BACKWARD);
         }
         #endregion
 
@@ -177,7 +177,7 @@ namespace HGPS_Robot
                     break;
                 case "backward":
                     BackwardDuring(1);
-                    break; 
+                    break;
                 case "left-turn":
                     TurnLeftDuring(1);
                     break;
@@ -209,42 +209,47 @@ namespace HGPS_Robot
         }
         static public void Go(string location)
         {
-            return;
+            if (ApplicationSettings.RobotMovementEnable == false)
+            {
+                Console.WriteLine("RObot movement is not enabled. change in applicationsettings");
+
+                GlobalFlowControl.Navigation.Reset();
+
+                return;
+            }
             try
             {
                 GlobalFlowControl.Navigation.ResetBeforeNavigation();
                 rBase.Go(location);
             }
-            catch { }
+            catch
+            {
+                GlobalFlowControl.Navigation.Reset();
+            }
         }
 
         static public void GoUntilReachedGoalOrCanceled(string location)
         {
-            return;
             Go(location);
             while (GlobalFlowControl.Navigation.Moving == true) ;
+
         }
 
         private static void RBase_NavigationStatusChanged(object o, NavigationStatusEventArgs e)
         {
             if (e.Status == "Goal reached.")
             {
-                //SpeechHelper.SpeakAsync("Navigation Reached Goal!");
                 GlobalFlowControl.Navigation.ReachedGoal = true;
 
             }
             else if (e.Status == "")
             {
                 GlobalFlowControl.Navigation.Canceled = true;
-                //SpeechHelper.SpeakAsync("Navigation Cancelled!");
             }
             else
             {
                 GlobalFlowControl.Navigation.Stucked = true;
-                //SpeechHelper.SpeakAsync("Sorry! I am stucked");
             }
-
-            //mainForm.NavSTT = e.Status; 
         }
         #endregion
 
@@ -275,7 +280,6 @@ namespace HGPS_Robot
         {
             rBase.Stop();
         }
-
 
         static public void Move(ROS.BaseDirection direction)
         {

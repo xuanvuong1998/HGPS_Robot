@@ -17,8 +17,7 @@ namespace HGPS_Robot
 {
     public static class WebHelper
     {
-        //private const string BASE_ADDRESS = "http://robo-ta.com/";
-        private const string BASE_ADDRESS = "https://localhost:44353/";
+        private static string BASE_ADDRESS = ApplicationSettings.BASE_ADDRESS;
         private const string ACCESS_TOKEN = "1H099XeDsRteM89yy91QonxH3mEd0DoE";
 
 

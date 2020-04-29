@@ -79,6 +79,7 @@ namespace HGPS_Robot
 
         public static void MoveDuringLesson()
         {
+            if (ApplicationSettings.RobotGestureEnable == false) return;
             var rdm = new Random();
             bool resetArd = false;
             Task.Factory.StartNew(() =>

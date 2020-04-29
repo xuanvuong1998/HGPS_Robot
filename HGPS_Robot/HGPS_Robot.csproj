@@ -290,6 +290,7 @@
     <Compile Include="Forms\MainUI.Designer.cs">
       <DependentUpon>MainUI.cs</DependentUpon>
     </Compile>
+    <Compile Include="Global\ApplicationSettings.cs" />
     <Compile Include="Global\GlobalData.cs" />
     <Compile Include="Global\GlobalFlowControl.cs" />
     <Compile Include="Global\RobotCmd.cs" />

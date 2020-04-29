@@ -658,7 +658,6 @@ namespace HGPS_Robot
             BaseHelper.Go("Home"); // Go to the center to annouce results
 
             GroupChallengeHelper.AssessGroupChallenge();
-
             
         }
         #endregion

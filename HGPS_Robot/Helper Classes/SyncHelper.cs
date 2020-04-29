@@ -14,8 +14,7 @@ namespace HGPS_Robot
         private static HubConnection _hubConnection;
         private static IHubProxy _syncHub, _myHub;
         private const string CLIENT_NAME = "Robo-TA";
-        //private const string _baseAddress = "http://robo-ta.com/";
-        private const string _baseAddress = "https://localhost:44353/";
+        private static string _baseAddress = ApplicationSettings.BASE_ADDRESS;
 
         public static event EventHandler<StatusEventArgs> StatusChanged;
         public static event EventHandler<RobotCommandEventArgs> RobotCommandChanged;
