@@ -8,10 +8,10 @@ namespace HGPS_Robot
 {
     class ApplicationSettings
     {
-        //private const string BASE_ADDRESS = "http://robo-ta.com/";
+        public static string BASE_ADDRESS = "https://robo-ta.com/";
         
-        public static string BASE_ADDRESS { get; set; }
-                    = @"https://localhost:44353/";
+        //public static string BASE_ADDRESS { get; set; }
+        //            = @"https://localhost:44353/";
 
         public static bool RobotGestureEnable { get; set; } = true;
 
