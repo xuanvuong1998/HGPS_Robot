@@ -8,8 +8,9 @@ namespace HGPS_Robot
 {
     class ApplicationSettings
     {
-        public static string BASE_ADDRESS = "https://robo-ta.com/";
-        
+        //public static string BASE_ADDRESS = "https://robo-ta.com/";
+        public static string BASE_ADDRESS = "https://coddie.io/";
+
         //public static string BASE_ADDRESS { get; set; }
         //            = @"https://localhost:44353/";
 

@@ -50,14 +50,16 @@ namespace HGPS_Robot
             frmInLesson.OfferHint();
         }
 
-        public static void Start(string lessonName, int startSlideNum, string voiceName)
+        public static async void Start(string lessonName, int startSlideNum, string voiceName)
         {
             LessonName = lessonName;
-            
-            int endSlideNum = FileHelper.GetLessonSlidesNumber(lessonName);
-            LastSlideNumber = endSlideNum;
-            string codePath = FileHelper.BasePath + @"\" + lessonName + @"\code.pptx";
-            progData = PowerpointHelper.GetSlidesData(codePath);
+
+            //int endSlideNum = FileHelper.GetLessonSlidesNumber(lessonName);
+            //LastSlideNumber = endSlideNum;
+            //string codePath = FileHelper.BasePath + @"\" + lessonName + @"\code.pptx";
+            //progData = PowerpointHelper.GetSlidesData(codePath);
+            progData = await WebHelper.GetLessonCommands(lessonName);
+            int endSlideNum = progData.Count;
 
             GlobalFlowControl.Lesson.ResetAll();
             Synthesizer.SelectVoiceByName(GlobalData.GetVoiceNameFromVoiceNumber(voiceName));

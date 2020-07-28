@@ -133,7 +133,7 @@ namespace HGPS_Robot
                 {
                     Thread.Sleep(500);
                 }
-
+                
                 CurrentCommand = _commands[commandIteration];
 
                 GroupChallengeHelper.CheckForGroupChallenge(CurrentCommand);
@@ -320,6 +320,7 @@ namespace HGPS_Robot
                                 while (GroupCompetitionHelper.ResultReceived == false)
                                 {
                                     Wait(500);
+                                    DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt");
                                 }
                             }
                             Debug.WriteLine("Received group perfo");

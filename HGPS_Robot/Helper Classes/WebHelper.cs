@@ -156,7 +156,7 @@ namespace HGPS_Robot
                         await client.SendAsync(req);
                     }
                 }
-            }
+            }   
         }
 
         public static async void AddLessonHistory(LessonHistory history)
@@ -169,6 +169,51 @@ namespace HGPS_Robot
                     req.Content = new StringContent(JsonConvert.SerializeObject(history), Encoding.UTF8, "application/json");
                     await client.SendAsync(req);
                 }
+            }
+        }
+
+        public static async Task<List<RobotProgSlide>> GetLessonCommands(string lessonName)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(BASE_ADDRESS);
+                var response = await client.GetAsync($"LessonManagement/GetLessonCommands?name={lessonName}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var commandsJson = await response.Content.ReadAsStringAsync();
+
+                    var commands = JsonConvert.DeserializeObject<List<string>>(commandsJson);
+                    var robotSlides = new List<RobotProgSlide>();
+
+                    foreach (var command in commands)
+                    {
+                        var robotSlide = new RobotProgSlide();
+                        var robotCode = command.Replace("\n", String.Empty)
+                                               .Replace("\x0B", String.Empty)
+                                               .Replace("\x11", String.Empty)
+                                               .Replace("\r", String.Empty);
+                        robotSlide.Code = robotCode;
+                        robotSlides.Add(robotSlide);
+
+                    }
+                    return robotSlides;
+                }
+                return null;
+            }
+        }
+
+        public static async Task<List<string>> GetLessonSlidesName()
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(BASE_ADDRESS);
+                var response = await client.GetAsync("LessonManagement/GetLessonSlidesName");
+                if (response.IsSuccessStatusCode)
+                {
+                    var lessonSlidesName = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<List<string>>(lessonSlidesName);
+                }
+                return null;
             }
         }
     }

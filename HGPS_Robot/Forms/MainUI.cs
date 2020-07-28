@@ -33,6 +33,8 @@ namespace HGPS_Robot
 
             UpperBodyHelper.Init();
             BaseHelper.Connect();
+
+            //LessonHelper.Start("Week 05 - Solving Word Problem", 1, "Voice 1");
         }
 
         private void SystemUpdateHelper_SystemUpdated(object sender, EventArgs e)

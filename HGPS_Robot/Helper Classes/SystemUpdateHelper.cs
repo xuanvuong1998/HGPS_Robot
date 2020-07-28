@@ -26,7 +26,7 @@ namespace HGPS_Robot
 
         private static void Update()
         {
-            ExportSlides();
+            //ExportSlides();
             UpdateToServer();
         }
 
@@ -65,12 +65,17 @@ namespace HGPS_Robot
             foreach (var folder in Directory.GetDirectories(lessonsPath))
             {
                 string lessonName = Path.GetFileName(folder);
-                string codePath = folder + @"\code.pptx";
-                if (string.IsNullOrEmpty(codePath)) continue;
-                if (!File.Exists(codePath)) continue;
+                var savedLessonSlides = WebHelper.GetLessonSlidesName().Result;
+                if (!savedLessonSlides.Contains(lessonName)) continue;
 
-                FileInfo fileInfo = new FileInfo(codePath);
-                var lastModified = fileInfo.LastWriteTime.ToString("dd/MM/yyyy hh:mm:ss tt");
+                
+                //string codePath = folder + @"\code.pptx";
+                //if (string.IsNullOrEmpty(codePath)) continue;
+                //if (!File.Exists(codePath)) continue;
+
+
+                //FileInfo fileInfo = new FileInfo(codePath);
+                //var lastModified = fileInfo.LastWriteTime.ToString("dd/MM/yyyy hh:mm:ss tt");
 
                 if (savedLessons != null)
                 {
@@ -85,11 +90,49 @@ namespace HGPS_Robot
                     }
                     else //not saved
                     {
-                        Save(folder, lastModified);
+                        //Save(folder, lastModified);
+                        Save(lessonName);
                     }
                 }
             }
         }
+        private static async void Save(string lessonName)
+        {
+            var progData = await WebHelper.GetLessonCommands(lessonName);
+
+            var lesson = new Lesson();
+            lesson.Id = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt");
+            lesson.Name = lessonName;
+            lesson.DateModified = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt");
+            lesson.Slides = progData.Count;
+            lesson.Teacher_Id = progData[0].TeacherId;
+            lesson.Subject = progData[0].Subject;
+
+            var lessonSaved = await WebHelper.AddLesson(lesson);
+
+            if (lessonSaved == "true")
+            {
+                int _questionNumber = 0;
+                for (int i = 0; i < progData.Count; i++)
+                {
+                    var question = progData[i].Question;
+                    if (question != null)
+                    {
+                        question.Id = 1;
+                        question.Lesson_Id = lesson.Id;
+                        _questionNumber += 1;
+                        question.Number = _questionNumber;
+                        WebHelper.AddQuestion(question);
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show($"Lesson {lesson.Name} not saved!");
+            }
+        }
+
+
         private static async void Save(string lessonFolder, string dateModified)
         {
             string codePath = lessonFolder + @"\code.pptx";
