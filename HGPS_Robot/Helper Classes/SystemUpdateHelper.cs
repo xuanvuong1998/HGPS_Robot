@@ -58,40 +58,16 @@ namespace HGPS_Robot
 
         public static void UpdateToServer()
         {
-            var savedLessons = WebHelper.GetSavedLessons();
+            var savedLessons = WebHelper.GetSavedLessons().Select(x => x.Name).ToList();
+            var savedLessonSlides = WebHelper.GetLessonSlidesName().Result;
 
-            string lessonsPath = FileHelper.BasePath;
-
-            foreach (var folder in Directory.GetDirectories(lessonsPath))
+            if (savedLessons != null)
             {
-                string lessonName = Path.GetFileName(folder);
-                var savedLessonSlides = WebHelper.GetLessonSlidesName().Result;
-                if (!savedLessonSlides.Contains(lessonName)) continue;
-
-                
-                //string codePath = folder + @"\code.pptx";
-                //if (string.IsNullOrEmpty(codePath)) continue;
-                //if (!File.Exists(codePath)) continue;
-
-
-                //FileInfo fileInfo = new FileInfo(codePath);
-                //var lastModified = fileInfo.LastWriteTime.ToString("dd/MM/yyyy hh:mm:ss tt");
-
-                if (savedLessons != null)
+                foreach (var lessonSlide in savedLessonSlides)
                 {
-                    int index = savedLessons.FindIndex(s => s.Name == lessonName);
-                    if (index >= 0) //saved
+                    if (!savedLessons.Contains(lessonSlide))
                     {
-                        //if (savedLessons[index].DateModified != lastModified)
-                        //{
-                            //WebHelper.DeleteLesson(lessonName);
-                            //Save(folder, lastModified);
-                        //}
-                    }
-                    else //not saved
-                    {
-                        //Save(folder, lastModified);
-                        Save(lessonName);
+                        Save(lessonSlide);
                     }
                 }
             }
