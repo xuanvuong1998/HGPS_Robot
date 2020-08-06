@@ -207,7 +207,7 @@ namespace HGPS_Robot
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(BASE_ADDRESS);
-                var response = await client.GetAsync("LessonManagement/GetLessonSlidesName");
+                var response = await client.GetAsync("LessonManagement/GetAllExistingLessonNames");
                 if (response.IsSuccessStatusCode)
                 {
                     var lessonSlidesName = await response.Content.ReadAsStringAsync();
