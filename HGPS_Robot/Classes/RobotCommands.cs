@@ -13,6 +13,7 @@ using SpeechLibrary;
 using System.Diagnostics;
 using Timer = System.Timers.Timer;
 using HGPS_Robot.Utils;
+using System.IO;
 
 namespace HGPS_Robot
 {
@@ -443,18 +444,22 @@ namespace HGPS_Robot
         }
         private void MySpeech(string file)
         {
-            var status = LessonStatusHelper.LessonStatus;
-            var fileLocation = FileHelper.BasePath + $@"{status.LessonName}\Speech\{file}";
-            _soundPlayer.SoundLocation = fileLocation;
-            _soundPlayer.PlaySync();
+            var fileLocation = FileHelper.GetDropboxDirectory() + $@"\Media\{file}";
+            if (File.Exists(fileLocation))
+            {
+                _soundPlayer.SoundLocation = fileLocation;
+                _soundPlayer.PlaySync();
+            }
         }
 
         private void MySpeechAsync(string file)
         {
-            var status = LessonStatusHelper.LessonStatus;
-            var fileLocation = FileHelper.BasePath + $@"{status.LessonName}\Speech\{file}";
-            _soundPlayer.SoundLocation = fileLocation;
-            _soundPlayer.Play();
+            var fileLocation = FileHelper.GetDropboxDirectory() + $@"\Media\{file}";
+            if (File.Exists(fileLocation))
+            {
+                _soundPlayer.SoundLocation = fileLocation;
+                _soundPlayer.Play();
+            }
         }
 
         #endregion
