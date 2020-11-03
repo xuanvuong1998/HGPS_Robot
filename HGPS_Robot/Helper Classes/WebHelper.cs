@@ -186,6 +186,7 @@ namespace HGPS_Robot
                     var robotSlides = new List<RobotProgSlide>();
 
                     foreach (var command in commands)
+                        if (command != null)
                     {
                         var robotSlide = new RobotProgSlide();
                         var robotCode = command.Replace("\n", String.Empty)

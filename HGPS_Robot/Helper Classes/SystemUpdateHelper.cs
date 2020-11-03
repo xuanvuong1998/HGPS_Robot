@@ -76,35 +76,42 @@ namespace HGPS_Robot
         {
             var progData = await WebHelper.GetLessonCommands(lessonName);
 
-            var lesson = new Lesson();
-            lesson.Id = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt");
-            lesson.Name = lessonName;
-            lesson.DateModified = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt");
-            lesson.Slides = progData.Count;
-            lesson.Teacher_Id = progData[0].TeacherId;
-            lesson.Subject = progData[0].Subject;
-
-            var lessonSaved = await WebHelper.AddLesson(lesson);
-
-            if (lessonSaved == "true")
+            if (progData != null)
             {
-                int _questionNumber = 0;
-                for (int i = 0; i < progData.Count; i++)
+                var lesson = new Lesson();
+                lesson.Id = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt");
+                lesson.Name = lessonName;
+                lesson.DateModified = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt");
+                lesson.Slides = progData.Count;
+                lesson.Teacher_Id = progData[0].TeacherId;
+                lesson.Subject = progData[0].Subject;
+
+                var lessonSaved = await WebHelper.AddLesson(lesson);
+
+                if (lessonSaved == "true")
                 {
-                    var question = progData[i].Question;
-                    if (question != null)
+                    int _questionNumber = 0;
+                    for (int i = 0; i < progData.Count; i++)
                     {
-                        question.Id = 1;
-                        question.Lesson_Id = lesson.Id;
-                        _questionNumber += 1;
-                        question.Number = _questionNumber;
-                        WebHelper.AddQuestion(question);
+                        var question = progData[i].Question;
+                        if (question != null)
+                        {
+                            question.Id = 1;
+                            question.Lesson_Id = lesson.Id;
+                            _questionNumber += 1;
+                            question.Number = _questionNumber;
+                            WebHelper.AddQuestion(question);
+                        }
                     }
+                }
+                else
+                {
+                    MessageBox.Show($"Lesson {lesson.Name} not saved!");
                 }
             }
             else
             {
-                MessageBox.Show($"Lesson {lesson.Name} not saved!");
+                MessageBox.Show("Unable to retrieve data from server. Please check internet connection.");
             }
         }
 
